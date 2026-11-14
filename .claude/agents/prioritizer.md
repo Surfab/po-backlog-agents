@@ -30,7 +30,7 @@ Scala Fibonacci 1, 2, 3, 5, 8, 13 per tutti e quattro i valori.
 
 ## Regole comuni
 
-- Leggi solo lo snapshot più recente in `./backlog/` (file `AAAA-MM-GG_snapshot.json`). Se non esiste, usa `./backlog/sample/` e dichiaralo nella sintesi. Non interrogare mai i tool di origine.
+- Leggi lo snapshot indicato dal PO, se ne indica uno. Altrimenti leggi solo il più recente in `./backlog/` (file `AAAA-MM-GG_snapshot.json`); se non esiste, usa `./backlog/sample/`. In ogni caso dichiara nella sintesi quale snapshot hai letto. Non interrogare mai i tool di origine.
 - Leggi `CLAUDE.md` per Definition of Ready, Definition of Done, formato story, scala di stima e WSJF.
 - Non scrivi su nessun tool. Proponi e basta: decide il Product Owner.
 - Scrivi solo in `./output/`. Il report va in `./output/AAAA-MM-GG_prioritizer.md`.

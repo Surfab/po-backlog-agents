@@ -6,9 +6,15 @@ Six Claude Code agents that review a Product Owner's backlog on Notion and Jira.
 
 **Cosa ha dimostrato la demo**
 
-- backlog-health ha trovato tutti i 7 difetti piantati nei dati di prova, compreso un duplicato tra Notion e Jira.
+- Ha trovato errori che nessuno aveva previsto: contraddizioni tra criteri di accettazione introdotte dalle stesse correzioni, e una soglia di 5 secondi nei criteri che nessuno aveva giustificato.
 - sprint-prep ha bocciato 5 candidati su 5 sulla Definition of Ready, invece di riempire lo sprint.
-- Tre giri di controllo hanno portato a zero le contraddizioni tra i criteri di accettazione della riconciliazione, comprese quelle introdotte dalle correzioni.
+- backlog-health ha trovato tutti i 7 difetti piantati nei dati di prova, compreso un duplicato tra Notion e Jira.
+
+Esempi di report reali: [salute del backlog](output/2026-11-13_backlog-health.md) · [preparazione dello sprint](output/2026-11-13_sprint-prep.md) · [impatti di compliance](output/2026-11-12_fintech-compliance.md)
+
+**Provalo in 2 minuti, senza connettori.** Apri la cartella in Claude Code e scrivi: "Lancia backlog-health su `backlog/sample/2026-11-12_snapshot.json`". Poi confronta il report con l'elenco dei difetti in `backlog/sample/README.md`.
+
+Progettato da un Product Owner e costruito con Claude Code in tre giorni.
 
 [🇮🇹 Italiano](#italiano) · [🇬🇧 English](#english)
 
