@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-11-14, screenshot nel README
+
+- README: screenshot del flusso con il pannello di backlog-sync aperto, in versione chiara e scura (GitHub sceglie in base al tema), cliccabile verso la pagina interattiva.
+- Immagini in `docs/img/flusso-chiaro.png` e `docs/img/flusso-scuro.png`, circa 80 KB l'una.
+- Se cambia la sezione "Il flusso" di `docs/index.html`, lo screenshot va rifatto.
+
 ## 2026-11-14, pagina interattiva
 
 - Nuova pagina `docs/index.html`, in italiano e in inglese, che spiega in due minuti come funzionano gli agenti. Ogni numero e ogni citazione rimanda al file del repository da cui viene. Pubblicata con GitHub Pages su `surfab.github.io/po-backlog-agents`.

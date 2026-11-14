@@ -6,6 +6,13 @@ Six Claude Code agents that review a Product Owner's backlog on Notion and Jira.
 
 **Come funziona, in due minuti:** [pagina interattiva](https://surfab.github.io/po-backlog-agents/) · **How it works, in two minutes:** [interactive page](https://surfab.github.io/po-backlog-agents/#en)
 
+<a href="https://surfab.github.io/po-backlog-agents/">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/img/flusso-scuro.png">
+    <img src="docs/img/flusso-chiaro.png" width="520" alt="Il flusso degli agenti: Notion e Jira, backlog-sync, snapshot, 5 agenti di analisi, proposte, OK del PO, change-log. The agent flow: Notion and Jira, backlog-sync, snapshot, 5 analysis agents, proposals, PO's OK, change-log.">
+  </picture>
+</a>
+
 **Cosa ha dimostrato la demo**
 
 - Ha trovato errori che nessuno aveva previsto: contraddizioni tra criteri di accettazione introdotte dalle stesse correzioni, e una soglia di 5 secondi nei criteri che nessuno aveva giustificato.
