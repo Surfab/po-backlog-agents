@@ -19,7 +19,7 @@ Gli agent leggono e propongono. Il Product Owner decide. **Nessuna scrittura su 
 
 1. **Adapter** (`./adapters/<tool>.md`): come si legge e si scrive un tool, mappa dei campi e degli stati.
 2. **Modello comune** (`./schema/backlog-item.schema.json`): formato unico degli item.
-3. **Agent di analisi** (`.claude/agents/`): leggono solo `./backlog/AAAA-MM-GG_snapshot.json`.
+3. **Agent di analisi** (`.claude/agents/`): leggono solo `./backlog/AAAA-MM-GG_HHMM_snapshot.json` (uno per sync, mai sovrascritto). Ogni report cita il file esatto che ha letto.
 
 Aggiungere un tool: `./adapters/README.md`.
 
@@ -40,16 +40,41 @@ Aggiungere un tool: `./adapters/README.md`.
 
 Se lo stesso contenuto esiste in due tool, vince la fonte di verità per quel tipo. L'altro item va collegato o chiuso, mai tenuto allineato a mano.
 
+## Parametri del backlog
+
+Valori letti dagli agent di analisi. Se ne manca uno, l'agent lo segnala tra i dati mancanti invece di usare un default.
+
+| Parametro | Valore |
+|---|---|
+| Item fermi | 28 giorni senza aggiornamenti, rispetto alla data dello snapshot |
+| Team | 6 sviluppatori, 1 QA |
+| Durata dello sprint | 2 settimane |
+| Sprint per la velocity | 3 sprint chiusi |
+
+## Collegamento discovery-delivery
+
+- Un'opportunità Notion è validata quando `stato_originale` = "Validata".
+- Un'opportunità validata deve avere un'epica Jira collegata: dipendenza `realizza` verso l'epica, oppure chiave dell'epica nel campo "Epica Jira" (`extra["Epica Jira"]`).
+- Un'opportunità e l'epica Jira che la realizza non sono duplicati.
+
 ## Agent
 
 | Agent | Quando |
 |---|---|
-| backlog-sync | per primo, a inizio sessione |
+| backlog-sync | per primo, a inizio sessione. La sessione principale gli passa nel prompt data e ora reali (`date "+%Y-%m-%dT%H:%M:%S%z"`) |
 | backlog-health | dopo ogni sync |
 | story-refiner | su story indicate per id, prima del refinement |
 | prioritizer | prima del planning |
 | fintech-compliance | prima che un item entri in sprint |
 | sprint-prep | 1-2 giorni prima del planning, o a fine sprint |
+
+## Agent di dominio
+
+Agent specifici del dominio del prodotto. Gli agent di analisi generici rimandano a loro quando un item rientra nei casi indicati.
+
+| Agent | Quando | Per quali item |
+|---|---|---|
+| fintech-compliance | prima che un item entri in sprint | item che toccano pagamenti, identità del cliente, dati personali, carte o integrazioni con terzi |
 
 ## Scritture
 
@@ -70,22 +95,39 @@ Se lo stesso contenuto esiste in due tool, vince la fonte di verità per quel ti
 
 "Come <utente> voglio <azione> per ottenere <beneficio>."
 
-L'utente è una persona del dominio: titolare di PMI, addetto all'amministrazione, dipendente con carta aziendale, commercialista. Acceptance criteria in Gherkin (Dato, Quando, Allora). Criteri INVEST.
+L'utente è una persona del dominio: titolare di PMI, addetto all'amministrazione, dipendente con carta aziendale, commercialista. Criteri INVEST.
+
+Acceptance criteria in blocchi Gherkin: uno `Scenario` per caso, con `Dato`, `Quando`, `Allora` su righe separate (ed `E` per le condizioni aggiuntive), come in `output/2026-11-12_story-refiner.md`. Una lista numerata in prosa non è Gherkin, anche se contiene "dato", "quando" e "allora".
+
+```gherkin
+Scenario: formato non ammesso
+  Dato una richiesta in stato "bozza"
+  Quando carico un file in un formato non compreso in <formati ammessi>
+  Allora il file viene rifiutato con un messaggio che elenca i formati ammessi
+```
+
+Casi limite da coprire negli acceptance criteria: importi, timeout, stati del pagamento.
 
 ## Scala di stima
 
 Story point Fibonacci: 1, 2, 3, 5, 8, 13. **Oltre 13 la story va divisa.** Stima il team, non il PO e non gli agent.
 
-## WSJF
+## Prioritizzazione
+
+Framework: WSJF.
 
 WSJF = (business value + time criticality + risk reduction) / job size
 
 - I quattro valori usano la scala 1, 2, 3, 5, 8, 13.
+- Si calcola su opportunità ed epiche.
+- Le story non hanno WSJF: il PO le ordina dentro l'epica.
 - Business value, time criticality e risk reduction li assegna il PO, su Notion per le opportunità.
-- Job size delle story: i loro story point.
-- Job size di opportunità ed epiche: valore esplicito nel campo "Job Size" dell'opportunità su Notion, assegnato dal PO con il team. L'epica Jira che realizza l'opportunità eredita tutti e quattro i valori. La somma dei figli non si usa: un'epica contiene anche bug e task non stimati, e le story cambiano con gli split.
-- Se un valore manca, il punteggio non si calcola.
-- Il WSJF si calcola su opportunità ed epiche. Le story dentro un'epica le ordina a mano il PO.
+- Job size di opportunità ed epiche: valore esplicito nel campo "Job Size" dell'opportunità su Notion, assegnato dal PO con il team.
+- Campi nello snapshot: `wsjf.business_value`, `wsjf.time_criticality`, `wsjf.risk_reduction`, `wsjf.job_size`.
+- Eredità: l'epica Jira che realizza un'opportunità (dipendenza `realizza` o campo "Epica Jira") eredita tutti e quattro i valori dell'opportunità. Opportunità ed epica collegate hanno lo stesso punteggio e nel report stanno su una riga sola. Un'epica senza opportunità di origine non è calcolabile.
+- Somma dei figli: non si usa come job size, perché un'epica contiene anche bug e task non stimati e le story cambiano con gli split. Se la somma delle stime dei figli supera di molto il Job Size dichiarato, è un problema Medio.
+- Valori mancanti: se ne manca anche uno, il punteggio non si calcola.
+- Parità: a punteggio uguale, viene prima l'item con time criticality più alta.
 
 ## Definition of Ready
 

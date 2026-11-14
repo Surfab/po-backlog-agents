@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Edit(./backlog/**)",
+      "Edit(./output/**)",
+      "mcp__<ID-CONNETTORE-1>__<tool-di-lettura-1>",
+      "mcp__<ID-CONNETTORE-1>__<tool-di-lettura-2>",
+      "mcp__<ID-CONNETTORE-2>__<tool-di-lettura-1>"
+    ],
+    "ask": [
+      "mcp__<ID-CONNETTORE-1>__<tool-di-scrittura-1>",
+      "mcp__<ID-CONNETTORE-1>__<tool-di-scrittura-2>",
+      "mcp__<ID-CONNETTORE-2>__<tool-di-scrittura-1>"
+    ],
+    "deny": [
+      "mcp__<ID-CONNETTORE-1>__<tool-che-elimina-1>",
+      "mcp__<ID-CONNETTORE-2>__<tool-che-elimina-1>",
+      "Bash(git init:*)",
+      "Bash(git worktree:*)"
+    ]
+  }
+}

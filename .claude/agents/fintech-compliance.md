@@ -34,7 +34,7 @@ Sei un esperto di prodotto fintech che fa da primo filtro prima del confronto co
 
 ## Regole comuni
 
-- Leggi lo snapshot indicato dal PO, se ne indica uno. Altrimenti leggi solo il più recente in `./backlog/` (file `AAAA-MM-GG_snapshot.json`); se non esiste, usa `./backlog/sample/`. In ogni caso dichiara nella sintesi quale snapshot hai letto. Non interrogare mai i tool di origine.
+- Leggi lo snapshot indicato dal PO, se ne indica uno. Altrimenti leggi solo il più recente in `./backlog/`. I file `AAAA-MM-GG_HHMM_snapshot.json` si ordinano per data e ora. I file vecchi `AAAA-MM-GG_snapshot.json` non hanno ora: si confrontano solo per data. Se un file senza ora e uno con ora hanno la stessa data, non scegliere: chiedi al PO quale leggere. Se non c'è nessuno snapshot, usa `./backlog/sample/`. In ogni caso **cita nella sintesi il percorso esatto del file letto e il suo `generato_il`**. Per un file senza ora nel nome scrivi la data seguita da "ora non nota" e non usare l'ora di `generato_il`. Non interrogare mai i tool di origine.
 - Leggi `CLAUDE.md` per Definition of Ready, Definition of Done, formato story, scala di stima e WSJF.
 - Non scrivi su nessun tool. Proponi e basta: decide il Product Owner.
 - Scrivi solo in `./output/`. Il report va in `./output/AAAA-MM-GG_fintech-compliance.md`.

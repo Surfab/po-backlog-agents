@@ -57,7 +57,7 @@ Due sprint, sola lettura, con l'ok di security sull'uso dell'AI con i dati di ba
       \              |            /
        backlog-sync (unico agent con accesso ai tool, solo lettura)
                      |
-     backlog/AAAA-MM-GG_snapshot.json           Livello 2: formato unico
+     backlog/AAAA-MM-GG_HHMM_snapshot.json      Livello 2: formato unico
                      |
    backlog-health  story-refiner  prioritizer   Livello 3: analisi
    fintech-compliance  sprint-prep
@@ -80,6 +80,7 @@ I sei agenti: sincronizzazione, salute del backlog, rifinitura delle story, prio
 ### Per usarlo
 
 - Questa copia pubblica usa segnaposto al posto degli identificativi reali. Prima di usarla sostituiscili, come spiegato in [Configurazione](docs/guida.md#configurazione).
+- Per un progetto nuovo si parte da [`template/`](template/) e dalla [checklist](template/CHECKLIST-nuovo-progetto.md).
 - Tutto il resto è nella [guida completa](docs/guida.md): uso quotidiano, i sei agenti, scritture e permessi, dati demo, regole di prodotto, cosa è verificato, limiti, problemi incontrati, storia del progetto.
 
 ---
@@ -122,4 +123,5 @@ The six agents: sync, backlog health, story refinement, WSJF prioritization, fin
 ### Using it
 
 - This public copy uses placeholders instead of real identifiers. Replace them before use, as explained in [Setup](docs/guide-en.md#setup).
+- For a new project, start from [`template/`](template/) and the [checklist](template/CHECKLIST-nuovo-progetto.md) (in Italian).
 - Everything else is in the [full guide](docs/guide-en.md): daily use, the six agents, writes and permissions, demo data, product rules, what is verified, known limits, problems found, project history.

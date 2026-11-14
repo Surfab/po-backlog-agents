@@ -26,6 +26,7 @@ It is a demo: product, people, numbers and tickets are fictional.
 - Three-layer architecture: adding a tool means writing an adapter, without touching the agents.
 - Tested on real tools: a Notion database and a Jira Cloud space, first in a cloud session and then on the Mac.
 - Every proposed change goes into a file. The main session applies it after your OK and records it in a change-log.
+- Four agents are generic: they read rules and values from `CLAUDE.md`. A new project starts from `template/`.
 
 ---
 
@@ -122,7 +123,7 @@ The system has three layers.
       \              |            /
        backlog-sync (the only agent with tool access, read-only)
                      |
-     backlog/AAAA-MM-GG_snapshot.json           Layer 2: single format
+     backlog/AAAA-MM-GG_HHMM_snapshot.json      Layer 2: single format
                      |
    backlog-health  story-refiner  prioritizer   Layer 3: analysis
    fintech-compliance  sprint-prep
@@ -140,6 +141,8 @@ The system has three layers.
 
 **Layer 3, analysis agents.** They read only the snapshot. They do not know which tool the data come from, so they do not need to change when you change or add a tool.
 
+**One snapshot per sync.** The name holds the real date and time, for example `2026-11-14_0935_snapshot.json`, and an existing file is never overwritten. Every report quotes the exact file it read, so an analysis can be rerun on the same data.
+
 **Source of truth.** Discovery (opportunities, research, hypotheses, PRDs) lives on Notion. Delivery (epics, stories, bugs, tasks) lives on Jira. If the same content exists in two tools, the source of truth wins and the other item is linked or closed, never kept in sync by hand. The bridge between the two worlds is the "Epica Jira" (Jira epic) field on the Notion opportunity.
 
 ---
@@ -154,6 +157,7 @@ po-backlog-agents/
 │   ├── guida.md                   the guide in Italian
 │   └── guide-en.md                this guide
 ├── CLAUDE.md                      project instructions, read by Claude at every start
+├── TEST-generici.md               regression tests of the generic agents, with results
 ├── .claude/
 │   ├── settings.json              permissions: what is allowed, what asks first, what is denied
 │   └── agents/
@@ -163,6 +167,11 @@ po-backlog-agents/
 │       ├── prioritizer.md
 │       ├── fintech-compliance.md
 │       └── sprint-prep.md
+├── template/                      starting point for a new project
+│   ├── CHECKLIST-nuovo-progetto.md   ten steps, from an empty folder to the first report
+│   ├── CLAUDE.template.md         CLAUDE.md with the sections to fill in
+│   ├── settings.template.json     permissions with connector placeholders
+│   └── agents/                    the four generic agents and backlog-sync.template.md
 ├── adapters/
 │   ├── README.md                  how to add a tool in 5 steps
 │   ├── notion.md
@@ -171,7 +180,9 @@ po-backlog-agents/
 ├── schema/
 │   └── backlog-item.schema.json   snapshot format
 ├── backlog/
-│   ├── AAAA-MM-GG_snapshot.json   normalized snapshots, one per day
+│   ├── AAAA-MM-GG_HHMM_snapshot.json   normalized snapshots, one per sync, never overwritten
+│   ├── 2026-11-12_snapshot.json   old snapshots, named without a time
+│   ├── 2026-11-13_snapshot.json
 │   ├── import/
 │   │   └── jira_PAY.csv           sample export, used only as a fallback
 │   └── sample/
@@ -193,14 +204,35 @@ All of them have `model: inherit`, so they use the session's model.
 
 | Agent | When | What it does | Tools |
 |---|---|---|---|
-| **backlog-sync** | At the start of a session | Reads every active tool read-only, normalizes and writes the snapshot. If a connector does not answer, falls back to CSV. Declares the fields it cannot map | Read, Glob, Write, 3 Notion read tools, 2 Jira read tools |
-| **backlog-health** | After every sync | Duplicates, also across tools; items idle for over 4 weeks; stories without criteria or estimate; estimates off the scale; broken dependencies; empty epics; items without an epic; validated opportunities without an epic; items blocked without a reason; contradictions between criteria | Read, Grep, Glob, Write |
-| **story-refiner** | Before refinement, on given ids | Rewrites the story as "As a… I want… so that…", checks INVEST, writes the criteria in Gherkin, proposes a split if it exceeds 13 points or is not testable | Read, Grep, Glob, Write |
-| **prioritizer** | Before planning | Computes WSJF on opportunities and epics, shows the calculation and the rationale, refuses to compute if a value is missing | Read, Grep, Glob, Write |
+| **backlog-sync** | At the start of a session | Reads every active tool read-only, normalizes and writes the snapshot with the real date and time in its name. Stops if the file already exists. If a connector does not answer, falls back to CSV. Declares the fields it cannot map | Read, Glob, Write, 3 Notion read tools, 2 Jira read tools |
+| **backlog-health** | After every sync | Duplicates, also across tools; items idle beyond the threshold in `CLAUDE.md`; stories without criteria or estimate; estimates off the scale; broken dependencies; empty epics; items without an epic; validated items not linked to delivery; items blocked without a reason; missing priority values; contradictions between criteria | Read, Grep, Glob, Write |
+| **story-refiner** | Before refinement, on given ids | Rewrites the story in the format set in `CLAUDE.md` ("As a… I want… so that…"), checks INVEST, writes the criteria as Gherkin blocks with one `Scenario` per case, proposes a split if it exceeds the top of the scale or is not testable | Read, Grep, Glob, Write |
+| **prioritizer** | Before planning | Applies the framework in the Prioritization section of `CLAUDE.md` (here WSJF on opportunities and epics), shows the calculation and the rationale, refuses to compute if a value is missing | Read, Grep, Glob, Write |
 | **fintech-compliance** | Before an item enters a sprint | Flags impacts on PSD2 and SCA, Verification of Payee, AML, KYC and KYB, GDPR, DORA, cards, SDD, SDI, audit trail. Does not quote articles of law: it states the risk and who to check it with | Read, Grep, Glob, Write |
-| **sprint-prep** | 1-2 days before planning | Draft sprint goal, Definition of Ready check on the candidates, capacity against the velocity of the last 3 sprints, review and retrospective agendas | Read, Grep, Glob, Write |
+| **sprint-prep** | 1-2 days before planning | Draft sprint goal, Definition of Ready check on the candidates, capacity against the velocity of the last closed sprints (how many is set in `CLAUDE.md`), review and retrospective agendas | Read, Grep, Glob, Write |
 
 Only backlog-sync touches the connectors, and only to read. The other five work on files.
+
+### Generic agents and domain agents
+
+backlog-health, story-refiner, prioritizer and sprint-prep are **generic**: they hold no Conto Business rules. They read story format, estimation scale, priority framework, thresholds, team and sprint length from `CLAUDE.md`. If a value is missing they do not use a default: they skip the check that depends on it and list it under missing data, with the `CLAUDE.md` section to complete. The regression test in `TEST-generici.md` confirmed that on Conto Business they give the same results as the previous version.
+
+fintech-compliance is a **domain agent**: it only makes sense for a payments product. The generic agents hand items over to it when they fall under the Agent di dominio (domain agents) section of `CLAUDE.md`. Another project can have different domain agents, or none.
+
+backlog-sync stays project-specific, because its `tools:` line holds the connector prefixes. `template/agents/` has it as `backlog-sync.template.md`, with placeholders.
+
+### Which snapshot the analysis agents read
+
+Unless the PO names one, they read the most recent one in `backlog/`, sorted by date and time. Old files without a time in the name are compared by date only. If an old file and a new one share the same date, they ask the PO which one to read.
+
+If `backlog/` holds no snapshot at all, the two versions behave differently, on purpose:
+
+- **Template agents** (`template/agents/`): they stop and ask the PO to run backlog-sync. In a real project, analyzing sample data instead of the real backlog would produce wrong reports without anyone noticing.
+- **Conto Business agents** (`.claude/agents/`): they fall back to `backlog/sample/`. Conto Business is a demo, and whoever tries it without connectors must be able to run the agents straight away on the sample data.
+
+Either way, the report summary quotes the exact path of the file read and its `generato_il` (generated at).
+
+backlog-sync gets the real date and time from the main session (`date "+%Y-%m-%dT%H:%M:%S%z"`). If the prompt has no time, it does not write the snapshot and asks for it.
 
 The agents write only to `backlog/` (backlog-sync) and to `output/` (all the others). An agent's frontmatter cannot restrict writing to a folder: the constraint lives in each agent's instructions and in the permissions.
 
@@ -333,11 +365,14 @@ The agents know this and flag it as a breach of the "the team estimates" rule.
 
 ## 8. Product rules
 
-They live in `CLAUDE.md` and apply to every agent:
+They live in `CLAUDE.md` and apply to every agent. The generic agents look them up by section name, so section names must not change.
 
-- **Story format:** "As a <user> I want <action> so that <benefit>", with a domain user (SME owner, accounting clerk, employee with a company card, accountant). Criteria in Gherkin. INVEST criteria.
+- **Backlog parameters:** items idle after 28 days without updates, a team of 6 developers and 1 QA, 2-week sprints, velocity over the last 3 closed sprints.
+- **Discovery-delivery link:** a Notion opportunity is validated when its status is "Validata", and from then on it must have a linked Jira epic (`realizza` dependency or "Epica Jira" field). A linked opportunity and epic are not duplicates.
+- **Domain agents:** fintech-compliance, for items touching payments, customer identity, personal data, cards or third-party integrations.
+- **Story format:** "As a <user> I want <action> so that <benefit>", with a domain user (SME owner, accounting clerk, employee with a company card, accountant). INVEST criteria. Acceptance criteria as Gherkin blocks, one `Scenario` per case with `Dato`, `Quando`, `Allora` (Given, When, Then) on separate lines: a numbered list in prose is not enough. Edge cases to cover: amounts, timeouts, payment statuses.
 - **Estimates:** Fibonacci story points 1, 2, 3, 5, 8, 13. Above 13 the story is split. The team estimates, not the PO and not the agents.
-- **WSJF:** (business value + time criticality + risk reduction) / job size, all on the 1-13 scale. Computed on opportunities and epics. Job size is the explicit "Job Size" value of the opportunity on Notion, not the sum of the children. The linked epic inherits all four values. Stories inside an epic are ordered by hand by the PO. If a value is missing, the score is not computed.
+- **Prioritization:** WSJF framework, (business value + time criticality + risk reduction) / job size, all on the 1-13 scale. Computed on opportunities and epics. Job size is the explicit "Job Size" value of the opportunity on Notion, not the sum of the children. The linked epic inherits all four values. Stories inside an epic are ordered by hand by the PO. If a value is missing, the score is not computed. On a tie, the item with higher time criticality comes first.
 - **Definition of Ready** and **Definition of Done:** 8 points each, with attention to compliance, audit trail and personal data kept out of logs.
 - **Glossary:** KYC, KYB, AML, SCA, PSD2 (AISP and PISP), SEPA instant transfer, Verification of Payee, SDD, chargeback, virtual IBAN, reconciliation, SDI.
 
@@ -376,6 +411,8 @@ The full procedure is in `adapters/README.md`. In short:
 
 The analysis agents stay untouched.
 
+For a **new project**, not just a new tool, start from `template/` and follow the ten steps in `template/CHECKLIST-nuovo-progetto.md`: fill in `CLAUDE.template.md`, copy the generic agents as they are, and write adapters and permissions for your own connectors.
+
 ---
 
 ## 10. What is verified and what is not
@@ -388,6 +425,7 @@ The analysis agents stay untouched.
 - Jira field map: story points, sprint, flag, parent, issue links, dates.
 - Writes with an OK and read-back: issue creation, changes to descriptions and estimates, status changes, sprints, issue links, comments, Notion property updates.
 - backlog-health found every planted defect and, on top of that, contradictions between criteria introduced while fixing them.
+- Generic agents: the five regression tests in `TEST-generici.md` passed on copies of the working folder, including the case of a value missing from `CLAUDE.md`.
 
 **Not verified**
 
@@ -395,6 +433,7 @@ The analysis agents stay untouched.
 - A full story going through the Definition of Done.
 - Reading the body of Notion pages and Jira comments: backlog-sync does not do it.
 - Writing to a tool in CSV mode: by definition there is none.
+- The template on a second project: so far it has only been tried on Conto Business.
 
 ---
 
@@ -403,10 +442,11 @@ The analysis agents stay untouched.
 - Changes to `CLAUDE.md` and to the agents take effect from the next session: in the current one the agents get the copy read at startup.
 - Velocity is computed only with at least 3 closed sprints.
 - Jira priority exists but is not on the create screen: every issue starts as "Medium" and the value means nothing.
-- `generato_il` (generated at) in the snapshot uses a conventional time (23:59:59Z) when the real time is unknown.
+- Snapshots up to 13 November 2026 have the old name without a time and a conventional `generato_il` (generated at) of 23:59:59Z. The one for the 13th is the afternoon version: the morning reports cannot be reproduced.
 - The Notion-Jira link is a text field ("Epica Jira"): nothing guarantees the key exists. backlog-health checks it.
 - "Aggiornato il" (updated on) on Notion changes with every edit, however small: an item can look alive because of a fixed typo.
 - DEMO-1 is included in the snapshot as a test item, already done.
+- During test 2 in `TEST-generici.md` an agent created an empty file in the root of the test folder. The rule to write only to `output/` lives in the agents' instructions, not in the permissions, so nothing blocks it.
 
 ---
 
@@ -422,6 +462,7 @@ The analysis agents stay untouched.
 | "This connector can't be used with the current credential" | Seen during the same outage | Reopen the session once the service is back |
 | New rules in `CLAUDE.md` are not applied | The agents read the copy from the start of the session | Reopen the session, or ask the agent to read the file again from disk |
 | Fixing one criterion breaks another | Rules scattered across several stories | Write the rule once in the epic and have the stories refer to it |
+| The 13 November snapshot had been overwritten in the afternoon: the morning reports could no longer be rerun on the same data. The regression test found it | The name held only the date, and backlog-sync overwrote the file for the same day | Real time in the name (`AAAA-MM-GG_HHMM_snapshot.json`) and in `generato_il`, and no overwriting: if the file exists, backlog-sync stops |
 
 ---
 
@@ -450,6 +491,9 @@ The analysis agents stay untouched.
 **14 November 2026**
 
 - Reconciliation rules completed in DEMO-9 (candidate invoice, automatic matching) and reversal criterion fixed in DEMO-8.
+- Made backlog-health, story-refiner, prioritizer and sprint-prep generic: rules and values move to `CLAUDE.md`, in the new sections Parametri del backlog (backlog parameters), Collegamento discovery-delivery, Agent di dominio (domain agents) and Prioritizzazione (prioritization).
+- Created the `template/` folder, with a checklist, a `CLAUDE.md` to fill in, permissions and agents.
+- Regression test on copies of the working folder: five tests passed. The test found the overwritten snapshot of the 13th, and the snapshot name now includes the time.
 
 ---
 
@@ -471,4 +515,6 @@ Useful improvements to the system:
 
 - Automatic validation of the snapshot after every sync.
 - A `/applica-proposte` (apply proposals) skill for the proposal, OK, write, change-log cycle, today described only in `CLAUDE.md`.
-- A comparison between two snapshots, to see what changed from one refinement to the next.
+- A comparison between two snapshots, to see what changed from one refinement to the next. With one file per sync and no overwriting, the data for it now exist.
+- A "snapshot" column in `proposte.md`, with the file each proposal comes from: the main session could then reject on its own the proposals that come from `backlog/sample/`.
+- Trying the template on a second project, with different tools and rules, to find out what `CLAUDE.template.md` really lacks.
