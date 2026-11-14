@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-11-14, pagina interattiva
+
+- Nuova pagina `docs/index.html`, in italiano e in inglese, che spiega in due minuti come funzionano gli agenti. Ogni numero e ogni citazione rimanda al file del repository da cui viene. Pubblicata con GitHub Pages su `surfab.github.io/po-backlog-agents`.
+- `docs/.nojekyll`: GitHub Pages serve i file così come sono, senza elaborarli.
+- README: link alla pagina, in italiano e in inglese.
+
 ## 2026-11-14, agenti generici e template
 
 - backlog-health, story-refiner, prioritizer e sprint-prep diventano generici: regole e valori li leggono da `CLAUDE.md` e, se un valore manca, lo segnalano invece di usare un default. fintech-compliance resta l'agente di dominio.

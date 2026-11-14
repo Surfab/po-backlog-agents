@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PO Backlog Agents</title>
+<meta name="description" content="Sei agenti per Claude Code che controllano il backlog di un Product Owner su Notion e Jira. Demo, dati fittizi.">
+<style>
+/* VOICE: sobria, da relazione di lavoro. IDEA: un registro di backlog che si legge in due minuti.
+   PICTURE: lo schema del flusso, cliccabile. COLOUR: bianco, inchiostro, un solo accento giallo.
+   TYPE: font di sistema. LAYOUT: colonna unica, 760px, sezioni a fasce. */
+:root{color-scheme:light;--bg:#ffffff;--ink:#101418;--soft:#4a5560;--line:#d6dbe0;--card:#f4f6f8;--acc:#ffd84a;--acc-ink:#101418}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#101418;--ink:#eef1f4;--soft:#aab4be;--line:#2c343c;--card:#182027;--acc:#ffd84a;--acc-ink:#101418}}
+:root[data-theme=light]{color-scheme:light;--bg:#ffffff;--ink:#101418;--soft:#4a5560;--line:#d6dbe0;--card:#f4f6f8}
+:root[data-theme=dark]{color-scheme:dark;--bg:#101418;--ink:#eef1f4;--soft:#aab4be;--line:#2c343c;--card:#182027}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;overflow-x:clip}
+body.en .it,body.it .en{display:none!important}
+a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px;box-shadow:0 0 0 5px var(--ink)}
+.wrap{max-width:760px;margin:0 auto;padding:0 max(5vw,16px)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;justify-content:space-between;align-items:center;min-height:56px;gap:12px}
+.brand{font-weight:700;font-size:15px}
+.lang{display:flex;border:1px solid var(--ink);border-radius:8px;overflow:hidden}
+.lang button{font:inherit;font-weight:700;font-size:14px;min-width:48px;min-height:44px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--acc);color:var(--acc-ink)}
+section{padding:40px 0;border-bottom:1px solid var(--line)}
+h1{font-size:clamp(34px,7vw,48px);line-height:1.05;margin:0 0 14px;text-wrap:balance}
+h2{font-size:clamp(22px,4.5vw,28px);line-height:1.15;margin:0 0 14px;text-wrap:balance}
+h3{font-size:17px;margin:0 0 6px}
+p{margin:0 0 12px}
+.lead{font-size:clamp(17px,3.6vw,20px);max-width:36ch}
+.tag{display:inline-block;background:var(--acc);color:var(--acc-ink);font-weight:700;font-size:14px;padding:3px 10px;border-radius:6px;margin-right:12px}
+.muted{color:var(--soft)}
+.small{font-size:14px}
+/* flusso */
+.flow{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:0}
+.flow>li{position:relative;padding-bottom:22px}
+.flow>li:not(:last-child)::after{content:"";position:absolute;left:50%;bottom:2px;width:2px;height:18px;background:var(--soft)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.node{width:100%;min-height:56px;font:inherit;text-align:left;cursor:pointer;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.node b{font-size:16px}
+.node small{display:block;color:var(--soft);font-size:14px}
+.node .ic{flex:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;font-weight:700;font-size:15px;line-height:1}
+.node[aria-expanded=true]{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
+.node[aria-expanded=true] small{color:var(--acc-ink)}
+.node[aria-expanded=true] .ic{border-color:var(--acc-ink)}
+.node.key{border:2px solid var(--ink)}
+.panel{margin-top:10px;border:1px solid var(--ink);border-radius:10px;padding:14px 16px;background:var(--bg)}
+.panel dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px}
+.panel dt{font-weight:700}
+.panel dd{margin:0}
+@media(max-width:520px){.panel dl{grid-template-columns:1fr}.panel dd{margin-bottom:6px}}
+blockquote{margin:14px 0 6px;padding:10px 14px;border-left:4px solid var(--acc);background:var(--card);font-size:15px}
+.note{font-size:13px;color:var(--soft);margin:0 0 4px}
+/* schede */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px;margin-top:16px}
+.card{background:var(--card);border-radius:10px;padding:14px 16px}
+.card p{margin:0 0 6px;font-size:15px}
+.card p:last-child{margin:0}
+.lab{font-weight:700}
+/* numeri */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px;margin-top:16px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:16px}
+.big{font-size:clamp(34px,8vw,44px);font-weight:800;line-height:1;margin-bottom:8px}
+.big mark{background:var(--acc);color:var(--acc-ink);padding:0 6px;border-radius:4px}
+.stat p{font-size:15px}
+.wsjf{width:100%;border-collapse:collapse;font-size:15px;margin:4px 0 10px}
+.wsjf td{padding:5px 0;border-bottom:1px solid var(--line)}
+.wsjf td:last-child{text-align:right;font-weight:700;white-space:nowrap;padding-left:10px}
+/* passi */
+.steps{list-style:none;margin:16px 0;padding:0;counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding:0 0 12px 44px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:-2px;width:30px;height:30px;border-radius:50%;background:var(--acc);color:var(--acc-ink);font-weight:800;display:grid;place-items:center}
+.log{font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--card);border-radius:8px;padding:12px 14px;white-space:pre-wrap;overflow-wrap:anywhere}
+details{margin-top:12px;border:1px solid var(--line);border-radius:10px;padding:0 14px}
+summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:700}
+details[open]{padding-bottom:12px}
+ul.plain{margin:8px 0 12px;padding-left:20px}
+ul.plain li{margin-bottom:6px}
+footer{padding:36px 0 56px}
+.links{display:flex;flex-wrap:wrap;gap:10px 20px;margin:12px 0}
+.links a{display:inline-flex;align-items:center;min-height:44px;font-weight:700}
+@media (prefers-reduced-motion:no-preference){.panel{animation:in .18s ease-out}@keyframes in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}}
+</style>
+</head>
+<body class="it">
+
+<header class="top">
+  <div class="wrap">
+    <span class="brand">PO Backlog Agents</span>
+    <div class="lang" role="group" aria-label="Lingua / Language">
+      <button type="button" id="b-it" aria-pressed="true" lang="it">IT</button>
+      <button type="button" id="b-en" aria-pressed="false" lang="en">EN</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- 1. Apertura -->
+<section aria-labelledby="h-intro">
+  <h1 id="h-intro">PO Backlog Agents</h1>
+  <p class="lead it">Sei agenti per Claude Code che controllano il backlog di un Product Owner su Notion e Jira. Leggono e propongono, il PO decide.</p>
+  <p class="lead en">Six Claude Code agents that review a Product Owner's backlog on Notion and Jira. They read and propose, the PO decides.</p>
+  <p><span class="tag"><span class="it">Demo, dati fittizi</span><span class="en">Demo, fictional data</span></span><a href="https://github.com/Surfab/po-backlog-agents"><span class="it">Repository su GitHub</span><span class="en">GitHub repository</span></a></p>
+  <p class="muted small it">Prodotto di prova: "Conto Business", un conto per PMI.</p>
+  <p class="muted small en">Test product: "Conto Business", an account for small businesses.</p>
+</section>
+
+<!-- 2. Cosa ha dimostrato -->
+<section aria-labelledby="h-proof">
+  <h2 id="h-proof"><span class="it">Cosa ha dimostrato</span><span class="en">What it showed</span></h2>
+  <div class="stats">
+    <div class="stat">
+      <div class="big"><mark>7 / 7</mark></div>
+      <p class="it">Difetti piantati nei dati di prova, tutti trovati da backlog-health.</p>
+      <p class="en">Defects planted in the test data, all found by backlog-health.</p>
+      <p class="small"><a href="https://github.com/Surfab/po-backlog-agents/blob/main/TEST-generici.md">TEST-generici.md</a> · <a href="https://github.com/Surfab/po-backlog-agents/blob/main/backlog/sample/README.md">backlog/sample/README.md</a></p>
+    </div>
+    <div class="stat">
+      <div class="big"><mark>5 / 5</mark></div>
+      <p class="it">Candidati allo sprint non pronti secondo la Definition of Ready. sprint-prep li ha bocciati invece di riempire lo sprint.</p>
+      <p class="en">Sprint candidates not ready under the Definition of Ready. sprint-prep rejected them instead of filling the sprint.</p>
+      <p class="small"><a href="https://github.com/Surfab/po-backlog-agents/blob/main/output/2026-11-13_sprint-prep.md">output/2026-11-13_sprint-prep.md</a></p>
+    </div>
+    <div class="stat">
+      <h3 class="it">Classifica WSJF</h3><h3 class="en">WSJF ranking</h3>
+      <table class="wsjf">
+        <tbody class="it">
+          <tr><td>Verifica del beneficiario</td><td>4,3</td></tr>
+          <tr><td>Onboarding KYB</td><td>2,0</td></tr>
+          <tr><td>Incasso ricorrente SDD</td><td>2,0</td></tr>
+          <tr><td>Riconciliazione fatture</td><td>1,2</td></tr>
+        </tbody>
+        <tbody class="en">
+          <tr><td>Payee verification</td><td>4.3</td></tr>
+          <tr><td>KYB onboarding</td><td>2.0</td></tr>
+          <tr><td>Recurring SDD collection</td><td>2.0</td></tr>
+          <tr><td>Invoice reconciliation</td><td>1.2</td></tr>
+        </tbody>
+      </table>
+      <p class="it">PAYDISC-4 e DEMO-4 non calcolabili: mancano i valori. I job size sono inventati, quindi la classifica prova il meccanismo, non l'ordine.</p>
+      <p class="en">PAYDISC-4 and DEMO-4 cannot be computed: values are missing. The job sizes are made up, so the ranking proves the mechanism, not the order.</p>
+      <p class="small"><a href="https://github.com/Surfab/po-backlog-agents/blob/main/output/2026-11-13_prioritizer.md">output/2026-11-13_prioritizer.md</a></p>
+    </div>
+    <div class="stat">
+      <div class="big"><mark>5 / 5</mark></div>
+      <p class="it">Test di non regressione superati dopo che quattro agenti sono stati resi generici.</p>
+      <p class="en">Regression tests passed after four agents were made generic.</p>
+      <p class="small"><a href="https://github.com/Surfab/po-backlog-agents/blob/main/TEST-generici.md">TEST-generici.md</a></p>
+    </div>
+  </div>
+  <details>
+    <summary><span class="it">Non conosci Scrum? Le parole usate qui</span><span class="en">New to Scrum? The words used here</span></summary>
+    <ul class="plain it">
+      <li><b>Sprint</b>: un periodo fisso in cui il team sviluppa un insieme di lavoro. Qui dura 2 settimane.</li>
+      <li><b>Story</b>: una funzione scritta dal punto di vista di chi la usa, "Come &lt;utente&gt; voglio &lt;azione&gt; per ottenere &lt;beneficio&gt;". Un'<b>epica</b> raccoglie più story con lo stesso obiettivo.</li>
+      <li><b>Refinement</b>: il team chiarisce, divide e stima le story. <b>Planning</b>: all'inizio dello sprint il team sceglie cosa fare.</li>
+      <li><b>Definition of Ready</b>: 8 controlli che dicono quando una story può entrare in uno sprint. Per esempio criteri verificabili, stima del team, dipendenze note, impatti di compliance valutati.</li>
+      <li><b>WSJF</b>: (valore di business + urgenza + riduzione del rischio) / dimensione del lavoro. Più alto il numero, prima si fa.</li>
+      <li><b>Velocity</b>: quanto lavoro il team chiude in media per sprint. Qui non si calcola: nessuno sprint è ancora chiuso.</li>
+      <li><b>SCA</b>: autenticazione forte del cliente, con almeno due fattori. <b>KYB</b>: identificazione e verifica di una società, compresi titolare effettivo e poteri di firma.</li>
+    </ul>
+    <ul class="plain en">
+      <li><b>Sprint</b>: a fixed period in which the team builds a set of work. Here it lasts 2 weeks.</li>
+      <li><b>Story</b>: a feature written from the user's point of view, "As a &lt;user&gt; I want &lt;action&gt; so that &lt;benefit&gt;". An <b>epic</b> groups stories with the same goal.</li>
+      <li><b>Refinement</b>: the team clarifies, splits and estimates stories. <b>Planning</b>: at the start of the sprint the team picks what to do.</li>
+      <li><b>Definition of Ready</b>: 8 checks that say when a story can enter a sprint. For example testable criteria, a team estimate, known dependencies, compliance impacts assessed.</li>
+      <li><b>WSJF</b>: (business value + time criticality + risk reduction) / job size. The higher the number, the sooner it is done.</li>
+      <li><b>Velocity</b>: how much work the team closes per sprint on average. Not computed here: no sprint has closed yet.</li>
+      <li><b>SCA</b>: strong customer authentication, with at least two factors. <b>KYB</b>: identifying and verifying a company, including its beneficial owner and signing powers.</li>
+    </ul>
+    <p class="small"><a href="https://github.com/Surfab/po-backlog-agents/blob/main/CLAUDE.md">CLAUDE.md</a></p>
+  </details>
+</section>
+
+<!-- 3. Il flusso -->
+<section aria-labelledby="h-flow">
+  <h2 id="h-flow"><span class="it">Il flusso</span><span class="en">The flow</span></h2>
+  <p class="it">Tocca un passo per i dettagli.</p>
+  <p class="en">Tap a step for details.</p>
+
+  <ol class="flow">
+    <li>
+      <div class="pair">
+        <button type="button" class="node" aria-expanded="false" aria-controls="p-notion"><span><b>Notion</b><small class="it">discovery</small><small class="en">discovery</small></span><span class="ic" aria-hidden="true">+</span></button>
+        <button type="button" class="node" aria-expanded="false" aria-controls="p-jira"><span><b>Jira</b><small class="it">delivery</small><small class="en">delivery</small></span><span class="ic" aria-hidden="true">+</span></button>
+      </div>
+      <div class="panel" id="p-notion" hidden>
+        <dl class="it"><dt>Contiene</dt><dd>Le opportunità del database "Discovery", con i valori per la priorità.</dd><dt>Produce</dt><dd>I dati che backlog-sync legge.</dd><dt>Non fa mai</dt><dd>Ricevere scritture senza un OK del PO.</dd></dl>
+        <dl class="en"><dt>Holds</dt><dd>The opportunities in the "Discovery" database, with their priority values.</dd><dt>Produces</dt><dd>The data backlog-sync reads.</dd><dt>Never</dt><dd>Receives writes without the PO's OK.</dd></dl>
+        <blockquote lang="it">«Non calcolabili PAYDISC-4 (mancano tutti e quattro i valori) e DEMO-4 (nessuna opportunità che la origina, quindi nulla da ereditare).»</blockquote>
+        <p class="note en">Original excerpt in Italian.</p>
+        <p class="small"><a href="https://github.com/Surfab/po-backlog-agents/blob/main/output/2026-11-13_prioritizer.md">output/2026-11-13_prioritizer.md</a></p>
+      </div>
+      <div class="panel" id="p-jira" hidden>
+        <dl class="it"><dt>Contiene</dt><dd>Epiche, story, bug e task. Uno sprint di prova.</dd><dt>Produce</dt><dd>I dati che backlog-sync legge.</dd><dt>Non fa mai</dt><dd>Ricevere scritture senza un OK del PO.</dd></dl>
+        <dl class="en"><dt>Holds</dt><dd>Epics, stories, bugs and tasks. One test sprint.</dd><dt>Produces</dt><dd>The data backlog-sync reads.</dd><dt>Never</dt><dd>Receives writes without the PO's OK.</dd></dl>
+        <blockquote lang="it">«jira:DEMO-7 … stato blocked per flag "Impediment", in PAY Sprint 1, dipendenze e issuelinks vuoti … Blocco senza causa.»</blockquote>
+        <p class="note en">Original excerpt in Italian.</p>
+        <p class="small"><a href="https://github.com/Surfab/po-backlog-agents/blob/main/output/2026-11-13_backlog-health.md">output/2026-11-13_backlog-health.md</a></p>
+      </div>
+    </li>
+
+    <li>
+      <button type="button" class="node key" aria-expanded="false" aria-controls="p-sync"><span><b>backlog-sync</b><small class="it">l'unico che legge i tool, solo in lettura</small><small class="en">the only one that reads the tools, read-only</small></span><span class="ic" aria-hidden="true">+</span></button>
+      <div class="panel" id="p-sync" hidden>
+        <dl class="it"><dt>Legge</dt><dd>Notion e Jira, con 5 tool di sola lettura. Se un connettore non risponde, un file CSV.</dd><dt>Produce</dt><dd>Uno snapshot JSON con data e ora nel nome.</dd><dt>Non fa mai</dt><dd>Scrivere sui tool, indovinare un campo che non sa tradurre, sovrascrivere uno snapshot.</dd></dl>
+        <dl class="en"><dt>Reads</dt><dd>Notion and Jira, through 5 read-only tools. If a connector does not answer, a CSV file.</dd><dt>Produces</dt><dd>A JSON snapshot with date and time in its name.</dd><dt>Never</dt><dd>Writes to the tools, guesses a field it cannot translate, overwrites a snapshot.</dd></dl>
+        <blockquote lang="it">«21 item: 5 Notion, 16 Jira, tutti letti via connettore.»</blockquote>
+        <p class="note en">Original excerpt in Italian.</p>
+        <p class="small"><a href="https://github.com/Surfab/po-backlog-agents/blob/main/output/2026-11-13_backlog-health.md">output/2026-11-13_backlog-health.md</a></p>
+      </div>
+    </li>
+
+    <li>
+      <button type="button" class="node" aria-expanded="false" aria-controls="p-snap"><span><b>snapshot</b><small class="it">un formato unico, un file per sync</small><small class="en">one format, one file per sync</small></span><span class="ic" aria-hidden="true">+</span></button>
+      <div class="panel" id="p-snap" hidden>
+        <dl class="it"><dt>Contiene</dt><dd>Ogni item con gli stessi campi, da qualunque tool arrivi.</dd><dt>Produce</dt><dd>La base di tutte le analisi. Ogni report cita il file che ha letto.</dd><dt>Non fa mai</dt><dd>Essere sovrascritto: un'analisi si può rifare sugli stessi dati.</dd></dl>
+        <dl class="en"><dt>Holds</dt><dd>Every item with the same fields, whatever tool it comes from.</dd><dt>Produces</dt><dd>The base for every analysis. Each report quotes the file it read.</dd><dt>Never</dt><dd>Gets overwritten: an analysis can be rerun on the same data.</dd></dl>
+        <blockquote lang="it">«Prima di scrivere, controlla con Glob se il file esiste già. Se esiste, non scriverlo … fermati e riporta al PO il percorso in conflitto.»</blockquote>
+        <p class="note en">Original excerpt in Italian.</p>
+        <p class="small"><a href="https://github.com/Surfab/po-backlog-agents/blob/main/.claude/agents/backlog-sync.md">.claude/agents/backlog-sync.md</a></p>
+      </div>
+    </li>
+
+    <li>
+      <button type="button" class="node" aria-expanded="false" aria-controls="p-agents"><span><b class="it">5 agenti di analisi</b><b class="en">5 analysis agents</b><small>backlog-health, story-refiner, prioritizer, fintech-compliance, sprint-prep</small></span><span class="ic" aria-hidden="true">+</span></button>
+      <div class="panel" id="p-agents" hidden>
+        <dl class="it"><dt>Legge</dt><dd>Solo lo snapshot e le regole del progetto in CLAUDE.md.</dd><dt>Produce</dt><dd>Un report: sintesi, problemi Critico, Medio, Basso, azioni, dati mancanti.</dd><dt>Non fa mai</dt><dd>Interrogare i tool, scrivere sui tool, usare un valore suo se ne manca uno.</dd></dl>
+        <dl class="en"><dt>Reads</dt><dd>Only the snapshot and the project rules in CLAUDE.md.</dd><dt>Produces</dt><dd>A report: summary, Critical, Medium, Low problems, actions, missing data.</dd><dt>Never</dt><dd>Queries the tools, writes to the tools, uses a value of its own when one is missing.</dd></dl>
+        <blockquote lang="it">«Nessuno dei 5 candidati supera oggi la Definition of Ready.»</blockquote>
+        <p class="note en">Original excerpt in Italian.</p>
+        <p class="small"><a href="https://github.com/Surfab/po-backlog-agents/blob/main/output/2026-11-13_sprint-prep.md">output/2026-11-13_sprint-prep.md</a></p>
+      </div>
+    </li>
+
+    <li>
+      <button type="button" class="node" aria-expanded="false" aria-controls="p-prop"><span><b class="it">proposte</b><b class="en">proposals</b><small class="it">una riga per modifica, "in attesa"</small><small class="en">one row per change, "pending"</small></span><span class="ic" aria-hidden="true">+</span></button>
+      <div class="panel" id="p-prop" hidden>
+        <dl class="it"><dt>Legge</dt><dd>Le modifiche suggerite dagli agenti.</dd><dt>Produce</dt><dd>Un file con id, tool, campo, valore attuale, valore proposto, motivo, stato.</dd><dt>Non fa mai</dt><dd>Applicarsi da sola.</dd></dl>
+        <dl class="en"><dt>Reads</dt><dd>The changes the agents suggest.</dd><dt>Produces</dt><dd>A file with id, tool, field, current value, proposed value, reason, status.</dd><dt>Never</dt><dd>Applies itself.</dd></dl>
+        <blockquote lang="it">«Ho accodato 5 righe nuove in 2026-11-13_proposte.md, tutte "in attesa".»</blockquote>
+        <p class="note en">Original excerpt in Italian.</p>
+        <p class="small"><a href="https://github.com/Surfab/po-backlog-agents/blob/main/output/2026-11-13_backlog-health.md">output/2026-11-13_backlog-health.md</a></p>
+      </div>
+    </li>
+
+    <li>
+      <button type="button" class="node key" aria-expanded="false" aria-controls="p-ok"><span><b class="it">OK del PO</b><b class="en">PO's OK</b><small class="it">la decisione resta al Product Owner</small><small class="en">the decision stays with the Product Owner</small></span><span class="ic" aria-hidden="true">+</span></button>
+      <div class="panel" id="p-ok" hidden>
+        <dl class="it"><dt>Legge</dt><dd>La chiamata esatta che la sessione principale sta per fare.</dd><dt>Produce</dt><dd>Il via libera per una riga, o per più righe se il PO lo dice in modo esplicito.</dd><dt>Non fa mai</dt><dd>Valere per le righe successive.</dd></dl>
+        <dl class="en"><dt>Reads</dt><dd>The exact call the main session is about to make.</dd><dt>Produces</dt><dd>The go-ahead for one row, or several rows if the PO says so explicitly.</dd><dt>Never</dt><dd>Covers the following rows.</dd></dl>
+        <blockquote lang="it">«OK del PO: "1) si" (righe 1, 2, 3 e 6 di 2026-11-12_proposte.md).»</blockquote>
+        <p class="note en">Original excerpt in Italian.</p>
+        <p class="small"><a href="https://github.com/Surfab/po-backlog-agents/blob/main/output/2026-11-12_change-log.md">output/2026-11-12_change-log.md</a></p>
+      </div>
+    </li>
+
+    <li>
+      <button type="button" class="node" aria-expanded="false" aria-controls="p-log"><span><b>change-log</b><small class="it">ogni scrittura, prima e dopo</small><small class="en">every write, before and after</small></span><span class="ic" aria-hidden="true">+</span></button>
+      <div class="panel" id="p-log" hidden>
+        <dl class="it"><dt>Legge</dt><dd>L'esito della scrittura, riletto dal tool.</dd><dt>Produce</dt><dd>Una riga per modifica: valore prima, valore dopo, strumento, esito.</dd><dt>Non fa mai</dt><dd>Cancellare: nel progetto non si elimina niente, si archivia o si sposta.</dd></dl>
+        <dl class="en"><dt>Reads</dt><dd>The outcome of the write, read back from the tool.</dd><dt>Produces</dt><dd>One row per change: value before, value after, tool, outcome.</dd><dt>Never</dt><dd>Deletes: in this project nothing is deleted, things are archived or moved.</dd></dl>
+        <blockquote lang="it">«notion:PAYDISC-2 | notion | Epica Jira | vuoto | DEMO-9 | notion-update-page | fatto»</blockquote>
+        <p class="note en">Original excerpt in Italian.</p>
+        <p class="small"><a href="https://github.com/Surfab/po-backlog-agents/blob/main/output/2026-11-12_change-log.md">output/2026-11-12_change-log.md</a></p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<!-- 4. I sei agenti -->
+<section aria-labelledby="h-agents">
+  <h2 id="h-agents"><span class="it">I sei agenti</span><span class="en">The six agents</span></h2>
+  <p class="it">Nessuno scrive su Notion o Jira. Se manca un dato, non lo inventano.</p>
+  <p class="en">None of them writes to Notion or Jira. If a value is missing, they do not invent it.</p>
+  <div class="cards">
+    <article class="card"><h3>backlog-sync</h3>
+      <p class="it"><span class="lab">Quando:</span> a inizio sessione.</p><p class="en"><span class="lab">When:</span> at the start of a session.</p>
+      <p class="it"><span class="lab">Fa:</span> legge i tool e scrive lo snapshot.</p><p class="en"><span class="lab">Does:</span> reads the tools and writes the snapshot.</p>
+      <p class="it"><span class="lab">Mai:</span> sovrascrive uno snapshot esistente.</p><p class="en"><span class="lab">Never:</span> overwrites an existing snapshot.</p></article>
+    <article class="card"><h3>backlog-health</h3>
+      <p class="it"><span class="lab">Quando:</span> dopo ogni sync.</p><p class="en"><span class="lab">When:</span> after every sync.</p>
+      <p class="it"><span class="lab">Controlla:</span> duplicati tra tool, item fermi, story incomplete, dipendenze rotte.</p><p class="en"><span class="lab">Checks:</span> duplicates across tools, idle items, incomplete stories, broken dependencies.</p>
+      <p class="it"><span class="lab">Mai:</span> interroga i tool.</p><p class="en"><span class="lab">Never:</span> queries the tools.</p></article>
+    <article class="card"><h3>story-refiner</h3>
+      <p class="it"><span class="lab">Quando:</span> prima del refinement, sulle story indicate.</p><p class="en"><span class="lab">When:</span> before refinement, on the stories named.</p>
+      <p class="it"><span class="lab">Fa:</span> riscrive la story, scrive i criteri di accettazione, propone uno split.</p><p class="en"><span class="lab">Does:</span> rewrites the story, writes acceptance criteria, proposes a split.</p>
+      <p class="it"><span class="lab">Mai:</span> stima le nuove story. Stima il team.</p><p class="en"><span class="lab">Never:</span> estimates the new stories. The team does.</p></article>
+    <article class="card"><h3>prioritizer</h3>
+      <p class="it"><span class="lab">Quando:</span> prima del planning.</p><p class="en"><span class="lab">When:</span> before planning.</p>
+      <p class="it"><span class="lab">Fa:</span> ordina opportunità ed epiche con WSJF, mostrando il calcolo.</p><p class="en"><span class="lab">Does:</span> ranks opportunities and epics with WSJF, showing the calculation.</p>
+      <p class="it"><span class="lab">Mai:</span> calcola se manca un valore, né ne propone uno suo.</p><p class="en"><span class="lab">Never:</span> computes when a value is missing, or proposes one of its own.</p></article>
+    <article class="card"><h3>fintech-compliance</h3>
+      <p class="it"><span class="lab">Quando:</span> prima che un item entri in sprint.</p><p class="en"><span class="lab">When:</span> before an item enters a sprint.</p>
+      <p class="it"><span class="lab">Controlla:</span> pagamenti, identità del cliente, dati personali, carte, terzi. Per esempio SCA e KYB.</p><p class="en"><span class="lab">Checks:</span> payments, customer identity, personal data, cards, third parties. For example SCA and KYB.</p>
+      <p class="it"><span class="lab">Mai:</span> dà pareri legali. Indica il rischio e con chi verificarlo.</p><p class="en"><span class="lab">Never:</span> gives legal advice. It names the risk and who to check it with.</p></article>
+    <article class="card"><h3>sprint-prep</h3>
+      <p class="it"><span class="lab">Quando:</span> 1-2 giorni prima del planning.</p><p class="en"><span class="lab">When:</span> 1-2 days before planning.</p>
+      <p class="it"><span class="lab">Fa:</span> bozza di sprint goal, verifica della Definition of Ready, capacità.</p><p class="en"><span class="lab">Does:</span> draft sprint goal, Definition of Ready check, capacity.</p>
+      <p class="it"><span class="lab">Mai:</span> sposta item tra sprint o inventa una velocity.</p><p class="en"><span class="lab">Never:</span> moves items between sprints or invents a velocity.</p></article>
+  </div>
+</section>
+
+<!-- 5. Nessuna modifica senza OK -->
+<section aria-labelledby="h-ok">
+  <h2 id="h-ok"><span class="it">Nessuna modifica senza OK</span><span class="en">No change without an OK</span></h2>
+  <ol class="steps">
+    <li><span class="it">Un agente scrive la modifica proposta in un file.</span><span class="en">An agent writes the proposed change to a file.</span></li>
+    <li><span class="it">La sessione principale mostra la chiamata esatta.</span><span class="en">The main session shows the exact call.</span></li>
+    <li><span class="it">Il PO dà l'OK: per una riga, o per più righe se lo dice in modo esplicito.</span><span class="en">The PO gives the OK: for one row, or for several if said explicitly.</span></li>
+    <li><span class="it">Scrittura, rilettura dal tool, riga nel change-log.</span><span class="en">Write, read-back from the tool, row in the change-log.</span></li>
+  </ol>
+  <p class="it">Un esempio reale, 12 novembre:</p>
+  <p class="en">A real example, 12 November (original in Italian):</p>
+  <div class="log" lang="it" tabindex="0" aria-label="Estratto del change-log">OK del PO: "1) si"
+notion:PAYDISC-2 | Epica Jira | vuoto → DEMO-9 | notion-update-page | fatto</div>
+  <p class="small"><a href="https://github.com/Surfab/po-backlog-agents/blob/main/output/2026-11-12_change-log.md">output/2026-11-12_change-log.md</a></p>
+  <p class="it">Scritture: chiedono sempre conferma. Eliminare pagine e database Notion: vietato.</p>
+  <p class="en">Writes: always ask for confirmation. Deleting Notion pages and databases: denied.</p>
+  <details>
+    <summary><span class="it">I permessi nel dettaglio</span><span class="en">Permissions in detail</span></summary>
+    <ul class="plain it">
+      <li>In "ask": 45 tool di scrittura, 36 di Notion e 9 di Atlassian. Claude chiede conferma prima di ognuno.</li>
+      <li>In "deny": i 2 tool che eliminano pagine e database Notion, più git init e git worktree.</li>
+      <li>In "allow": la lettura dei file e i 5 tool di lettura dei connettori.</li>
+    </ul>
+    <ul class="plain en">
+      <li>In "ask": 45 write tools, 36 for Notion and 9 for Atlassian. Claude asks for confirmation before each one.</li>
+      <li>In "deny": the 2 tools that delete Notion pages and databases, plus git init and git worktree.</li>
+      <li>In "allow": reading files and the 5 connector read tools.</li>
+    </ul>
+    <p class="small"><a href="https://github.com/Surfab/po-backlog-agents/blob/main/.claude/settings.json">.claude/settings.json</a></p>
+  </details>
+</section>
+
+<!-- 6. Lo snapshot sovrascritto -->
+<section aria-labelledby="h-snap">
+  <h2 id="h-snap"><span class="it">Lo snapshot sovrascritto</span><span class="en">The overwritten snapshot</span></h2>
+  <ol class="steps">
+    <li><span class="it">Il nome conteneva solo la data. Il 13 novembre lo snapshot è stato riscritto nel pomeriggio: i report del mattino non si potevano più rifare.</span><span class="en">The name held only the date. On 13 November the snapshot was rewritten in the afternoon: the morning reports could no longer be rerun.</span></li>
+    <li><span class="it">Il test di non regressione ha trovato differenze che non venivano dagli agenti, ma dallo snapshot.</span><span class="en">The regression test found differences that came from the snapshot, not from the agents.</span></li>
+    <li><span class="it">Ora il nome contiene data e ora reali. Se il file esiste già, backlog-sync si ferma.</span><span class="en">Now the name holds the real date and time. If the file already exists, backlog-sync stops.</span></li>
+  </ol>
+  <p class="small"><a class="it" href="https://github.com/Surfab/po-backlog-agents/blob/main/docs/guida.md#12-problemi-incontrati-e-come-si-risolvono">docs/guida.md, sezione 12</a><a class="en" href="https://github.com/Surfab/po-backlog-agents/blob/main/docs/guide-en.md#12-problems-found-and-how-to-fix-them">docs/guide-en.md, section 12</a></p>
+</section>
+
+<!-- 7. Perché non bastano gli agenti di Jira -->
+<section aria-labelledby="h-why">
+  <h2 id="h-why"><span class="it">Perché non bastano gli agenti di Jira</span><span class="en">Why Jira's own agents are not enough</span></h2>
+  <p class="it">Jira ha già agenti AI che controllano se un item è pronto. Se il backlog vive solo su Jira, partirei da quelli. Questo sistema copre altro:</p>
+  <p class="en">Jira already has AI agents that check whether an item is ready. If the backlog lives only in Jira, I would start there. This system covers something else:</p>
+  <ul class="plain it">
+    <li>Notion e Jira insieme, con i buchi tra discovery e delivery.</li>
+    <li>Analisi ripetibili su snapshot datati.</li>
+    <li>Una traccia di ogni modifica, dove serve un audit trail.</li>
+  </ul>
+  <ul class="plain en">
+    <li>Notion and Jira together, with the gaps between discovery and delivery.</li>
+    <li>Repeatable analysis on dated snapshots.</li>
+    <li>A trail for every change, where an audit trail is required.</li>
+  </ul>
+  <p class="muted it">Il limite: gira sulla macchina del PO. Il team vede le proposte solo quando diventano modifiche su Jira.</p>
+  <p class="muted en">The limit: it runs on the PO's machine. The team sees the proposals only when they become changes in Jira.</p>
+
+  <h3 class="it">Come lo proverei in un team vero</h3><h3 class="en">How I would test it with a real team</h3>
+  <p class="it">Due sprint, sola lettura, con l'ok di security sull'uso dell'AI con i dati di backlog.</p>
+  <p class="en">Two sprints, read-only, with security's approval for using AI on backlog data.</p>
+  <ol class="steps">
+    <li><span class="it">Prima misuro gli ultimi 3 sprint.</span><span class="en">First I measure the last 3 sprints.</span></li>
+    <li><span class="it">Per due sprint lancio backlog-health e sprint-prep prima di refinement e planning.</span><span class="en">For two sprints I run backlog-health and sprint-prep before refinement and planning.</span></li>
+    <li><span class="it">Misuro story pronte, story che tornano in refinement, proposte accettate, mio tempo.</span><span class="en">I track ready stories, stories going back to refinement, accepted proposals, my time.</span></li>
+    <li><span class="it">Mi fermo se il team accetta meno di metà delle proposte o il tempo non scende.</span><span class="en">I stop if the team accepts fewer than half of the proposals or the time does not go down.</span></li>
+  </ol>
+  <p class="small"><a href="https://github.com/Surfab/po-backlog-agents/blob/main/README.md">README.md</a></p>
+</section>
+
+</main>
+
+<!-- 8. Chiusura -->
+<footer class="wrap">
+  <p class="it">Progettato da un Product Owner e costruito con Claude Code in tre giorni.</p>
+  <p class="en">Designed by a Product Owner and built with Claude Code in three days.</p>
+  <div class="links">
+    <a href="https://github.com/Surfab/po-backlog-agents"><span class="it">Repository</span><span class="en">Repository</span></a>
+    <a href="https://github.com/Surfab/po-backlog-agents/blob/main/docs/guida.md" lang="it">Guida in italiano</a>
+    <a href="https://github.com/Surfab/po-backlog-agents/blob/main/docs/guide-en.md" lang="en">Guide in English</a>
+    <a href="https://www.linkedin.com/in/fquagliocotti/">LinkedIn</a>
+  </div>
+  <p><strong>Fabrizio Quaglio Cotti</strong></p>
+  <p class="muted small it">Nomi e dati sono inventati. Il sistema non fornisce consulenza legale.</p>
+  <p class="muted small en">All names and data are fictional. The system does not provide legal advice.</p>
+</footer>
+
+<script>
+{
+  const body = document.body, root = document.documentElement;
+  const bIt = document.getElementById('b-it'), bEn = document.getElementById('b-en');
+  const setLang = (l, push) => {
+    body.className = l;
+    root.lang = l;
+    bIt.setAttribute('aria-pressed', String(l === 'it'));
+    bEn.setAttribute('aria-pressed', String(l === 'en'));
+    document.title = 'PO Backlog Agents';
+    if (push) {
+      try { history.replaceState(null, '', l === 'en' ? '#en' : location.pathname + location.search); }
+      catch (e) { if (l === 'en') location.hash = 'en'; }
+    }
+  };
+  bIt.addEventListener('click', () => setLang('it', true));
+  bEn.addEventListener('click', () => setLang('en', true));
+  window.addEventListener('hashchange', () => setLang(location.hash === '#en' ? 'en' : 'it', false));
+  setLang(location.hash === '#en' ? 'en' : 'it', false);
+
+  const nodes = Array.from(document.querySelectorAll('.node'));
+  nodes.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const open = btn.getAttribute('aria-expanded') === 'true';
+      nodes.forEach(o => {
+        o.setAttribute('aria-expanded', 'false');
+        o.querySelector('.ic').textContent = '+';
+        document.getElementById(o.getAttribute('aria-controls')).hidden = true;
+      });
+      if (!open) {
+        btn.setAttribute('aria-expanded', 'true');
+        btn.querySelector('.ic').textContent = '−';
+        document.getElementById(btn.getAttribute('aria-controls')).hidden = false;
+      }
+    });
+  });
+}
+</script>
+</body>
+</html>
