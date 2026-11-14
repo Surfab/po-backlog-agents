@@ -181,7 +181,7 @@ conto-business/
     └── AAAA-MM-GG_change-log.md   modifiche applicate
 ```
 
-La cartella **non è un repository git** e deve restare così. `settings.json` vieta `git init` e `git worktree`.
+Claude non crea repository git né worktree: `settings.json` vieta `git init` e `git worktree`. La cartella di lavoro originale non usa git; questo repository GitHub ne è una copia per la pubblicazione. Se cloni il repository, commit e push restano una tua decisione.
 
 ---
 
@@ -650,7 +650,7 @@ conto-business/
     └── AAAA-MM-GG_change-log.md   applied changes
 ```
 
-The working folder **is not a git repository** and must stay that way. `settings.json` denies `git init` and `git worktree`.
+Claude does not create git repositories or worktrees: `settings.json` denies `git init` and `git worktree`. The original working folder does not use git; this GitHub repository is a copy made for publishing. If you clone it, commits and pushes stay your decision.
 
 ---
 

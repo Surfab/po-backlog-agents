@@ -5,7 +5,7 @@ Sistema di subagent per il lavoro da Product Owner Scrum sul prodotto "Conto Bus
 ## Ambiente di lavoro
 
 - Claude Code dal tab Code dell'app Claude Desktop, non da terminale.
-- **Questa cartella non è un repository git e deve restare così.** Niente `git init`, niente worktree.
+- **Claude non crea repository git né worktree in questa cartella.** Se la cartella è già un clone, commit e push li decide il PO.
 - I tool esterni sono connettori dell'app, non server aggiunti con `claude mcp add`.
 - **Demo: tutti i dati sono fittizi.** Persone, numeri, ticket e ricerche sono inventati.
 - Output in italiano.
