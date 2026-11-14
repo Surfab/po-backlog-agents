@@ -21,16 +21,16 @@ Stato: **attivo via connettore**. Mappa costruita leggendo 5 item reali il 2026-
 - `mcp__<ID-CONNETTORE-NOTION>__notion-fetch`: legge schema del database e corpo di una pagina
 - `mcp__<ID-CONNETTORE-NOTION>__notion-search`: ritrova pagina o database se l'ID cambia
 
-## Tool di scrittura (solo sessione principale, sempre in "ask")
+## Tool di scrittura (solo sessione principale, in "ask" tranne quelli di eliminazione)
 
 - `mcp__<ID-CONNETTORE-NOTION>__notion-update-page`: modifica proprietà o contenuto di un item
 - `mcp__<ID-CONNETTORE-NOTION>__notion-create-pages`: crea un item
 - `mcp__<ID-CONNETTORE-NOTION>__notion-create-comment`: commenta un item
 - `mcp__<ID-CONNETTORE-NOTION>__notion-move-pages`, `mcp__<ID-CONNETTORE-NOTION>__notion-duplicate-page`
 - `mcp__<ID-CONNETTORE-NOTION>__notion-update-data-source`, `mcp__<ID-CONNETTORE-NOTION>__notion-create-database`: cambiano lo schema, da usare solo su richiesta esplicita
-- `mcp__<ID-CONNETTORE-NOTION>__notion-delete-pages`, `mcp__<ID-CONNETTORE-NOTION>__notion-delete-databases`: non usarli. Regola del progetto: non si elimina, si archivia o si sposta.
+- `mcp__<ID-CONNETTORE-NOTION>__notion-delete-pages`, `mcp__<ID-CONNETTORE-NOTION>__notion-delete-databases`: bloccati, sono in "deny" in `.claude/settings.json`. Regola del progetto: non si elimina, si archivia o si sposta.
 
-L'elenco completo dei tool di scrittura Notion è in `.claude/settings.json`, sezione "ask".
+L'elenco completo dei tool di scrittura Notion è in `.claude/settings.json`, sezioni "ask" e "deny".
 
 ## Query standard
 

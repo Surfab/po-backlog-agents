@@ -17,11 +17,9 @@
       "mcp__<ID-CONNETTORE-NOTION>__notion-update-page",
       "mcp__<ID-CONNETTORE-NOTION>__notion-move-pages",
       "mcp__<ID-CONNETTORE-NOTION>__notion-duplicate-page",
-      "mcp__<ID-CONNETTORE-NOTION>__notion-delete-pages",
       "mcp__<ID-CONNETTORE-NOTION>__notion-restore-pages",
       "mcp__<ID-CONNETTORE-NOTION>__notion-restore-version",
       "mcp__<ID-CONNETTORE-NOTION>__notion-create-database",
-      "mcp__<ID-CONNETTORE-NOTION>__notion-delete-databases",
       "mcp__<ID-CONNETTORE-NOTION>__notion-update-data-source",
       "mcp__<ID-CONNETTORE-NOTION>__notion-convert-to-meetings-database",
       "mcp__<ID-CONNETTORE-NOTION>__notion-create-view",
@@ -62,6 +60,8 @@
       "mcp__<ID-CONNETTORE-ATLASSIAN>__updateConfluenceContent"
     ],
     "deny": [
+      "mcp__<ID-CONNETTORE-NOTION>__notion-delete-pages",
+      "mcp__<ID-CONNETTORE-NOTION>__notion-delete-databases",
       "Bash(git init:*)",
       "Bash(git worktree:*)"
     ]
