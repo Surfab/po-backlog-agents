@@ -1,4 +1,14 @@
-# Conto Business, assistente del Product Owner
+# PO Backlog Agents
+
+Sei agent per Claude Code che controllano il backlog di un Product Owner su Notion e Jira. Leggono e propongono, il PO decide.
+
+Six Claude Code agents that review a Product Owner's backlog on Notion and Jira. They read and propose, the PO decides.
+
+**Cosa ha dimostrato la demo**
+
+- backlog-health ha trovato tutti i 7 difetti piantati nei dati di prova, compreso un duplicato tra Notion e Jira.
+- sprint-prep ha bocciato 5 candidati su 5 sulla Definition of Ready, invece di riempire lo sprint.
+- Tre giri di controllo hanno portato a zero le contraddizioni tra i criteri di accettazione della riconciliazione, comprese quelle introdotte dalle correzioni.
 
 [🇮🇹 Italiano](#italiano) · [🇬🇧 English](#english)
 
@@ -9,6 +19,19 @@
 > I nomi di persona e i dati sono inventati.
 >
 > Il sistema non fornisce consulenza legale.
+
+Un sistema di agent per Claude Code che aiuta un Product Owner Scrum a tenere in ordine il backlog. Legge i dati da più tool (oggi Notion e Jira), li porta in un formato unico e li fa analizzare da sei agent specializzati. Gli agent leggono e propongono. Il Product Owner decide. Nessuna scrittura su nessun tool parte senza un OK esplicito.
+
+È una demo: prodotto, persone, numeri e ticket sono inventati.
+
+**In breve**
+
+- Sei agent: sincronizzazione, salute del backlog, rifinitura delle story, priorità WSJF, impatti di compliance fintech, preparazione dello sprint.
+- Architettura a tre livelli: aggiungere un tool vuol dire scrivere un adapter, senza toccare gli agent.
+- Provato su dati reali: un database Notion e uno spazio Jira Cloud, prima in una sessione cloud e poi sul Mac.
+- Ogni modifica proposta finisce in un file. Le applica la sessione principale, dopo il tuo OK, e la registra in un change-log.
+
+---
 
 ### Configurazione
 
@@ -30,19 +53,6 @@ Note:
 - `TUO-SITO.atlassian.net` compare anche negli snapshot in `backlog/` e in un change-log in `output/`: sono dati di esempio, non configurazione.
 - La chiave dello spazio Jira (`DEMO`) e gli id dei campi custom (`customfield_…`) in `adapters/jira.md` valgono per il sito della demo: sul tuo sito vanno verificati.
 - Gli snapshot in `backlog/` e i report in `output/` sono l'esito delle sessioni demo e servono come esempio.
-
----
-
-Un sistema di agent per Claude Code che aiuta un Product Owner Scrum a tenere in ordine il backlog. Legge i dati da più tool (oggi Notion e Jira), li porta in un formato unico e li fa analizzare da sei agent specializzati. Gli agent leggono e propongono. Il Product Owner decide. Nessuna scrittura su nessun tool parte senza un OK esplicito.
-
-È una demo: prodotto, persone, numeri e ticket sono inventati.
-
-**In breve**
-
-- Sei agent: sincronizzazione, salute del backlog, rifinitura delle story, priorità WSJF, impatti di compliance fintech, preparazione dello sprint.
-- Architettura a tre livelli: aggiungere un tool vuol dire scrivere un adapter, senza toccare gli agent.
-- Provato su dati reali: un database Notion e uno spazio Jira Cloud, prima in una sessione cloud e poi sul Mac.
-- Ogni modifica proposta finisce in un file. Le applica la sessione principale, dopo il tuo OK, e la registra in un change-log.
 
 ---
 
@@ -479,6 +489,19 @@ Miglioramenti utili al sistema:
 
 **Language note.** The agents, `CLAUDE.md`, the adapters and all agent output are written in Italian. So are the demo data: Notion properties, Jira statuses and issue titles. In the tables below, titles are translated; on Notion and Jira they are in Italian. File and field names are left as they are, for example `proposte.md` (proposals) and `campi_non_mappati` (unmapped fields).
 
+An agent system for Claude Code that helps a Scrum Product Owner keep the backlog in order. It reads data from several tools (Notion and Jira today), brings them into a single format and has six specialized agents analyze them. The agents read and propose. The Product Owner decides. No write to any tool happens without an explicit OK.
+
+It is a demo: product, people, numbers and tickets are fictional.
+
+**At a glance**
+
+- Six agents: sync, backlog health, story refinement, WSJF prioritization, fintech compliance impacts, sprint preparation.
+- Three-layer architecture: adding a tool means writing an adapter, without touching the agents.
+- Tested on real tools: a Notion database and a Jira Cloud space, first in a cloud session and then on the Mac.
+- Every proposed change goes into a file. The main session applies it after your OK and records it in a change-log.
+
+---
+
 ### Setup
 
 This public copy contains no real identifiers: placeholders take their place. Before using the system, replace them with the values from your own account.
@@ -499,19 +522,6 @@ Notes:
 - `TUO-SITO.atlassian.net` also appears in the snapshots in `backlog/` and in a change-log in `output/`: they are sample data, not configuration.
 - The Jira space key (`DEMO`) and the custom field ids (`customfield_…`) in `adapters/jira.md` apply to the demo site: check them on your own site.
 - The snapshots in `backlog/` and the reports in `output/` are the results of the demo sessions and serve as examples.
-
----
-
-An agent system for Claude Code that helps a Scrum Product Owner keep the backlog in order. It reads data from several tools (Notion and Jira today), brings them into a single format and has six specialized agents analyze them. The agents read and propose. The Product Owner decides. No write to any tool happens without an explicit OK.
-
-It is a demo: product, people, numbers and tickets are fictional.
-
-**At a glance**
-
-- Six agents: sync, backlog health, story refinement, WSJF prioritization, fintech compliance impacts, sprint preparation.
-- Three-layer architecture: adding a tool means writing an adapter, without touching the agents.
-- Tested on real tools: a Notion database and a Jira Cloud space, first in a cloud session and then on the Mac.
-- Every proposed change goes into a file. The main session applies it after your OK and records it in a change-log.
 
 ---
 
