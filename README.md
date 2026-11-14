@@ -98,10 +98,12 @@ Scrivi le richieste in linguaggio normale. Esempi:
 |---|---|
 | Inizio sessione | "Lancia backlog-sync" |
 | Subito dopo | "Lancia backlog-health sullo snapshot di oggi" |
-| Prima del refinement | "Lancia story-refiner su DEMO-14 e DEMO-15" |
-| Prima che una story entri in sprint | "Lancia fintech-compliance su DEMO-5" |
-| Prima del planning | "Lancia prioritizer", poi "Lancia sprint-prep su PAY Sprint 1" |
+| Prima del refinement | "Lancia story-refiner su `DEMO-14` e `DEMO-15`" |
+| Prima che una story entri in sprint | "Lancia fintech-compliance su `DEMO-5`" |
+| Prima del planning | "Lancia prioritizer", poi "Lancia sprint-prep su `PAY Sprint 1`" |
 | Per applicare le proposte | "Mostrami le proposte in attesa" e poi "OK per la riga 3" |
+
+**Gli esempi usano segnaposto.** `DEMO-14`, `DEMO-15` e `DEMO-5` stanno per le chiavi delle issue Jira, `PAY Sprint 1` per il nome dello sprint. Sostituiscili con quelli del tuo progetto, per esempio `CHECKOUT-142` e `Sprint 12`. Nei dati della demo corrispondono a issue e sprint reali dello spazio Jira di prova.
 
 L'ordine consigliato è sempre: **sync, poi analisi, poi decisioni**. Gli agenti di analisi leggono solo lo snapshot: se non rifai il sync, lavorano su dati vecchi.
 
@@ -567,10 +569,12 @@ Write your requests in plain language. The agents expect Italian, for example:
 |---|---|---|
 | Start of session | "Lancia backlog-sync" | Run backlog-sync |
 | Right after | "Lancia backlog-health sullo snapshot di oggi" | Run backlog-health on today's snapshot |
-| Before refinement | "Lancia story-refiner su DEMO-14 e DEMO-15" | Run story-refiner on DEMO-14 and DEMO-15 |
-| Before a story enters a sprint | "Lancia fintech-compliance su DEMO-5" | Run fintech-compliance on DEMO-5 |
-| Before planning | "Lancia prioritizer", then "Lancia sprint-prep su PAY Sprint 1" | Run prioritizer, then sprint-prep on PAY Sprint 1 |
+| Before refinement | "Lancia story-refiner su `DEMO-14` e `DEMO-15`" | Run story-refiner on `DEMO-14` and `DEMO-15` |
+| Before a story enters a sprint | "Lancia fintech-compliance su `DEMO-5`" | Run fintech-compliance on `DEMO-5` |
+| Before planning | "Lancia prioritizer", then "Lancia sprint-prep su `PAY Sprint 1`" | Run prioritizer, then sprint-prep on `PAY Sprint 1` |
 | To apply proposals | "Mostrami le proposte in attesa", then "OK per la riga 3" | Show pending proposals, then OK for row 3 |
+
+**The examples use placeholders.** `DEMO-14`, `DEMO-15` and `DEMO-5` stand for Jira issue keys, `PAY Sprint 1` for the sprint name. Replace them with the ones from your own project, for example `CHECKOUT-142` and `Sprint 12`. In the demo data they match real issues and a real sprint in the test Jira space.
 
 The recommended order is always: **sync, then analysis, then decisions**. The analysis agents read only the snapshot: if you skip the sync, they work on old data.
 
