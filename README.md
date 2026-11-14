@@ -1,8 +1,8 @@
-# PO Backlog Agents
+# PO Backlog agentis
 
-Sei agent per Claude Code che controllano il backlog di un Product Owner su Notion e Jira. Leggono e propongono, il PO decide.
+Sei agenti per Claude Code che controllano il backlog di un Product Owner su Notion e Jira. Leggono e propongono, il PO decide.
 
-Six Claude Code agents that review a Product Owner's backlog on Notion and Jira. They read and propose, the PO decides.
+Six Claude Code agentis that review a Product Owner's backlog on Notion and Jira. They read and propose, the PO decides.
 
 **Cosa ha dimostrato la demo**
 
@@ -26,14 +26,14 @@ Progettato da un Product Owner e costruito con Claude Code in tre giorni.
 >
 > Il sistema non fornisce consulenza legale.
 
-Un sistema di agent per Claude Code che aiuta un Product Owner Scrum a tenere in ordine il backlog. Legge i dati da più tool (oggi Notion e Jira), li porta in un formato unico e li fa analizzare da sei agent specializzati. Gli agent leggono e propongono. Il Product Owner decide. Nessuna scrittura su nessun tool parte senza un OK esplicito.
+Un sistema di agenti per Claude Code che aiuta un Product Owner Scrum a tenere in ordine il backlog. Legge i dati da più tool (oggi Notion e Jira), li porta in un formato unico e li fa analizzare da sei agenti specializzati. Gli agenti leggono e propongono. Il Product Owner decide. Nessuna scrittura su nessun tool parte senza un OK esplicito.
 
 È una demo: prodotto, persone, numeri e ticket sono inventati.
 
 **In breve**
 
-- Sei agent: sincronizzazione, salute del backlog, rifinitura delle story, priorità WSJF, impatti di compliance fintech, preparazione dello sprint.
-- Architettura a tre livelli: aggiungere un tool vuol dire scrivere un adapter, senza toccare gli agent.
+- Sei agenti: sincronizzazione, salute del backlog, rifinitura delle story, priorità WSJF, impatti di compliance fintech, preparazione dello sprint.
+- Architettura a tre livelli: aggiungere un tool vuol dire scrivere un adapter, senza toccare gli agenti.
 - Provato su dati reali: un database Notion e uno spazio Jira Cloud, prima in una sessione cloud e poi sul Mac.
 - Ogni modifica proposta finisce in un file. Le applica la sessione principale, dopo il tuo OK, e la registra in un change-log.
 
@@ -46,8 +46,8 @@ Questa copia pubblica non contiene identificativi reali: al loro posto ci sono d
 | Segnaposto | Che cos'è | Dove cambiarlo |
 |---|---|---|
 | `TUO-SITO.atlassian.net` | il tuo sito Jira Cloud (usato come `cloudId` e negli URL delle issue) | `adapters/jira.md` |
-| `mcp__<ID-CONNETTORE-NOTION>__` | prefisso dei tool del connettore Notion nella tua sessione | `.claude/agents/backlog-sync.md` (riga `tools:`), `.claude/settings.json`, `adapters/notion.md` |
-| `mcp__<ID-CONNETTORE-ATLASSIAN>__` | prefisso dei tool del connettore Atlassian nella tua sessione | `.claude/agents/backlog-sync.md` (riga `tools:`), `.claude/settings.json`, `adapters/jira.md` |
+| `mcp__<ID-CONNETTORE-NOTION>__` | prefisso dei tool del connettore Notion nella tua sessione | `.claude/agentis/backlog-sync.md` (riga `tools:`), `.claude/settings.json`, `adapters/notion.md` |
+| `mcp__<ID-CONNETTORE-ATLASSIAN>__` | prefisso dei tool del connettore Atlassian nella tua sessione | `.claude/agentis/backlog-sync.md` (riga `tools:`), `.claude/settings.json`, `adapters/jira.md` |
 | `<URL-PAGINA-NOTION>` | URL della pagina Notion che contiene il database | `adapters/notion.md` |
 | `<URL-DATABASE-NOTION>` | URL del database "Discovery" | `adapters/notion.md` |
 | `collection://<ID-DATA-SOURCE-NOTION>` | identificativo della data source del database | `adapters/notion.md` (sezione "Dove sono i dati" e query standard) |
@@ -67,7 +67,7 @@ Note:
 1. [Come si usa](#1-come-si-usa)
 2. [Come funziona](#2-come-funziona)
 3. [Struttura della cartella](#3-struttura-della-cartella)
-4. [I sei agent](#4-i-sei-agent)
+4. [I sei agenti](#4-i-sei-agenti)
 5. [Le scritture: proposte, OK, change-log](#5-le-scritture-proposte-ok-change-log)
 6. [Connettori, nomi dei tool e permessi](#6-connettori-nomi-dei-tool-e-permessi)
 7. [I dati demo](#7-i-dati-demo)
@@ -103,11 +103,11 @@ Scrivi le richieste in linguaggio normale. Esempi:
 | Prima del planning | "Lancia prioritizer", poi "Lancia sprint-prep su PAY Sprint 1" |
 | Per applicare le proposte | "Mostrami le proposte in attesa" e poi "OK per la riga 3" |
 
-L'ordine consigliato è sempre: **sync, poi analisi, poi decisioni**. Gli agent di analisi leggono solo lo snapshot: se non rifai il sync, lavorano su dati vecchi.
+L'ordine consigliato è sempre: **sync, poi analisi, poi decisioni**. Gli agenti di analisi leggono solo lo snapshot: se non rifai il sync, lavorano su dati vecchi.
 
-#### Cosa leggere dopo ogni agent
+#### Cosa leggere dopo ogni agenti
 
-Ogni agent scrive un report in `output/AAAA-MM-GG_<agent>.md`, sempre con lo stesso formato:
+Ogni agenti scrive un report in `output/AAAA-MM-GG_<agenti>.md`, sempre con lo stesso formato:
 
 1. Sintesi in 3 righe.
 2. Problemi divisi in Critico, Medio, Basso, ognuno con l'id dell'item.
@@ -128,7 +128,7 @@ Il sistema ha tre livelli.
   adapter         adapter        adapter        Livello 1: come si legge ogni tool
      \               |             /
       \              |            /
-       backlog-sync (unico agent con accesso ai tool, solo lettura)
+       backlog-sync (unico agenti con accesso ai tool, solo lettura)
                      |
      backlog/AAAA-MM-GG_snapshot.json           Livello 2: formato unico
                      |
@@ -146,7 +146,7 @@ Il sistema ha tre livelli.
 
 **Livello 2, modello comune.** `schema/backlog-item.schema.json` definisce lo snapshot. Ogni item ha gli stessi campi qualunque sia il tool di origine: id nel formato `tool:chiave`, tipo, titolo, descrizione, acceptance criteria, stato normalizzato (todo, in_progress, blocked, done) e stato originale, priorità, stima, valori WSJF, sprint, parent, dipendenze, label, date. Tutto quello che il tool ha in più finisce in `extra`, così non si perde niente. Quello che backlog-sync non sa tradurre finisce in `campi_non_mappati`, invece di essere indovinato.
 
-**Livello 3, agent di analisi.** Leggono solo lo snapshot. Non sanno da quale tool arrivano i dati, e per questo non vanno toccati quando cambi o aggiungi un tool.
+**Livello 3, agenti di analisi.** Leggono solo lo snapshot. Non sanno da quale tool arrivano i dati, e per questo non vanno toccati quando cambi o aggiungi un tool.
 
 **Fonte di verità.** La discovery (opportunità, ricerche, ipotesi, PRD) vive su Notion. La delivery (epiche, story, bug, task) vive su Jira. Se lo stesso contenuto esiste in due tool, vince la fonte di verità e l'altro item si collega o si chiude, mai si tiene allineato a mano. Il collegamento tra i due mondi è il campo "Epica Jira" sull'opportunità Notion.
 
@@ -160,7 +160,7 @@ conto-business/
 ├── CLAUDE.md                      istruzioni di progetto, lette da Claude a ogni avvio
 ├── .claude/
 │   ├── settings.json              permessi: cosa è consentito, cosa chiede conferma, cosa è vietato
-│   └── agents/
+│   └── agentis/
 │       ├── backlog-sync.md
 │       ├── backlog-health.md
 │       ├── story-refiner.md
@@ -180,9 +180,9 @@ conto-business/
 │   │   └── jira_PAY.csv           export di esempio, usato solo come ripiego
 │   └── sample/
 │       ├── 2026-11-12_snapshot.json   10 item fittizi con difetti piantati
-│       └── README.md                  elenco dei difetti, per provare gli agent
+│       └── README.md                  elenco dei difetti, per provare gli agenti
 └── output/
-    ├── AAAA-MM-GG_<agent>.md      report degli agent
+    ├── AAAA-MM-GG_<agenti>.md      report degli agenti
     ├── AAAA-MM-GG_proposte.md     modifiche proposte, con colonna "stato"
     └── AAAA-MM-GG_change-log.md   modifiche applicate
 ```
@@ -191,11 +191,11 @@ Claude non crea repository git né worktree: `settings.json` vieta `git init` e 
 
 ---
 
-### 4. I sei agent
+### 4. I sei agenti
 
 Tutti hanno `model: inherit`, cioè usano il modello della sessione.
 
-| Agent | Quando | Cosa fa | Tool |
+| agenti | Quando | Cosa fa | Tool |
 |---|---|---|---|
 | **backlog-sync** | A inizio sessione | Legge ogni tool attivo in sola lettura, normalizza e scrive lo snapshot. Se un connettore non risponde ripiega sul CSV. Dichiara i campi che non sa mappare | Read, Glob, Write, 3 tool Notion di lettura, 2 tool Jira di lettura |
 | **backlog-health** | Dopo ogni sync | Duplicati anche tra tool, item fermi da oltre 4 settimane, story senza criteri o stima, stime fuori scala, dipendenze rotte, epiche vuote, item senza epica, opportunità validate senza epica, item bloccati senza motivo, contraddizioni tra criteri | Read, Grep, Glob, Write |
@@ -206,7 +206,7 @@ Tutti hanno `model: inherit`, cioè usano il modello della sessione.
 
 Solo backlog-sync tocca i connettori, e solo in lettura. Gli altri cinque lavorano sui file.
 
-Gli agent scrivono solo in `backlog/` (backlog-sync) e in `output/` (tutti gli altri). Il frontmatter di un agent non può limitare la scrittura a una cartella: il vincolo sta nelle istruzioni di ogni agent e nei permessi.
+Gli agenti scrivono solo in `backlog/` (backlog-sync) e in `output/` (tutti gli altri). Il frontmatter di un agenti non può limitare la scrittura a una cartella: il vincolo sta nelle istruzioni di ogni agenti e nei permessi.
 
 ---
 
@@ -214,7 +214,7 @@ Gli agent scrivono solo in `backlog/` (backlog-sync) e in `output/` (tutti gli a
 
 Il ciclo di una modifica:
 
-1. Un agent scrive una riga in `output/AAAA-MM-GG_proposte.md`:
+1. Un agenti scrive una riga in `output/AAAA-MM-GG_proposte.md`:
    `| id | tool | campo | valore attuale | valore proposto | motivo | stato |`
    con stato "in attesa".
 2. Chiedi alla sessione principale di applicarla.
@@ -243,7 +243,7 @@ Lo stesso tool ha un nome diverso a seconda di dove gira la sessione:
 
 Il codice nel prefisso desktop è l'identificativo del connettore installato sul tuo account. Resta stabile finché non scolleghi e ricolleghi il connettore. **Se ricolleghi un connettore, controlla subito i prefissi** e aggiornali in questi quattro file:
 
-- `.claude/agents/backlog-sync.md` (riga `tools:`)
+- `.claude/agentis/backlog-sync.md` (riga `tools:`)
 - `.claude/settings.json`
 - `adapters/notion.md`
 - `adapters/jira.md`
@@ -327,20 +327,20 @@ Alcuni numeri non vengono da un team o da un PO reale. Li ho inseriti io per far
 - Job Size di PAYDISC-1, 2, 3, 5 e Risk Reduction di PAYDISC-3.
 - Story point di DEMO-7, 8, 10.
 
-Gli agent lo sanno e lo segnalano come violazione della regola "stima il team".
+Gli agenti lo sanno e lo segnalano come violazione della regola "stima il team".
 
 #### Dati di prova offline
 
-`backlog/sample/` contiene 10 item fittizi con difetti piantati apposta (un duplicato tra tool, una story da 21 punti, un'opportunità validata senza epica, un item fermo da 6 settimane, un'epica vuota). Servono a provare gli agent senza connettori. L'elenco dei difetti è in `backlog/sample/README.md`.
+`backlog/sample/` contiene 10 item fittizi con difetti piantati apposta (un duplicato tra tool, una story da 21 punti, un'opportunità validata senza epica, un item fermo da 6 settimane, un'epica vuota). Servono a provare gli agenti senza connettori. L'elenco dei difetti è in `backlog/sample/README.md`.
 
 ---
 
 ### 8. Regole di prodotto
 
-Stanno in `CLAUDE.md` e valgono per tutti gli agent:
+Stanno in `CLAUDE.md` e valgono per tutti gli agenti:
 
 - **Formato story:** "Come <utente> voglio <azione> per ottenere <beneficio>", con un utente del dominio (titolare di PMI, addetto all'amministrazione, dipendente con carta, commercialista). Criteri in Gherkin. Criteri INVEST.
-- **Stima:** story point Fibonacci 1, 2, 3, 5, 8, 13. Oltre 13 la story si divide. Stima il team, non il PO né gli agent.
+- **Stima:** story point Fibonacci 1, 2, 3, 5, 8, 13. Oltre 13 la story si divide. Stima il team, non il PO né gli agenti.
 - **WSJF:** (business value + time criticality + risk reduction) / job size, tutto sulla scala 1-13. Si calcola su opportunità ed epiche. Il job size è il valore esplicito "Job Size" dell'opportunità su Notion, non la somma dei figli. L'epica collegata eredita i quattro valori. Le story dentro un'epica le ordina a mano il PO. Se manca un valore, il punteggio non si calcola.
 - **Definition of Ready** e **Definition of Done:** 8 punti ciascuna, con attenzione a compliance, audit trail e dati personali fuori dai log.
 - **Glossario:** KYC, KYB, AML, SCA, PSD2 (AISP e PISP), bonifico istantaneo SEPA, Verification of Payee, SDD, chargeback, IBAN virtuale, riconciliazione, SDI.
@@ -378,7 +378,7 @@ La procedura completa è in `adapters/README.md`. In sintesi:
 4. Aggiungi i tool di lettura a backlog-sync, quelli di scrittura in "ask" in `settings.json`, il tool in `CLAUDE.md`.
 5. Lancia backlog-sync e controlla lo snapshot, poi backlog-health.
 
-Gli agent di analisi non si toccano.
+Gli agenti di analisi non si toccano.
 
 ---
 
@@ -388,7 +388,7 @@ Gli agent di analisi non si toccano.
 
 - Lettura via connettore di Notion (5 item) e Jira (16 item), sul Mac, con snapshot valido rispetto allo schema.
 - Ripiego su CSV quando il connettore Jira non era raggiungibile.
-- Tutti e sei gli agent, ognuno con il suo frontmatter.
+- Tutti e sei gli agenti, ognuno con il suo frontmatter.
 - Mappa dei campi Jira: story point, sprint, flag, parent, link tra issue, date.
 - Scrittura con OK e rilettura: creazione di issue, modifica di descrizioni e stime, cambi di stato, sprint, link tra issue, commenti, aggiornamento di proprietà Notion.
 - backlog-health ha trovato tutti i difetti piantati e, in più, contraddizioni tra criteri introdotte durante le correzioni.
@@ -404,7 +404,7 @@ Gli agent di analisi non si toccano.
 
 ### 11. Limiti noti
 
-- Le modifiche a `CLAUDE.md` e agli agent valgono dalla sessione successiva: in quella in corso gli agent ricevono la copia letta all'avvio.
+- Le modifiche a `CLAUDE.md` e agli agenti valgono dalla sessione successiva: in quella in corso gli agenti ricevono la copia letta all'avvio.
 - La velocity si calcola solo con almeno 3 sprint chiusi.
 - La priorità Jira esiste ma non compare nella schermata di creazione: ogni issue nasce "Medium" e il valore non dice nulla.
 - `generato_il` nello snapshot usa un'ora convenzionale (23:59:59Z) quando l'ora reale non è nota.
@@ -419,12 +419,12 @@ Gli agent di analisi non si toccano.
 | Sintomo | Causa | Soluzione |
 |---|---|---|
 | backlog-sync non trova i tool dei connettori | Prefisso diverso tra cloud e desktop | Aggiornare i prefissi nei 4 file elencati nella sezione 6 |
-| Gli agent non compaiono tra quelli disponibili | Sessione aperta sulla cartella sbagliata, per esempio una `conto-business` dentro un'altra | Aprire la sessione sulla cartella che contiene `CLAUDE.md` |
-| Mancano agent e permessi dopo aver copiato i file | La cartella `.claude` è nascosta ed è rimasta indietro | Cmd+Maiusc+punto nel Finder e copiarla |
+| Gli agenti non compaiono tra quelli disponibili | Sessione aperta sulla cartella sbagliata, per esempio una `conto-business` dentro un'altra | Aprire la sessione sulla cartella che contiene `CLAUDE.md` |
+| Mancano agenti e permessi dopo aver copiato i file | La cartella `.claude` è nascosta ed è rimasta indietro | Cmd+Maiusc+punto nel Finder e copiarla |
 | Una sessione cloud non vede la cartella sul Mac | Le cartelle su iCloud Drive (sotto `~/Library`) non si collegano a una sessione cloud | Usare una sessione locale |
 | Tutti i connettori danno errore 503 o timeout insieme | Disservizio temporaneo del servizio che instrada le chiamate | Aspettare e riprovare. Non scollegare il connettore: cambierebbe il prefisso |
 | "This connector can't be used with the current credential" | Visto durante lo stesso disservizio | Riaprire la sessione dopo che il servizio è tornato |
-| Le regole nuove di `CLAUDE.md` non vengono applicate | Gli agent leggono la copia di inizio sessione | Riaprire la sessione, oppure chiedere all'agent di rileggere il file dal disco |
+| Le regole nuove di `CLAUDE.md` non vengono applicate | Gli agenti leggono la copia di inizio sessione | Riaprire la sessione, oppure chiedere all'agenti di rileggere il file dal disco |
 | Correggere un criterio ne rompe un altro | Regole sparse in più story | Scrivere la regola una volta nell'epica e far riferire lì le story |
 
 ---
@@ -435,7 +435,7 @@ Gli agent di analisi non si toccano.
 
 - Verificati i connettori: Notion raggiungibile, Atlassian non collegato.
 - Creati su Notion la pagina PAY Product e il database Discovery con 5 opportunità.
-- Scritti schema, adapter, i sei agent, `CLAUDE.md`, `settings.json` e i 10 item di esempio.
+- Scritti schema, adapter, i sei agenti, `CLAUDE.md`, `settings.json` e i 10 item di esempio.
 - Primo sync: Notion via connettore, Jira via CSV.
 - Collegato Atlassian a un sito Jira Cloud gratuito. Adapter Jira riscritto sui campi reali.
 - Create 7 issue su Jira, poi stime, stati, flag. backlog-health ha trovato tutti i difetti piantati.
@@ -487,22 +487,22 @@ Miglioramenti utili al sistema:
 
 **In short**
 
-- A set of Claude Code subagents that helps a Scrum Product Owner keep a backlog healthy.
-- It reads Notion and Jira through connectors, normalizes every item into one JSON snapshot, and runs six specialized agents on it.
-- The agents cover sync, backlog health, story refinement, WSJF prioritization, fintech compliance impacts and sprint preparation.
-- Agents only read and propose: every write to a tool needs an explicit OK from the Product Owner and is recorded in a change-log.
+- A set of Claude Code subagentis that helps a Scrum Product Owner keep a backlog healthy.
+- It reads Notion and Jira through connectors, normalizes every item into one JSON snapshot, and runs six specialized agentis on it.
+- The agentis cover sync, backlog health, story refinement, WSJF prioritization, fintech compliance impacts and sprint preparation.
+- agentis only read and propose: every write to a tool needs an explicit OK from the Product Owner and is recorded in a change-log.
 - Demo project: product, people, numbers and tickets are fictional.
 
-**Language note.** The agents, `CLAUDE.md`, the adapters and all agent output are written in Italian. So are the demo data: Notion properties, Jira statuses and issue titles. In the tables below, titles are translated; on Notion and Jira they are in Italian. File and field names are left as they are, for example `proposte.md` (proposals) and `campi_non_mappati` (unmapped fields).
+**Language note.** The agentis, `CLAUDE.md`, the adapters and all agenti output are written in Italian. So are the demo data: Notion properties, Jira statuses and issue titles. In the tables below, titles are translated; on Notion and Jira they are in Italian. File and field names are left as they are, for example `proposte.md` (proposals) and `campi_non_mappati` (unmapped fields).
 
-An agent system for Claude Code that helps a Scrum Product Owner keep the backlog in order. It reads data from several tools (Notion and Jira today), brings them into a single format and has six specialized agents analyze them. The agents read and propose. The Product Owner decides. No write to any tool happens without an explicit OK.
+An agenti system for Claude Code that helps a Scrum Product Owner keep the backlog in order. It reads data from several tools (Notion and Jira today), brings them into a single format and has six specialized agentis analyze them. The agentis read and propose. The Product Owner decides. No write to any tool happens without an explicit OK.
 
 It is a demo: product, people, numbers and tickets are fictional.
 
 **At a glance**
 
-- Six agents: sync, backlog health, story refinement, WSJF prioritization, fintech compliance impacts, sprint preparation.
-- Three-layer architecture: adding a tool means writing an adapter, without touching the agents.
+- Six agentis: sync, backlog health, story refinement, WSJF prioritization, fintech compliance impacts, sprint preparation.
+- Three-layer architecture: adding a tool means writing an adapter, without touching the agentis.
 - Tested on real tools: a Notion database and a Jira Cloud space, first in a cloud session and then on the Mac.
 - Every proposed change goes into a file. The main session applies it after your OK and records it in a change-log.
 
@@ -515,8 +515,8 @@ This public copy contains no real identifiers: placeholders take their place. Be
 | Placeholder | What it is | Where to change it |
 |---|---|---|
 | `TUO-SITO.atlassian.net` | your Jira Cloud site (used as `cloudId` and in issue URLs) | `adapters/jira.md` |
-| `mcp__<ID-CONNETTORE-NOTION>__` | tool prefix of the Notion connector in your session | `.claude/agents/backlog-sync.md` (`tools:` line), `.claude/settings.json`, `adapters/notion.md` |
-| `mcp__<ID-CONNETTORE-ATLASSIAN>__` | tool prefix of the Atlassian connector in your session | `.claude/agents/backlog-sync.md` (`tools:` line), `.claude/settings.json`, `adapters/jira.md` |
+| `mcp__<ID-CONNETTORE-NOTION>__` | tool prefix of the Notion connector in your session | `.claude/agentis/backlog-sync.md` (`tools:` line), `.claude/settings.json`, `adapters/notion.md` |
+| `mcp__<ID-CONNETTORE-ATLASSIAN>__` | tool prefix of the Atlassian connector in your session | `.claude/agentis/backlog-sync.md` (`tools:` line), `.claude/settings.json`, `adapters/jira.md` |
 | `<URL-PAGINA-NOTION>` | URL of the Notion page that holds the database | `adapters/notion.md` |
 | `<URL-DATABASE-NOTION>` | URL of the "Discovery" database | `adapters/notion.md` |
 | `collection://<ID-DATA-SOURCE-NOTION>` | identifier of the database's data source | `adapters/notion.md` ("Dove sono i dati" section and standard query) |
@@ -536,7 +536,7 @@ Notes:
 1. [How to use it](#1-how-to-use-it)
 2. [How it works](#2-how-it-works)
 3. [Folder structure](#3-folder-structure)
-4. [The six agents](#4-the-six-agents)
+4. [The six agentis](#4-the-six-agentis)
 5. [Writes: proposals, OK, change-log](#5-writes-proposals-ok-change-log)
 6. [Connectors, tool names and permissions](#6-connectors-tool-names-and-permissions)
 7. [Demo data](#7-demo-data)
@@ -561,7 +561,7 @@ Notes:
 
 #### Every working session
 
-Write your requests in plain language. The agents expect Italian, for example:
+Write your requests in plain language. The agentis expect Italian, for example:
 
 | When | What you write | Meaning |
 |---|---|---|
@@ -572,11 +572,11 @@ Write your requests in plain language. The agents expect Italian, for example:
 | Before planning | "Lancia prioritizer", then "Lancia sprint-prep su PAY Sprint 1" | Run prioritizer, then sprint-prep on PAY Sprint 1 |
 | To apply proposals | "Mostrami le proposte in attesa", then "OK per la riga 3" | Show pending proposals, then OK for row 3 |
 
-The recommended order is always: **sync, then analysis, then decisions**. The analysis agents read only the snapshot: if you skip the sync, they work on old data.
+The recommended order is always: **sync, then analysis, then decisions**. The analysis agentis read only the snapshot: if you skip the sync, they work on old data.
 
-#### What to read after each agent
+#### What to read after each agenti
 
-Each agent writes a report to `output/AAAA-MM-GG_<agent>.md` (AAAA-MM-GG = YYYY-MM-DD), always in the same format:
+Each agenti writes a report to `output/AAAA-MM-GG_<agenti>.md` (AAAA-MM-GG = YYYY-MM-DD), always in the same format:
 
 1. Summary in 3 lines.
 2. Problems grouped as Critical, Medium, Low, each with the item id.
@@ -597,7 +597,7 @@ The system has three layers.
   adapter         adapter        adapter        Layer 1: how each tool is read
      \               |             /
       \              |            /
-       backlog-sync (the only agent with tool access, read-only)
+       backlog-sync (the only agenti with tool access, read-only)
                      |
      backlog/AAAA-MM-GG_snapshot.json           Layer 2: single format
                      |
@@ -615,7 +615,7 @@ The system has three layers.
 
 **Layer 2, common model.** `schema/backlog-item.schema.json` defines the snapshot. Every item has the same fields whatever its source tool: id in the `tool:key` format, type, title, description, acceptance criteria, normalized status (todo, in_progress, blocked, done) and original status, priority, estimate, WSJF values, sprint, parent, dependencies, labels, dates. Anything extra the tool has goes into `extra`, so nothing is lost. Whatever backlog-sync cannot translate goes into `campi_non_mappati`, instead of being guessed.
 
-**Layer 3, analysis agents.** They read only the snapshot. They do not know which tool the data come from, so they do not need to change when you change or add a tool.
+**Layer 3, analysis agentis.** They read only the snapshot. They do not know which tool the data come from, so they do not need to change when you change or add a tool.
 
 **Source of truth.** Discovery (opportunities, research, hypotheses, PRDs) lives on Notion. Delivery (epics, stories, bugs, tasks) lives on Jira. If the same content exists in two tools, the source of truth wins and the other item is linked or closed, never kept in sync by hand. The bridge between the two worlds is the "Epica Jira" (Jira epic) field on the Notion opportunity.
 
@@ -629,7 +629,7 @@ conto-business/
 ├── CLAUDE.md                      project instructions, read by Claude at every start
 ├── .claude/
 │   ├── settings.json              permissions: what is allowed, what asks first, what is denied
-│   └── agents/
+│   └── agentis/
 │       ├── backlog-sync.md
 │       ├── backlog-health.md
 │       ├── story-refiner.md
@@ -649,9 +649,9 @@ conto-business/
 │   │   └── jira_PAY.csv           sample export, used only as a fallback
 │   └── sample/
 │       ├── 2026-11-12_snapshot.json   10 fictional items with planted defects
-│       └── README.md                  list of the defects, to test the agents
+│       └── README.md                  list of the defects, to test the agentis
 └── output/
-    ├── AAAA-MM-GG_<agent>.md      agent reports
+    ├── AAAA-MM-GG_<agenti>.md      agenti reports
     ├── AAAA-MM-GG_proposte.md     proposed changes, with a "stato" (status) column
     └── AAAA-MM-GG_change-log.md   applied changes
 ```
@@ -660,11 +660,11 @@ Claude does not create git repositories or worktrees: `settings.json` denies `gi
 
 ---
 
-### 4. The six agents
+### 4. The six agentis
 
 All of them have `model: inherit`, so they use the session's model.
 
-| Agent | When | What it does | Tools |
+| agenti | When | What it does | Tools |
 |---|---|---|---|
 | **backlog-sync** | At the start of a session | Reads every active tool read-only, normalizes and writes the snapshot. If a connector does not answer, falls back to CSV. Declares the fields it cannot map | Read, Glob, Write, 3 Notion read tools, 2 Jira read tools |
 | **backlog-health** | After every sync | Duplicates, also across tools; items idle for over 4 weeks; stories without criteria or estimate; estimates off the scale; broken dependencies; empty epics; items without an epic; validated opportunities without an epic; items blocked without a reason; contradictions between criteria | Read, Grep, Glob, Write |
@@ -675,7 +675,7 @@ All of them have `model: inherit`, so they use the session's model.
 
 Only backlog-sync touches the connectors, and only to read. The other five work on files.
 
-The agents write only to `backlog/` (backlog-sync) and to `output/` (all the others). An agent's frontmatter cannot restrict writing to a folder: the constraint lives in each agent's instructions and in the permissions.
+The agentis write only to `backlog/` (backlog-sync) and to `output/` (all the others). An agenti's frontmatter cannot restrict writing to a folder: the constraint lives in each agenti's instructions and in the permissions.
 
 ---
 
@@ -683,7 +683,7 @@ The agents write only to `backlog/` (backlog-sync) and to `output/` (all the oth
 
 The life of a change:
 
-1. An agent writes a row to `output/AAAA-MM-GG_proposte.md`:
+1. An agenti writes a row to `output/AAAA-MM-GG_proposte.md`:
    `| id | tool | field | current value | proposed value | reason | status |`
    with status "in attesa" (pending).
 2. You ask the main session to apply it.
@@ -712,7 +712,7 @@ The same tool has a different name depending on where the session runs:
 
 The code in the desktop prefix is the identifier of the connector installed on your account. It stays stable until you disconnect and reconnect the connector. **If you reconnect a connector, check the prefixes right away** and update them in these four files:
 
-- `.claude/agents/backlog-sync.md` (`tools:` line)
+- `.claude/agentis/backlog-sync.md` (`tools:` line)
 - `.claude/settings.json`
 - `adapters/notion.md`
 - `adapters/jira.md`
@@ -796,20 +796,20 @@ Some numbers do not come from a real team or PO. I entered them to make the demo
 - Job Size of PAYDISC-1, 2, 3, 5 and Risk Reduction of PAYDISC-3.
 - Story points of DEMO-7, 8, 10.
 
-The agents know this and flag it as a breach of the "the team estimates" rule.
+The agentis know this and flag it as a breach of the "the team estimates" rule.
 
 #### Offline test data
 
-`backlog/sample/` holds 10 fictional items with deliberately planted defects (a duplicate across tools, a 21-point story, a validated opportunity without an epic, an item idle for 6 weeks, an empty epic). They let you try the agents without connectors. The list of defects is in `backlog/sample/README.md`.
+`backlog/sample/` holds 10 fictional items with deliberately planted defects (a duplicate across tools, a 21-point story, a validated opportunity without an epic, an item idle for 6 weeks, an empty epic). They let you try the agentis without connectors. The list of defects is in `backlog/sample/README.md`.
 
 ---
 
 ### 8. Product rules
 
-They live in `CLAUDE.md` and apply to every agent:
+They live in `CLAUDE.md` and apply to every agenti:
 
 - **Story format:** "As a <user> I want <action> so that <benefit>", with a domain user (SME owner, accounting clerk, employee with a company card, accountant). Criteria in Gherkin. INVEST criteria.
-- **Estimates:** Fibonacci story points 1, 2, 3, 5, 8, 13. Above 13 the story is split. The team estimates, not the PO and not the agents.
+- **Estimates:** Fibonacci story points 1, 2, 3, 5, 8, 13. Above 13 the story is split. The team estimates, not the PO and not the agentis.
 - **WSJF:** (business value + time criticality + risk reduction) / job size, all on the 1-13 scale. Computed on opportunities and epics. Job size is the explicit "Job Size" value of the opportunity on Notion, not the sum of the children. The linked epic inherits all four values. Stories inside an epic are ordered by hand by the PO. If a value is missing, the score is not computed.
 - **Definition of Ready** and **Definition of Done:** 8 points each, with attention to compliance, audit trail and personal data kept out of logs.
 - **Glossary:** KYC, KYB, AML, SCA, PSD2 (AISP and PISP), SEPA instant transfer, Verification of Payee, SDD, chargeback, virtual IBAN, reconciliation, SDI.
@@ -847,7 +847,7 @@ The full procedure is in `adapters/README.md`. In short:
 4. Add the read tools to backlog-sync, the write tools to "ask" in `settings.json`, and the tool to `CLAUDE.md`.
 5. Run backlog-sync and check the snapshot, then backlog-health.
 
-The analysis agents stay untouched.
+The analysis agentis stay untouched.
 
 ---
 
@@ -857,7 +857,7 @@ The analysis agents stay untouched.
 
 - Reading Notion (5 items) and Jira (16 items) through connectors, on the Mac, with a snapshot valid against the schema.
 - Fallback to CSV when the Jira connector could not be reached.
-- All six agents, each with its own frontmatter.
+- All six agentis, each with its own frontmatter.
 - Jira field map: story points, sprint, flag, parent, issue links, dates.
 - Writes with an OK and read-back: issue creation, changes to descriptions and estimates, status changes, sprints, issue links, comments, Notion property updates.
 - backlog-health found every planted defect and, on top of that, contradictions between criteria introduced while fixing them.
@@ -873,7 +873,7 @@ The analysis agents stay untouched.
 
 ### 11. Known limits
 
-- Changes to `CLAUDE.md` and to the agents take effect from the next session: in the current one the agents get the copy read at startup.
+- Changes to `CLAUDE.md` and to the agentis take effect from the next session: in the current one the agentis get the copy read at startup.
 - Velocity is computed only with at least 3 closed sprints.
 - Jira priority exists but is not on the create screen: every issue starts as "Medium" and the value means nothing.
 - `generato_il` (generated at) in the snapshot uses a conventional time (23:59:59Z) when the real time is unknown.
@@ -888,12 +888,12 @@ The analysis agents stay untouched.
 | Symptom | Cause | Fix |
 |---|---|---|
 | backlog-sync cannot find the connector tools | Different prefix between cloud and desktop | Update the prefixes in the 4 files listed in section 6 |
-| The agents do not show up among the available ones | Session opened on the wrong folder, for example a `conto-business` inside another one | Open the session on the folder that contains `CLAUDE.md` |
-| Agents and permissions missing after copying the files | The `.claude` folder is hidden and was left behind | Cmd+Shift+period in Finder, then copy it |
+| The agentis do not show up among the available ones | Session opened on the wrong folder, for example a `conto-business` inside another one | Open the session on the folder that contains `CLAUDE.md` |
+| agentis and permissions missing after copying the files | The `.claude` folder is hidden and was left behind | Cmd+Shift+period in Finder, then copy it |
 | A cloud session cannot see the folder on the Mac | iCloud Drive folders (under `~/Library`) do not attach to a cloud session | Use a local session |
 | All connectors return 503 or time out at once | Temporary outage of the service that routes the calls | Wait and retry. Do not disconnect the connector: the prefix would change |
 | "This connector can't be used with the current credential" | Seen during the same outage | Reopen the session once the service is back |
-| New rules in `CLAUDE.md` are not applied | The agents read the copy from the start of the session | Reopen the session, or ask the agent to read the file again from disk |
+| New rules in `CLAUDE.md` are not applied | The agentis read the copy from the start of the session | Reopen the session, or ask the agenti to read the file again from disk |
 | Fixing one criterion breaks another | Rules scattered across several stories | Write the rule once in the epic and have the stories refer to it |
 
 ---
@@ -904,7 +904,7 @@ The analysis agents stay untouched.
 
 - Checked the connectors: Notion reachable, Atlassian not connected.
 - Created the PAY Product page and the Discovery database with 5 opportunities on Notion.
-- Wrote the schema, the adapters, the six agents, `CLAUDE.md`, `settings.json` and the 10 sample items.
+- Wrote the schema, the adapters, the six agentis, `CLAUDE.md`, `settings.json` and the 10 sample items.
 - First sync: Notion through the connector, Jira through CSV.
 - Connected Atlassian to a free Jira Cloud site. Rewrote the Jira adapter on the real fields.
 - Created 7 issues on Jira, then estimates, statuses, flags. backlog-health found every planted defect.
