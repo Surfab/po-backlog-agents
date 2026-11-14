@@ -1,6 +1,6 @@
 # Test di non regressione degli agent generici
 
-Verifica che i quattro agent generici (backlog-health, story-refiner, prioritizer, sprint-prep) diano su Conto Business gli stessi risultati della versione precedente, conservata in `archivio/agents-v1/`.
+Verifica che i quattro agent generici (backlog-health, story-refiner, prioritizer, sprint-prep) diano su Conto Business gli stessi risultati della versione precedente. Dove trovare la versione precedente: `archivio/agents-v1/` nella cartella di lavoro; nel repository pubblico, [`.claude/agents/` al commit fccd388](https://github.com/Surfab/po-backlog-agents/tree/fccd388eb661cd99c0a9e91aa2e3deac5cd973aa/.claude/agents).
 
 ## Preparazione
 
@@ -9,7 +9,7 @@ Verifica che i quattro agent generici (backlog-health, story-refiner, prioritize
 3. Controlla che la sessione veda gli agent: "Elenca gli agent di progetto disponibili". Devono essere 6.
 4. **Le proposte prodotte durante i test non si applicano mai**, nemmeno quando gli id somigliano a item reali. Il campione copia alla lettera i titoli di DEMO-2, 3, 4, 5, 7 e 9 con chiavi diverse (PAY-…). Le opportunità PAYDISC-1, 2 e 3 hanno lo stesso id e lo stesso titolo che su Notion.
 
-Per ogni test scrivi l'esito nella tabella in fondo. **Se il test 3 (prioritizer) dà un risultato diverso, fermati e avvisa il PO**: decide lui se tornare alla versione in `archivio/agents-v1/`.
+Per ogni test scrivi l'esito nella tabella in fondo. **Se il test 3 (prioritizer) dà un risultato diverso, fermati e avvisa il PO**: decide lui se tornare alla versione precedente: `archivio/agents-v1/` nella cartella di lavoro; nel repository pubblico, [`.claude/agents/` al commit fccd388](https://github.com/Surfab/po-backlog-agents/tree/fccd388eb661cd99c0a9e91aa2e3deac5cd973aa/.claude/agents).
 
 ## Test 1: backlog-health sui dati di prova
 
@@ -110,8 +110,8 @@ Esito: **superato** se l'agent non usa nessuna soglia e segnala il valore mancan
 |---|---|---|---|
 | 1 backlog-health | 2026-11-14 | superato | 7 difetti su 7, casi sani non segnalati. In più: sospetto duplicato notion:PAYDISC-3 / jira:PAY-102 (Critico), WSJF non calcolabile su PAY-102 e PAY-109, label con maiuscole diverse tra i tool. |
 | 2 story-refiner | 2026-11-14 | superato | Sezioni Sintesi (3 righe), Problemi (Critico/Medio/Basso), dettaglio per story, Azioni, Dati mancanti presenti. Formato story con titolare di PMI e addetto all'amministrazione. INVEST con 6 righe per story. 50 `Scenario` Gherkin con Dato/Quando/Allora/E su righe separate, casi di errore, importi (1.219,99 contro 1.220,00), timeout, stati. PAY-118 divisa in S1-S4 senza stime, PAY-131 in caso esatto + S5-S7. Rimando a fintech-compliance per entrambe. 12 righe nuove nelle proposte. Fuori test: l'agent ha creato per errore un file vuoto `scratchpad_unused.txt` nella radice. |
-| 3 prioritizer | 2026-11-14 | superato | Classifica, valori, parità e non calcolabili identici al 13/11. In più usa i link "blocca" presenti nello snapshot (il report del 13/11 li dava assenti) e propone una riga condizionata (DEMO-10 blocca DEMO-5). |
-| 4 sprint-prep | 2026-11-14 | superato | Tutti i punti presenti. Differenze: DoR punto 5 di DEMO-6 ora ok grazie ai link; ordine delle sezioni diverso; nessuna riga nuova in proposte. |
+| 3 prioritizer | 2026-11-14 | superato | Classifica, valori, parità e non calcolabili identici al 13/11. In più usa i link "blocca" presenti nello snapshot, che il report del 13/11 dava assenti, e propone una riga condizionata (DEMO-10 blocca DEMO-5). La differenza sui link non dipende dagli agent: lo snapshot del 13 era stato rigenerato nel pomeriggio, dopo la creazione dei link, sopra la versione letta dai report del mattino (vedi [Problemi incontrati](docs/guida.md#12-problemi-incontrati-e-come-si-risolvono) nella guida). |
+| 4 sprint-prep | 2026-11-14 | superato | Tutti i punti presenti. Differenze: DoR punto 5 di DEMO-6 ora ok grazie ai link "blocca"; ordine delle sezioni diverso; nessuna riga nuova in proposte. La differenza sui link non dipende dagli agent: lo snapshot del 13 era stato rigenerato nel pomeriggio, dopo la creazione dei link, sopra la versione letta dai report del mattino (vedi [Problemi incontrati](docs/guida.md#12-problemi-incontrati-e-come-si-risolvono) nella guida). |
 | 5 valore mancante | 2026-11-14 | superato | Controllo 2 non eseguito, PAY-125 non segnalato come fermo, "Item fermi" tra i dati mancanti con rimando a Parametri del backlog, nessuna soglia in giorni. Eseguito in una sessione nuova. La riga "Item fermi" è ancora tolta da `CLAUDE.md` della copia. |
 
 Alla fine la cartella `conto-business-test` si può archiviare o tenere per i test successivi. Non contiene niente che serva all'originale.

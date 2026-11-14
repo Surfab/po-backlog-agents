@@ -436,6 +436,7 @@ Per un **progetto nuovo**, non solo un tool nuovo, si parte da `template/` e si 
 - Il collegamento Notion-Jira è un campo di testo ("Epica Jira"): niente garantisce che la chiave esista. backlog-health lo controlla.
 - "Aggiornato il" su Notion cambia a ogni modifica, anche minima: un item può sembrare vivo per un refuso corretto.
 - DEMO-1 è incluso nello snapshot come item di prova, già completato.
+- Durante il test 2 di `TEST-generici.md` un agente ha creato un file vuoto nella radice della cartella di test. Il vincolo di scrivere solo in `output/` sta nelle istruzioni degli agenti, non nei permessi, quindi niente lo blocca.
 
 ---
 
@@ -505,4 +506,5 @@ Miglioramenti utili al sistema:
 - Una validazione automatica dello snapshot dopo ogni sync.
 - Una skill `/applica-proposte` per il ciclo proposta, OK, scrittura, change-log, oggi descritto solo in `CLAUDE.md`.
 - Confronto tra due snapshot, per vedere cosa è cambiato tra un refinement e l'altro. Con un file per sync e niente sovrascritture, ora i dati per farlo ci sono.
+- Una colonna "snapshot" in `proposte.md`, con il file da cui nasce ogni proposta: così la sessione principale rifiuta da sola le proposte nate da `backlog/sample/`.
 - Provare il template su un secondo progetto, con tool e regole diversi, per capire cosa manca davvero in `CLAUDE.template.md`.

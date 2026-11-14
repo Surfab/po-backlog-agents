@@ -446,6 +446,7 @@ For a **new project**, not just a new tool, start from `template/` and follow th
 - The Notion-Jira link is a text field ("Epica Jira"): nothing guarantees the key exists. backlog-health checks it.
 - "Aggiornato il" (updated on) on Notion changes with every edit, however small: an item can look alive because of a fixed typo.
 - DEMO-1 is included in the snapshot as a test item, already done.
+- During test 2 in `TEST-generici.md` an agent created an empty file in the root of the test folder. The rule to write only to `output/` lives in the agents' instructions, not in the permissions, so nothing blocks it.
 
 ---
 
@@ -515,4 +516,5 @@ Useful improvements to the system:
 - Automatic validation of the snapshot after every sync.
 - A `/applica-proposte` (apply proposals) skill for the proposal, OK, write, change-log cycle, today described only in `CLAUDE.md`.
 - A comparison between two snapshots, to see what changed from one refinement to the next. With one file per sync and no overwriting, the data for it now exist.
+- A "snapshot" column in `proposte.md`, with the file each proposal comes from: the main session could then reject on its own the proposals that come from `backlog/sample/`.
 - Trying the template on a second project, with different tools and rules, to find out what `CLAUDE.template.md` really lacks.
