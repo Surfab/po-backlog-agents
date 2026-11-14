@@ -16,6 +16,7 @@ Un sistema di agenti per Claude Code che aiuta un Product Owner Scrum a tenere i
 - Architettura a tre livelli: aggiungere un tool vuol dire scrivere un adapter, senza toccare gli agenti.
 - Provato su dati reali: un database Notion e uno spazio Jira Cloud, prima in una sessione cloud e poi sul Mac.
 - Ogni modifica proposta finisce in un file. Le applica la sessione principale, dopo il tuo OK, e la registra in un change-log.
+- Quattro agenti sono generici: regole e valori li leggono da `CLAUDE.md`. Per un progetto nuovo si parte da `template/`.
 
 ---
 
@@ -112,7 +113,7 @@ Il sistema ha tre livelli.
       \              |            /
        backlog-sync (unico agent con accesso ai tool, solo lettura)
                      |
-     backlog/AAAA-MM-GG_snapshot.json           Livello 2: formato unico
+     backlog/AAAA-MM-GG_HHMM_snapshot.json      Livello 2: formato unico
                      |
    backlog-health  story-refiner  prioritizer   Livello 3: analisi
    fintech-compliance  sprint-prep
@@ -130,6 +131,8 @@ Il sistema ha tre livelli.
 
 **Livello 3, agenti di analisi.** Leggono solo lo snapshot. Non sanno da quale tool arrivano i dati, e per questo non vanno toccati quando cambi o aggiungi un tool.
 
+**Uno snapshot per sync.** Il nome contiene data e ora reali, per esempio `2026-11-14_0935_snapshot.json`, e un file esistente non si sovrascrive mai. Ogni report cita il file esatto che ha letto, così un'analisi si può rifare sugli stessi dati.
+
 **Fonte di verità.** La discovery (opportunità, ricerche, ipotesi, PRD) vive su Notion. La delivery (epiche, story, bug, task) vive su Jira. Se lo stesso contenuto esiste in due tool, vince la fonte di verità e l'altro item si collega o si chiude, mai si tiene allineato a mano. Il collegamento tra i due mondi è il campo "Epica Jira" sull'opportunità Notion.
 
 ---
@@ -144,6 +147,7 @@ po-backlog-agents/
 │   ├── guida.md                   questa guida
 │   └── guide-en.md                la guida in inglese
 ├── CLAUDE.md                      istruzioni di progetto, lette da Claude a ogni avvio
+├── TEST-generici.md               test di non regressione degli agenti generici, con gli esiti
 ├── .claude/
 │   ├── settings.json              permessi: cosa è consentito, cosa chiede conferma, cosa è vietato
 │   └── agents/
@@ -153,6 +157,11 @@ po-backlog-agents/
 │       ├── prioritizer.md
 │       ├── fintech-compliance.md
 │       └── sprint-prep.md
+├── template/                      punto di partenza per un progetto nuovo
+│   ├── CHECKLIST-nuovo-progetto.md   dieci passi, dalla cartella vuota al primo report
+│   ├── CLAUDE.template.md         CLAUDE.md con le sezioni da compilare
+│   ├── settings.template.json     permessi con i segnaposto dei connettori
+│   └── agents/                    i quattro agenti generici e backlog-sync.template.md
 ├── adapters/
 │   ├── README.md                  come aggiungere un tool in 5 passi
 │   ├── notion.md
@@ -161,7 +170,9 @@ po-backlog-agents/
 ├── schema/
 │   └── backlog-item.schema.json   formato dello snapshot
 ├── backlog/
-│   ├── AAAA-MM-GG_snapshot.json   snapshot normalizzati, uno per giorno
+│   ├── AAAA-MM-GG_HHMM_snapshot.json   snapshot normalizzati, uno per sync, mai sovrascritti
+│   ├── 2026-11-12_snapshot.json   snapshot vecchi, con il nome senza ora
+│   ├── 2026-11-13_snapshot.json
 │   ├── import/
 │   │   └── jira_PAY.csv           export di esempio, usato solo come ripiego
 │   └── sample/
@@ -183,14 +194,35 @@ Tutti hanno `model: inherit`, cioè usano il modello della sessione.
 
 | Agente | Quando | Cosa fa | Tool |
 |---|---|---|---|
-| **backlog-sync** | A inizio sessione | Legge ogni tool attivo in sola lettura, normalizza e scrive lo snapshot. Se un connettore non risponde ripiega sul CSV. Dichiara i campi che non sa mappare | Read, Glob, Write, 3 tool Notion di lettura, 2 tool Jira di lettura |
-| **backlog-health** | Dopo ogni sync | Duplicati anche tra tool, item fermi da oltre 4 settimane, story senza criteri o stima, stime fuori scala, dipendenze rotte, epiche vuote, item senza epica, opportunità validate senza epica, item bloccati senza motivo, contraddizioni tra criteri | Read, Grep, Glob, Write |
-| **story-refiner** | Prima del refinement, su id indicati | Riscrive la story nel formato "Come… voglio… per…", verifica INVEST, scrive i criteri in Gherkin, propone uno split se supera 13 punti o non è testabile | Read, Grep, Glob, Write |
-| **prioritizer** | Prima del planning | Calcola il WSJF su opportunità ed epiche, mostra calcolo e razionale, rifiuta di calcolare se manca un valore | Read, Grep, Glob, Write |
+| **backlog-sync** | A inizio sessione | Legge ogni tool attivo in sola lettura, normalizza e scrive lo snapshot con data e ora reali nel nome. Se il file esiste già si ferma. Se un connettore non risponde ripiega sul CSV. Dichiara i campi che non sa mappare | Read, Glob, Write, 3 tool Notion di lettura, 2 tool Jira di lettura |
+| **backlog-health** | Dopo ogni sync | Duplicati anche tra tool, item fermi oltre la soglia di `CLAUDE.md`, story senza criteri o stima, stime fuori scala, dipendenze rotte, epiche vuote, item senza epica, item validati senza collegamento alla delivery, item bloccati senza motivo, valori di priorità mancanti, contraddizioni tra criteri | Read, Grep, Glob, Write |
+| **story-refiner** | Prima del refinement, su id indicati | Riscrive la story nel formato di `CLAUDE.md` ("Come… voglio… per…"), verifica INVEST, scrive i criteri in blocchi Gherkin con uno `Scenario` per caso, propone uno split se supera il massimo della scala o non è testabile | Read, Grep, Glob, Write |
+| **prioritizer** | Prima del planning | Applica il framework della sezione Prioritizzazione di `CLAUDE.md` (qui WSJF su opportunità ed epiche), mostra calcolo e razionale, rifiuta di calcolare se manca un valore | Read, Grep, Glob, Write |
 | **fintech-compliance** | Prima che un item entri in sprint | Segnala impatti su PSD2 e SCA, Verification of Payee, AML, KYC e KYB, GDPR, DORA, carte, SDD, SDI, audit trail. Non cita articoli di legge: indica il rischio e con chi verificarlo | Read, Grep, Glob, Write |
-| **sprint-prep** | 1-2 giorni prima del planning | Bozza di sprint goal, verifica della Definition of Ready sui candidati, capacità rispetto alla velocity degli ultimi 3 sprint, scalette di review e retrospettiva | Read, Grep, Glob, Write |
+| **sprint-prep** | 1-2 giorni prima del planning | Bozza di sprint goal, verifica della Definition of Ready sui candidati, capacità rispetto alla velocity degli ultimi sprint chiusi (quanti, lo dice `CLAUDE.md`), scalette di review e retrospettiva | Read, Grep, Glob, Write |
 
 Solo backlog-sync tocca i connettori, e solo in lettura. Gli altri cinque lavorano sui file.
+
+### Agenti generici e agenti di dominio
+
+backlog-health, story-refiner, prioritizer e sprint-prep sono **generici**: non contengono regole di Conto Business. Formato story, scala di stima, framework di priorità, soglie, team e durata dello sprint li leggono da `CLAUDE.md`. Se un valore manca, non usano un default: saltano il controllo che ne dipende e lo scrivono tra i dati mancanti, con la sezione di `CLAUDE.md` da completare. Il test di non regressione in `TEST-generici.md` ha verificato che su Conto Business danno gli stessi risultati della versione precedente.
+
+fintech-compliance è un **agente di dominio**: vale solo per un prodotto di pagamenti. Gli agenti generici rimandano a lui quando un item rientra nei casi della sezione Agent di dominio di `CLAUDE.md`. Un altro progetto può avere agenti di dominio diversi, o nessuno.
+
+backlog-sync resta specifico del progetto, perché la riga `tools:` contiene i prefissi dei connettori. In `template/agents/` c'è come `backlog-sync.template.md`, con i segnaposto.
+
+### Quale snapshot leggono gli agenti di analisi
+
+Se il PO non ne indica uno, leggono il più recente in `backlog/`, ordinando per data e ora. I file vecchi senza ora nel nome si confrontano solo per data. Se un file vecchio e uno nuovo hanno la stessa data, chiedono al PO quale leggere.
+
+Se in `backlog/` non c'è nessuno snapshot, le due versioni si comportano in modo diverso, ed è una scelta voluta:
+
+- **Agenti del template** (`template/agents/`): si fermano e chiedono al PO di lanciare backlog-sync. In un progetto reale analizzare dati di esempio al posto del backlog vero darebbe report sbagliati senza che nessuno se ne accorga.
+- **Agenti di Conto Business** (`.claude/agents/`): ripiegano su `backlog/sample/`. Conto Business è una demo, e chi la prova senza connettori deve poter lanciare gli agenti subito sui dati di esempio.
+
+In entrambi i casi la sintesi del report cita il percorso esatto del file letto e il suo `generato_il`.
+
+backlog-sync riceve dalla sessione principale data e ora reali (`date "+%Y-%m-%dT%H:%M:%S%z"`). Se il prompt non contiene l'ora, non scrive lo snapshot e la chiede.
 
 Gli agenti scrivono solo in `backlog/` (backlog-sync) e in `output/` (tutti gli altri). Il frontmatter di un agente non può limitare la scrittura a una cartella: il vincolo sta nelle istruzioni di ogni agente e nei permessi.
 
@@ -323,11 +355,14 @@ Gli agenti lo sanno e lo segnalano come violazione della regola "stima il team".
 
 ## 8. Regole di prodotto
 
-Stanno in `CLAUDE.md` e valgono per tutti gli agenti:
+Stanno in `CLAUDE.md` e valgono per tutti gli agenti. Gli agenti generici le cercano per nome di sezione, quindi i nomi delle sezioni non si cambiano.
 
-- **Formato story:** "Come <utente> voglio <azione> per ottenere <beneficio>", con un utente del dominio (titolare di PMI, addetto all'amministrazione, dipendente con carta, commercialista). Criteri in Gherkin. Criteri INVEST.
+- **Parametri del backlog:** item fermi dopo 28 giorni senza aggiornamenti, team di 6 sviluppatori e 1 QA, sprint di 2 settimane, velocity sugli ultimi 3 sprint chiusi.
+- **Collegamento discovery-delivery:** un'opportunità Notion è validata quando lo stato è "Validata", e da quel momento deve avere un'epica Jira collegata (dipendenza `realizza` o campo "Epica Jira"). Opportunità ed epica collegate non sono duplicati.
+- **Agent di dominio:** fintech-compliance, per gli item che toccano pagamenti, identità del cliente, dati personali, carte o integrazioni con terzi.
+- **Formato story:** "Come <utente> voglio <azione> per ottenere <beneficio>", con un utente del dominio (titolare di PMI, addetto all'amministrazione, dipendente con carta, commercialista). Criteri INVEST. Acceptance criteria in blocchi Gherkin, uno `Scenario` per caso con `Dato`, `Quando`, `Allora` su righe separate: una lista numerata in prosa non basta. Casi limite da coprire: importi, timeout, stati del pagamento.
 - **Stima:** story point Fibonacci 1, 2, 3, 5, 8, 13. Oltre 13 la story si divide. Stima il team, non il PO né gli agenti.
-- **WSJF:** (business value + time criticality + risk reduction) / job size, tutto sulla scala 1-13. Si calcola su opportunità ed epiche. Il job size è il valore esplicito "Job Size" dell'opportunità su Notion, non la somma dei figli. L'epica collegata eredita i quattro valori. Le story dentro un'epica le ordina a mano il PO. Se manca un valore, il punteggio non si calcola.
+- **Prioritizzazione:** framework WSJF, (business value + time criticality + risk reduction) / job size, tutto sulla scala 1-13. Si calcola su opportunità ed epiche. Il job size è il valore esplicito "Job Size" dell'opportunità su Notion, non la somma dei figli. L'epica collegata eredita i quattro valori. Le story dentro un'epica le ordina a mano il PO. Se manca un valore, il punteggio non si calcola. A parità viene prima l'item con time criticality più alta.
 - **Definition of Ready** e **Definition of Done:** 8 punti ciascuna, con attenzione a compliance, audit trail e dati personali fuori dai log.
 - **Glossario:** KYC, KYB, AML, SCA, PSD2 (AISP e PISP), bonifico istantaneo SEPA, Verification of Payee, SDD, chargeback, IBAN virtuale, riconciliazione, SDI.
 
@@ -366,6 +401,8 @@ La procedura completa è in `adapters/README.md`. In sintesi:
 
 Gli agenti di analisi non si toccano.
 
+Per un **progetto nuovo**, non solo un tool nuovo, si parte da `template/` e si seguono i dieci passi di `template/CHECKLIST-nuovo-progetto.md`: si compila `CLAUDE.template.md`, si copiano gli agenti generici così come sono e si scrivono adapter e permessi per i propri connettori.
+
 ---
 
 ## 10. Cosa è verificato e cosa no
@@ -378,6 +415,7 @@ Gli agenti di analisi non si toccano.
 - Mappa dei campi Jira: story point, sprint, flag, parent, link tra issue, date.
 - Scrittura con OK e rilettura: creazione di issue, modifica di descrizioni e stime, cambi di stato, sprint, link tra issue, commenti, aggiornamento di proprietà Notion.
 - backlog-health ha trovato tutti i difetti piantati e, in più, contraddizioni tra criteri introdotte durante le correzioni.
+- Agenti generici: i cinque test di non regressione di `TEST-generici.md` sono superati su copie della cartella di lavoro, compreso il caso di un valore mancante in `CLAUDE.md`.
 
 **Non verificato**
 
@@ -385,6 +423,7 @@ Gli agenti di analisi non si toccano.
 - Il passaggio di una story completa attraverso la Definition of Done.
 - La lettura del corpo delle pagine Notion e dei commenti Jira: backlog-sync non lo fa.
 - La scrittura su un tool in modalità CSV: per definizione non c'è.
+- Il template su un secondo progetto: finora è stato provato solo su Conto Business.
 
 ---
 
@@ -393,7 +432,7 @@ Gli agenti di analisi non si toccano.
 - Le modifiche a `CLAUDE.md` e agli agenti valgono dalla sessione successiva: in quella in corso gli agenti ricevono la copia letta all'avvio.
 - La velocity si calcola solo con almeno 3 sprint chiusi.
 - La priorità Jira esiste ma non compare nella schermata di creazione: ogni issue nasce "Medium" e il valore non dice nulla.
-- `generato_il` nello snapshot usa un'ora convenzionale (23:59:59Z) quando l'ora reale non è nota.
+- Gli snapshot fino al 13 novembre 2026 hanno il vecchio nome senza ora e `generato_il` convenzionale (23:59:59Z). Quello del 13 è la versione del pomeriggio: i report del mattino non sono riproducibili.
 - Il collegamento Notion-Jira è un campo di testo ("Epica Jira"): niente garantisce che la chiave esista. backlog-health lo controlla.
 - "Aggiornato il" su Notion cambia a ogni modifica, anche minima: un item può sembrare vivo per un refuso corretto.
 - DEMO-1 è incluso nello snapshot come item di prova, già completato.
@@ -412,6 +451,7 @@ Gli agenti di analisi non si toccano.
 | "This connector can't be used with the current credential" | Visto durante lo stesso disservizio | Riaprire la sessione dopo che il servizio è tornato |
 | Le regole nuove di `CLAUDE.md` non vengono applicate | Gli agenti leggono la copia di inizio sessione | Riaprire la sessione, oppure chiedere all'agente di rileggere il file dal disco |
 | Correggere un criterio ne rompe un altro | Regole sparse in più story | Scrivere la regola una volta nell'epica e far riferire lì le story |
+| Lo snapshot del 13 novembre era stato sovrascritto nel pomeriggio: i report del mattino non si potevano più rifare sugli stessi dati. Lo ha scoperto il test di non regressione | Il nome conteneva solo la data, e backlog-sync sovrascriveva il file dello stesso giorno | Ora reale nel nome (`AAAA-MM-GG_HHMM_snapshot.json`) e in `generato_il`, e nessuna sovrascrittura: se il file esiste, backlog-sync si ferma |
 
 ---
 
@@ -440,6 +480,9 @@ Gli agenti di analisi non si toccano.
 **14 novembre 2026**
 
 - Regole di riconciliazione completate in DEMO-9 (fattura candidata, abbinamento automatico) e criterio di storno corretto in DEMO-8.
+- Resi generici backlog-health, story-refiner, prioritizer e sprint-prep: regole e valori passano in `CLAUDE.md`, nelle nuove sezioni Parametri del backlog, Collegamento discovery-delivery, Agent di dominio e Prioritizzazione.
+- Creata la cartella `template/`, con checklist, `CLAUDE.md` da compilare, permessi e agenti.
+- Test di non regressione su copie della cartella di lavoro: cinque test superati. Il test ha scoperto lo snapshot del 13 sovrascritto, e il nome dello snapshot ora contiene l'ora.
 
 ---
 
@@ -461,4 +504,5 @@ Miglioramenti utili al sistema:
 
 - Una validazione automatica dello snapshot dopo ogni sync.
 - Una skill `/applica-proposte` per il ciclo proposta, OK, scrittura, change-log, oggi descritto solo in `CLAUDE.md`.
-- Confronto tra due snapshot, per vedere cosa è cambiato tra un refinement e l'altro.
+- Confronto tra due snapshot, per vedere cosa è cambiato tra un refinement e l'altro. Con un file per sync e niente sovrascritture, ora i dati per farlo ci sono.
+- Provare il template su un secondo progetto, con tool e regole diversi, per capire cosa manca davvero in `CLAUDE.template.md`.

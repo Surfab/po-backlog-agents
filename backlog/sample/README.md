@@ -21,6 +21,10 @@ Se backlog-health non li trova tutti, qualcosa non va.
 - jira:PAY-112: story completa, 5 punti, in sprint.
 - notion:PAYDISC-1 e jira:PAY-101: opportunità ed epica collegate. Non sono un duplicato.
 
+## Caso non piantato
+
+Il campione contiene anche un difetto che non è stato messo apposta: **notion:PAYDISC-3 e jira:PAY-102** rispondono allo stesso bisogno, ma non c'è nessun collegamento tra i due. Non c'è una dipendenza `realizza` e non c'è la chiave dell'epica nel campo "Epica Jira". Se backlog-health lo segnala, come duplicato o come mancato collegamento tra discovery e delivery, il risultato è corretto e non è un falso positivo. Non entra nel conteggio dei 7 difetti del test 1.
+
 ## Cosa manca di proposito
 
 Nessuno sprint chiuso: sprint-prep deve dire che la velocity non si può calcolare.
