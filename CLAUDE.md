@@ -57,7 +57,7 @@ Se lo stesso contenuto esiste in due tool, vince la fonte di verità per quel ti
 - Le applica solo la sessione principale. Per ogni riga: controlla la fonte di verità, traduci campo e valore con l'adapter del tool, mostra la chiamata che stai per fare, aspetta l'OK, esegui, annota l'esito in `./output/AAAA-MM-GG_change-log.md`.
 - Una modifica alla volta. Un OK vale per una riga, non per le successive.
 - Per un tool in modalità CSV non c'è scrittura: la proposta resta nel file e la applica il PO a mano.
-- Tutti i tool di scrittura dei connettori sono in "ask" in `.claude/settings.json`.
+- Tutti i tool di scrittura dei connettori sono in "ask" in `.claude/settings.json`. Quelli che eliminano pagine o database Notion sono in "deny": non si elimina niente.
 
 ## Formato di output degli agent
 
