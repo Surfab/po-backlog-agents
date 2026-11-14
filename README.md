@@ -4,6 +4,8 @@ Sei agenti per Claude Code che controllano il backlog di un Product Owner su Not
 
 Six Claude Code agents that review a Product Owner's backlog on Notion and Jira. They read and propose, the PO decides.
 
+**Come funziona, in due minuti:** [pagina interattiva](https://surfab.github.io/po-backlog-agents/) · **How it works, in two minutes:** [interactive page](https://surfab.github.io/po-backlog-agents/#en)
+
 **Cosa ha dimostrato la demo**
 
 - Ha trovato errori che nessuno aveva previsto: contraddizioni tra criteri di accettazione introdotte dalle stesse correzioni, e una soglia di 5 secondi nei criteri che nessuno aveva giustificato.
