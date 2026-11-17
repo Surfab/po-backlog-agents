@@ -91,7 +91,7 @@ Write your requests in plain language. The agents expect Italian, for example:
 | Start of session | "Lancia backlog-sync" | Run backlog-sync |
 | Right after | "Lancia backlog-health sullo snapshot di oggi" | Run backlog-health on today's snapshot |
 | Before refinement | "Lancia story-refiner su `DEMO-14` e `DEMO-15`" | Run story-refiner on `DEMO-14` and `DEMO-15` |
-| Before a story enters a sprint | "Lancia fintech-compliance su `DEMO-5`" | Run fintech-compliance on `DEMO-5` |
+| Before a story enters a sprint | "Lancia domain-review su `DEMO-5`" | Run domain-review on `DEMO-5` |
 | Before planning | "Lancia prioritizer", then "Lancia sprint-prep su `PAY Sprint 1`" | Run prioritizer, then sprint-prep on `PAY Sprint 1` |
 | To apply proposals | "Mostrami le proposte in attesa", then "OK per la riga 3" | Show pending proposals, then OK for row 3 |
 
@@ -127,7 +127,7 @@ The system has three layers.
      backlog/AAAA-MM-GG_HHMM_snapshot.json      Layer 2: single format
                      |
    backlog-health  story-refiner  prioritizer   Layer 3: analysis
-   fintech-compliance  sprint-prep
+   domain-review  sprint-prep
                      |
         output/reports and output/proposals
                      |
@@ -166,7 +166,7 @@ po-backlog-agents/
 │       ├── backlog-health.md
 │       ├── story-refiner.md
 │       ├── prioritizer.md
-│       ├── fintech-compliance.md
+│       ├── domain-review.md
 │       └── sprint-prep.md
 ├── TEST-plugin.md                 plugin tests, to run in a new session
 ├── .claude-plugin/
@@ -177,6 +177,10 @@ po-backlog-agents/
 │   ├── skills/nuovo-progetto/     the skill that sets up a project
 │   └── templates/                 CLAUDE.template.md, settings, backlog-sync, checklist,
 │                                  schema, base adapters, empty and example domain rules
+├── domain/
+│   └── fintech.md                 domain rules read by domain-review
+├── archivio/
+│   └── agents/fintech-compliance.md   the old domain agent, no longer used
 ├── adapters/
 │   ├── README.md                  how to add a tool in 5 steps
 │   ├── notion.md
@@ -213,7 +217,7 @@ All of them have `model: inherit`, so they use the session's model.
 | **backlog-health** | After every sync | Duplicates, also across tools; items idle beyond the threshold in `CLAUDE.md`; stories without criteria or estimate; estimates off the scale; broken dependencies; empty epics; items without an epic; validated items not linked to delivery; items blocked without a reason; missing priority values; contradictions between criteria | Read, Grep, Glob, Write |
 | **story-refiner** | Before refinement, on given ids | Rewrites the story in the format set in `CLAUDE.md` ("As a… I want… so that…"), checks INVEST, writes the criteria as Gherkin blocks with one `Scenario` per case, proposes a split if it exceeds the top of the scale or is not testable | Read, Grep, Glob, Write |
 | **prioritizer** | Before planning | Applies the framework in the Prioritization section of `CLAUDE.md` (here WSJF on opportunities and epics), shows the calculation and the rationale, refuses to compute if a value is missing | Read, Grep, Glob, Write |
-| **fintech-compliance** | Before an item enters a sprint | Flags impacts on PSD2 and SCA, Verification of Payee, AML, KYC and KYB, GDPR, DORA, cards, SDD, SDI, audit trail. Does not quote articles of law: it states the risk and who to check it with | Read, Grep, Glob, Write |
+| **domain-review** | Before an item enters a sprint | Applies the rules in `domain/fintech.md`: impacts on PSD2 and SCA, Verification of Payee, AML, KYC and KYB, GDPR, DORA, cards, SDD, SDI, audit trail, payees and scope of the check, deadlines, item context. Does not quote articles of law: it states the risk and who to check it with | Read, Grep, Glob, Write |
 | **sprint-prep** | 1-2 days before planning | Draft sprint goal, Definition of Ready check on the candidates, capacity against the velocity of the last closed sprints (how many is set in `CLAUDE.md`), review and retrospective agendas | Read, Grep, Glob, Write |
 
 Only backlog-sync touches the connectors, and only to read. The other five work on files.
@@ -222,7 +226,7 @@ Only backlog-sync touches the connectors, and only to read. The other five work 
 
 backlog-health, story-refiner, prioritizer and sprint-prep are **generic**: they hold no Conto Business rules. They read story format, estimation scale, priority framework, thresholds, team and sprint length from `CLAUDE.md`. If a value is missing they do not use a default: they skip the check that depends on it and list it under missing data, with the `CLAUDE.md` section to complete. The regression test in `TEST-generici.md` confirmed that on Conto Business they give the same results as the previous version.
 
-fintech-compliance is a **domain agent**: it only makes sense for a payments product. The generic agents hand items over to it when they fall under the Agent di dominio (domain agents) section of `CLAUDE.md`. In the plugin its place is taken by domain-review, a single domain agent that reads its rules from a file (section 15). The demo will switch to domain-review after the tests in `TEST-plugin.md`.
+domain-review is the **domain agent**: it holds no rules of its own and reads them from the file named in the Agent di dominio (domain agent) section of `CLAUDE.md`, here `domain/fintech.md` (section 15). The generic agents hand items over to it when they fall within that file's Ambito (scope). Until 17 November 2026 the demo used fintech-compliance, an agent with the payment rules written inside: it has been moved to `archivio/agents/` and all its checks are in `domain/fintech.md`. Older reports in `output/` still carry its name.
 
 backlog-sync stays project-specific, because its `tools:` line holds the connector prefixes. The plugin has it as `plugin/templates/backlog-sync.template.md`, with placeholders.
 
@@ -374,7 +378,7 @@ They live in `CLAUDE.md` and apply to every agent. The generic agents look them 
 
 - **Backlog parameters:** items idle after 28 days without updates, a team of 6 developers and 1 QA, 2-week sprints, velocity over the last 3 closed sprints.
 - **Discovery-delivery link:** a Notion opportunity is validated when its status is "Validata", and from then on it must have a linked Jira epic (`realizza` dependency or "Epica Jira" field). A linked opportunity and epic are not duplicates.
-- **Domain agents:** fintech-compliance, for items touching payments, customer identity, personal data, cards or third-party integrations.
+- **Domain agent:** rules file `domain/fintech.md`, read by domain-review for items touching payments, customer identity, personal data, cards or third-party integrations.
 - **Story format:** "As a <user> I want <action> so that <benefit>", with a domain user (SME owner, accounting clerk, employee with a company card, accountant). INVEST criteria. Acceptance criteria as Gherkin blocks, one `Scenario` per case with `Dato`, `Quando`, `Allora` (Given, When, Then) on separate lines: a numbered list in prose is not enough. Edge cases to cover: amounts, timeouts, payment statuses.
 - **Estimates:** Fibonacci story points 1, 2, 3, 5, 8, 13. Above 13 the story is split. The team estimates, not the PO and not the agents.
 - **Prioritization:** WSJF framework, (business value + time criticality + risk reduction) / job size, all on the 1-13 scale. Computed on opportunities and epics. Job size is the explicit "Job Size" value of the opportunity on Notion, not the sum of the children. The linked epic inherits all four values. Stories inside an epic are ordered by hand by the PO. If a value is missing, the score is not computed. On a tie, the item with higher time criticality comes first.
@@ -528,7 +532,7 @@ Useful improvements to the system:
 
 ## 15. The plugin for other projects
 
-The generic agents, the skill that sets up a project and the templates are also a Claude Code plugin, `po-backlog-agents`. The repository is its marketplace, `surfab`. The Conto Business demo stays as it is and does not use the plugin.
+The generic agents, the skill that sets up a project and the templates are also a Claude Code plugin, `po-backlog-agents`. The repository is its marketplace, `surfab`. The Conto Business demo does not use the plugin: it has its own copies of the agents in `.claude/agents/`, domain-review included, which fall back to `backlog/sample/` when there is no snapshot.
 
 ### Installation
 

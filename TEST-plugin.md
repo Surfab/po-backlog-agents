@@ -126,11 +126,7 @@ Prepara la cartella B dal Terminale. Copia il `CLAUDE.md` di Conto Business, i d
 cd ~/Developer/po-plugin-test-B && R=~/Developer/po-backlog-agents && mkdir -p backlog domain output && cp $R/CLAUDE.md . && cp -R $R/backlog/sample backlog/ && cp $R/backlog/2026-11-12_snapshot.json backlog/ && cp $R/plugin/templates/domain/fintech.md domain/
 ```
 
-Porta `CLAUDE.md` della copia B alla forma del plugin. Aprilo con un editor e cambia tre punti:
-
-1. Nella tabella della sezione "Agent", la riga `| fintech-compliance | prima che un item entri in sprint |` diventa `| domain-review | prima che un item entri in sprint |`.
-2. Nella sezione "Agent di dominio" il titolo `## Agent di dominio` resta. Sotto il titolo, al posto della frase introduttiva e della tabella, scrivi una sola riga: ``File di regole: `domain/fintech.md` ``.
-3. Nella Definition of Ready, al punto 6, `passaggio da fintech-compliance` diventa `passaggio da domain-review`.
+Dal 17 novembre 2026 il `CLAUDE.md` di Conto Business è già nella forma del plugin. Controlla nella copia B che la sezione "Agent di dominio" contenga la riga ``File di regole: `domain/fintech.md` `` e che la tabella "Agent" e la Definition of Ready (punto 6) citino domain-review. Il 17/11 il test è stato eseguito con la versione precedente, modificata a mano in questi tre punti.
 
 Poi apri una **sessione nuova e locale** sulla cartella B e scrivi: "Elenca gli agent disponibili, con il nome completo". Devono comparire solo i cinque del plugin.
 

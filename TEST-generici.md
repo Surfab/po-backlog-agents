@@ -51,7 +51,7 @@ Confronta con `output/2026-11-12_story-refiner.md`. Il report deve avere:
 - Una riga per ognuno dei sei criteri INVEST.
 - Acceptance criteria in blocchi Gherkin: uno `Scenario` per caso, con `Dato`, `Quando`, `Allora` su righe separate, come nel report del 12 novembre. **La prosa numerata non basta**, anche se usa le parole Dato, Quando, Allora: in quel caso il test non è superato. Almeno un caso di errore e i casi limite di `CLAUDE.md` dove pertinenti (importi, timeout, stati del pagamento).
 - Uno split obbligatorio per PAY-118 (21 punti), senza stime sulle nuove story.
-- Il rimando "da passare a fintech-compliance" se la story tocca pagamenti, identità o dati personali.
+- Il rimando "da passare a domain-review" se la story rientra nell'Ambito di `domain/fintech.md` (pagamenti, identità, dati personali). Fino al 17/11 l'agente di dominio era fintech-compliance: gli esiti qui sotto portano ancora quel nome.
 - Righe aggiunte a `output/AAAA-MM-GG_proposte.md`.
 
 Esito: **superato** se tutti i punti ci sono.
@@ -88,7 +88,7 @@ Confronta con `output/2026-11-13_sprint-prep.md`. Il report deve avere:
 - I 5 candidati (DEMO-5, 6, 7, 8, 10), nessuno pronto sulla Definition of Ready.
 - Velocity dichiarata non calcolabile: servono 3 sprint chiusi (valore letto da "Parametri del backlog").
 - Team e durata dello sprint presi da `CLAUDE.md` (6 sviluppatori, 1 QA, 2 settimane).
-- Tra i rischi, il rimando a fintech-compliance come agent di dominio.
+- Tra i rischi, gli item che rientrano nell'Ambito di `domain/fintech.md` senza un report di domain-review (fino al 17/11: il rimando a fintech-compliance).
 
 Esito: **superato** se tutti i punti ci sono.
 

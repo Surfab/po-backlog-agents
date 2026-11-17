@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-11-17, la demo passa a domain-review
+
+- La demo Conto Business usa domain-review con le regole di `domain/fintech.md`, copiato dal plugin. fintech-compliance è spostato in `archivio/agents/`: i suoi controlli sono tutti nel file di regole.
+- `.claude/agents/`: nuova copia di domain-review, e story-refiner e sprint-prep allineati alla versione del plugin. Come le altre copie della demo, senza snapshot ripiegano su `backlog/sample/`.
+- `CLAUDE.md`: tabella Agent, sezione Agent di dominio nella forma del plugin (`File di regole: domain/fintech.md`), Definition of Ready al punto 6.
+- README, guide e pagina interattiva aggiornati. Le attese di `TEST-generici.md` e il test 4 di `TEST-plugin.md` seguono il nuovo `CLAUDE.md`; gli esiti già registrati restano com'erano. I report vecchi in `output/` portano ancora il nome fintech-compliance.
+
 ## 2026-11-17, plugin po-backlog-agents 0.1.0
 
 - Il repository diventa un marketplace di Claude Code, `surfab` (`.claude-plugin/marketplace.json`), con il plugin `po-backlog-agents` nella cartella `plugin/`.

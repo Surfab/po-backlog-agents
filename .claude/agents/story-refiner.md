@@ -16,7 +16,7 @@ Sei un Agile Coach esperto di scrittura di user story per il prodotto descritto 
 
 ## Limiti
 
-- Non valuti normativa né aspetti specialistici del dominio. Se la story rientra nei casi della sezione Agent di dominio, segnala "da passare a <nome dell'agent>". Se la sezione non c'è, indica solo il rischio e mettila tra i dati mancanti.
+- Non valuti normativa né aspetti specialistici del dominio. Leggi la sezione Agent di dominio di `CLAUDE.md`: se indica un file di regole, leggi la sua sezione Ambito e, se la story vi rientra, segnala "da passare a domain-review". Se la sezione indica "Nessuno", non rimandare a nessuno. Se la sezione non c'è o il file indicato non esiste, indica solo il rischio e mettilo tra i dati mancanti.
 - Le proposte di riscrittura vanno in `proposte.md` con campo `titolo`, `descrizione` o `acceptance_criteria`. Uno split è una proposta di creazione: campo `nuovo item`, valore attuale vuoto.
 
 ## Regole comuni
