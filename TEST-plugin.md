@@ -110,9 +110,11 @@ Controlla:
 
 Poi verifica che non sovrascriva:
 
-1. Nel Terminale salva le impronte dei file: `cd ~/Developer/po-plugin-test-A && find . -type f -not -path './.claude/settings.local.json' | sort | xargs shasum > ../impronte-A.txt`
+1. Nel Terminale salva le impronte dei file: `cd ~/Developer/po-plugin-test-A && find . -type f -not -path './.claude/settings.local.json' -not -name '.DS_Store' | sort | xargs shasum > ../impronte-A.txt`
 2. Nella sessione rilancia `/po-backlog-agents:nuovo-progetto`. Atteso: si ferma prima delle domande, elenca i file che esistono già e chiede. Rispondi "interrompi".
-3. Nel Terminale: `cd ~/Developer/po-plugin-test-A && find . -type f -not -path './.claude/settings.local.json' | sort | xargs shasum | diff - ../impronte-A.txt`. Nessun output = nessun file cambiato.
+3. Nel Terminale: `cd ~/Developer/po-plugin-test-A && find . -type f -not -path './.claude/settings.local.json' -not -name '.DS_Store' | sort | xargs shasum | diff - ../impronte-A.txt`. Nessun output = nessun file cambiato.
+
+I file `.DS_Store` sono esclusi perché li scrive il Finder, non la skill, e possono cambiare in qualsiasi momento.
 
 Esito: **superato** se tutti i punti ci sono e nessun file è cambiato al secondo lancio.
 
@@ -127,7 +129,7 @@ cd ~/Developer/po-plugin-test-B && R=~/Developer/po-backlog-agents && mkdir -p b
 Porta `CLAUDE.md` della copia B alla forma del plugin. Aprilo con un editor e cambia tre punti:
 
 1. Nella tabella della sezione "Agent", la riga `| fintech-compliance | prima che un item entri in sprint |` diventa `| domain-review | prima che un item entri in sprint |`.
-2. Nella sezione "Agent di dominio", al posto della tabella scrivi una sola riga: ``File di regole: `domain/fintech.md` ``.
+2. Nella sezione "Agent di dominio" il titolo `## Agent di dominio` resta. Sotto il titolo, al posto della frase introduttiva e della tabella, scrivi una sola riga: ``File di regole: `domain/fintech.md` ``.
 3. Nella Definition of Ready, al punto 6, `passaggio da fintech-compliance` diventa `passaggio da domain-review`.
 
 Poi apri una **sessione nuova e locale** sulla cartella B e scrivi: "Elenca gli agent disponibili, con il nome completo". Devono comparire solo i cinque del plugin.
@@ -191,6 +193,10 @@ Controlla anche:
 
 Esito: **superato** se tutte le 21 righe sono trovate. Una gravità diversa da quella del 12/11 va scritta nelle note ma non fa fallire il test. **Se manca anche un solo impatto, fermati e avvisa il PO**: la demo non passa a domain-review finché il file di regole non è corretto.
 
+Il report del 12/11 viene da un lancio molto approfondito: il 17/11 fintech-compliance, rilanciato sugli stessi item, ne ha ritrovati 17 su 21. Lo stesso agente con le stesse regole può dare report diversi. Per questo un impatto che deve uscire sempre va scritto come controllo in "Cosa controllare", e non lasciato al giudizio del modello.
+
+Per ripetere il test nello stesso giorno, prima sposta il report precedente, per esempio in `output/AAAA-MM-GG_domain-review_lancio1.md`, e apri una sessione nuova. Se il report del giorno esiste già, l'agente può decidere di non riscriverlo.
+
 Poi verifica il caso "Nessuno":
 
 1. In `CLAUDE.md` della copia B cambia la riga in `File di regole: Nessuno`.
@@ -200,15 +206,19 @@ Atteso: una riga che dice che nessun dominio è configurato, nessun report nuovo
 
 ## Test 6: disinstallazione
 
-Nel Terminale, in ognuna delle due cartelle:
+Il marketplace è registrato una sola volta per tutto il computer: si toglie con un solo comando, che disinstalla il plugin anche dalle altre cartelle. Il `.claude/settings.local.json` delle altre cartelle però non viene pulito. Per questo prima si disinstalla il plugin in ogni cartella, poi si toglie il marketplace una volta sola.
+
+Nel Terminale, un comando alla volta:
 
 ```bash
-cd ~/Developer/po-plugin-test-A && claude plugin uninstall po-backlog-agents@surfab --scope local && claude plugin marketplace remove surfab --scope local
+cd ~/Developer/po-plugin-test-A && claude plugin uninstall po-backlog-agents@surfab --scope local
 ```
 
 ```bash
 cd ~/Developer/po-plugin-test-B && claude plugin uninstall po-backlog-agents@surfab --scope local && claude plugin marketplace remove surfab --scope local
 ```
+
+Poi controlla `.claude/settings.local.json` in tutte e due le cartelle: `enabledPlugins` e `extraKnownMarketplaces` devono essere vuoti. Se in una cartella restano voci di `surfab` (di solito in A, dove il marketplace non è stato tolto), toglile a mano con un editor. Rilanciare lì `claude plugin marketplace remove` non serve: risponde che `surfab` non esiste.
 
 Controlla con `claude plugin list` che il plugin non compaia più. Le cartelle di prova restano come sono, con i file creati dai test. Si possono archiviare o tenere per i test successivi: non contengono niente che serva al repository.
 
@@ -216,9 +226,9 @@ Controlla con `claude plugin list` che il plugin non compaia più. Le cartelle d
 
 | Test | Data | Esito | Note |
 |---|---|---|---|
-| 1 validazione | | | |
-| 2 installazione | | | |
-| 3 nuovo-progetto | | | |
-| 4 backlog-health | | | |
-| 5 domain-review | | | |
-| 6 disinstallazione | | | |
+| 1 validazione | 2026-11-17 | superato | CLI 2.1.326. Unico avviso: ICON_MISSING, che serve solo per l'elenco nella directory dei plugin. |
+| 2 installazione | 2026-11-17 | superato | Plugin attivo in A e in B, letto dal clone. `claude plugin list` mostra due righe local, una per cartella. |
+| 3 nuovo-progetto | 2026-11-17 | superato | 6 domande, 7 file e 2 cartelle, copie identiche ai template, nessun valore inventato. Al secondo lancio si ferma e chiede per tutti i file insieme, non file per file. Nessun file cambiato. |
+| 4 backlog-health | 2026-11-17 | superato | 7 su 7, PAYDISC-1 / PAY-101 non segnalati. PAY-112 segnalata come osservazione fuori dai controlli, per i criteri in prosa e non in Gherkin, coerente con il Formato story. Sospetto duplicato PAYDISC-3 / PAY-102 come il 14/11. Report datato con la data dello snapshot. |
+| 5 domain-review | 2026-11-17 | superato dopo una correzione | Primo lancio 15 su 21 (mancavano M3, M4, M8, M9, B2, B4); fintech-compliance rilanciato lo stesso giorno 17 su 21. Aggiunti a `fintech.md` tre controlli espliciti: secondo lancio 21 su 21. Gravità diverse dal 12/11: C4, C5, C8 e B2 Medio, C6 e M7 Basso. Caso "Nessuno": nessuna analisi, nessun file scritto. |
+| 6 disinstallazione | 2026-11-17 | superato | Il marketplace tolto nella cartella A ha disinstallato anche la copia della B, ma ne ha lasciato le dichiarazioni in `settings.local.json`, tolte a mano. Istruzioni del test corrette. |

@@ -9,6 +9,7 @@
 - story-refiner e sprint-prep rimandano a domain-review. Il template di `CLAUDE.md` ha la nuova forma della sezione Agent di dominio.
 - Nuovo `TEST-plugin.md`: validazione, installazione in una cartella di prova, skill, backlog-health e domain-review.
 - README e guide: installazione, skill, agente di dominio e cosa resta da fare in ogni progetto. La demo Conto Business usa ancora fintech-compliance: passa a domain-review dopo i test.
+- `TEST-plugin.md` eseguito il 2026-11-17: sei test su sei superati. Per il test 5 `fintech.md` ha tre controlli in più (beneficiari e perimetro della verifica, scadenze, contesto dell'item): senza, domain-review ritrovava 15 impatti su 21, e fintech-compliance rilanciato lo stesso giorno 17. Corrette nel test le istruzioni su impronte, `CLAUDE.md` della cartella B, nuovo lancio di domain-review e disinstallazione.
 
 ## 2026-11-14, screenshot nel README
 
