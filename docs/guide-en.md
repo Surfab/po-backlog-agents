@@ -26,7 +26,7 @@ It is a demo: product, people, numbers and tickets are fictional.
 - Three-layer architecture: adding a tool means writing an adapter, without touching the agents.
 - Tested on real tools: a Notion database and a Jira Cloud space, first in a cloud session and then on the Mac.
 - Every proposed change goes into a file. The main session applies it after your OK and records it in a change-log.
-- Four agents are generic: they read rules and values from `CLAUDE.md`. A new project starts from `template/`.
+- Four agents are generic: they read rules and values from `CLAUDE.md`. For a new project there is a Claude Code plugin (section 15).
 
 ---
 
@@ -69,6 +69,7 @@ Notes:
 12. [Problems found and how to fix them](#12-problems-found-and-how-to-fix-them)
 13. [Project history](#13-project-history)
 14. [Next steps](#14-next-steps)
+15. [The plugin for other projects](#15-the-plugin-for-other-projects)
 
 ---
 
@@ -167,11 +168,15 @@ po-backlog-agents/
 │       ├── prioritizer.md
 │       ├── fintech-compliance.md
 │       └── sprint-prep.md
-├── template/                      starting point for a new project
-│   ├── CHECKLIST-nuovo-progetto.md   ten steps, from an empty folder to the first report
-│   ├── CLAUDE.template.md         CLAUDE.md with the sections to fill in
-│   ├── settings.template.json     permissions with connector placeholders
-│   └── agents/                    the four generic agents and backlog-sync.template.md
+├── TEST-plugin.md                 plugin tests, to run in a new session
+├── .claude-plugin/
+│   └── marketplace.json           "surfab" marketplace, with the po-backlog-agents plugin
+├── plugin/                        the plugin, installable in any project
+│   ├── .claude-plugin/plugin.json name, version, description
+│   ├── agents/                    the four generic agents and domain-review
+│   ├── skills/nuovo-progetto/     the skill that sets up a project
+│   └── templates/                 CLAUDE.template.md, settings, backlog-sync, checklist,
+│                                  schema, base adapters, empty and example domain rules
 ├── adapters/
 │   ├── README.md                  how to add a tool in 5 steps
 │   ├── notion.md
@@ -217,9 +222,9 @@ Only backlog-sync touches the connectors, and only to read. The other five work 
 
 backlog-health, story-refiner, prioritizer and sprint-prep are **generic**: they hold no Conto Business rules. They read story format, estimation scale, priority framework, thresholds, team and sprint length from `CLAUDE.md`. If a value is missing they do not use a default: they skip the check that depends on it and list it under missing data, with the `CLAUDE.md` section to complete. The regression test in `TEST-generici.md` confirmed that on Conto Business they give the same results as the previous version.
 
-fintech-compliance is a **domain agent**: it only makes sense for a payments product. The generic agents hand items over to it when they fall under the Agent di dominio (domain agents) section of `CLAUDE.md`. Another project can have different domain agents, or none.
+fintech-compliance is a **domain agent**: it only makes sense for a payments product. The generic agents hand items over to it when they fall under the Agent di dominio (domain agents) section of `CLAUDE.md`. In the plugin its place is taken by domain-review, a single domain agent that reads its rules from a file (section 15). The demo will switch to domain-review after the tests in `TEST-plugin.md`.
 
-backlog-sync stays project-specific, because its `tools:` line holds the connector prefixes. `template/agents/` has it as `backlog-sync.template.md`, with placeholders.
+backlog-sync stays project-specific, because its `tools:` line holds the connector prefixes. The plugin has it as `plugin/templates/backlog-sync.template.md`, with placeholders.
 
 ### Which snapshot the analysis agents read
 
@@ -227,7 +232,7 @@ Unless the PO names one, they read the most recent one in `backlog/`, sorted by 
 
 If `backlog/` holds no snapshot at all, the two versions behave differently, on purpose:
 
-- **Template agents** (`template/agents/`): they stop and ask the PO to run backlog-sync. In a real project, analyzing sample data instead of the real backlog would produce wrong reports without anyone noticing.
+- **Plugin agents** (`plugin/agents/`): they stop and ask the PO to run backlog-sync. In a real project, analyzing sample data instead of the real backlog would produce wrong reports without anyone noticing.
 - **Conto Business agents** (`.claude/agents/`): they fall back to `backlog/sample/`. Conto Business is a demo, and whoever tries it without connectors must be able to run the agents straight away on the sample data.
 
 Either way, the report summary quotes the exact path of the file read and its `generato_il` (generated at).
@@ -411,7 +416,7 @@ The full procedure is in `adapters/README.md`. In short:
 
 The analysis agents stay untouched.
 
-For a **new project**, not just a new tool, start from `template/` and follow the ten steps in `template/CHECKLIST-nuovo-progetto.md`: fill in `CLAUDE.template.md`, copy the generic agents as they are, and write adapters and permissions for your own connectors.
+For a **new project**, not just a new tool, install the plugin and run the `nuovo-progetto` skill: see section 15 and the ten steps in `plugin/templates/CHECKLIST-nuovo-progetto.md`.
 
 ---
 
@@ -433,7 +438,7 @@ For a **new project**, not just a new tool, start from `template/` and follow th
 - A full story going through the Definition of Done.
 - Reading the body of Notion pages and Jira comments: backlog-sync does not do it.
 - Writing to a tool in CSV mode: by definition there is none.
-- The template on a second project: so far it has only been tried on Conto Business.
+- The plugin on a second project: so far the generic agents have only been tried on Conto Business. The plugin tests are in `TEST-plugin.md`.
 
 ---
 
@@ -517,4 +522,63 @@ Useful improvements to the system:
 - A `/applica-proposte` (apply proposals) skill for the proposal, OK, write, change-log cycle, today described only in `CLAUDE.md`.
 - A comparison between two snapshots, to see what changed from one refinement to the next. With one file per sync and no overwriting, the data for it now exist.
 - A "snapshot" column in `proposte.md`, with the file each proposal comes from: the main session could then reject on its own the proposals that come from `backlog/sample/`.
-- Trying the template on a second project, with different tools and rules, to find out what `CLAUDE.template.md` really lacks.
+- Trying the plugin on a second project, with different tools and rules, to find out what `CLAUDE.template.md` really lacks.
+
+---
+
+## 15. The plugin for other projects
+
+The generic agents, the skill that sets up a project and the templates are also a Claude Code plugin, `po-backlog-agents`. The repository is its marketplace, `surfab`. The Conto Business demo stays as it is and does not use the plugin.
+
+### Installation
+
+Once per computer, from a terminal:
+
+```bash
+claude plugin marketplace add Surfab/po-backlog-agents
+claude plugin install po-backlog-agents@surfab
+```
+
+With no options the plugin applies to all your projects (`user` scope). With `--scope project` it applies to the project only and goes into `.claude/settings.json`; with `--scope local` it applies only to you and only to that project. After installing, open a new session: plugins and agents are read at startup.
+
+The plugin agents carry the plugin name in front: `po-backlog-agents:backlog-health`, `po-backlog-agents:domain-review` and so on. "Run backlog-health" is usually enough. Watch out: if the project has an agent with the same name in `.claude/agents/`, the project one wins.
+
+**Updates.** `plugin.json` declares a version (0.1.0 today). Whoever installed the plugin gets a change only when the version changes: bump it at every plugin change and record it in the CHANGELOG. To update: `claude plugin update po-backlog-agents@surfab`.
+
+### The nuovo-progetto skill
+
+In a local session on the project folder, type `/po-backlog-agents:nuovo-progetto`. The skill asks at most six questions:
+
+1. product, report language, real or fictional data;
+2. backlog tools, connector or CSV, and source of truth;
+3. team and sprint;
+4. estimation scale;
+5. priority framework;
+6. domain, or none.
+
+It then creates `CLAUDE.md`, `.claude/settings.json`, `.claude/agents/backlog-sync.md`, `schema/`, `adapters/README.md`, `adapters/csv.md` and, if you named a domain, `domain/<domain>.md`. It fills in only what you said: everything else stays as a placeholder. If a file already exists it does not overwrite it: it stops and asks. At the end it lists the remaining placeholders and the next steps of the checklist.
+
+### The interchangeable domain agent
+
+domain-review is a single agent for any industry. The rules are not in the agent but in a project file, named in `CLAUDE.md`:
+
+```markdown
+## Agent di dominio
+
+File di regole: `domain/fintech.md`
+```
+
+With `File di regole: Nessuno` (none), domain-review analyzes nothing and says so in one line.
+
+The rules file has seven fixed sections: Ruolo (role), Ambito (scope: which items), Cosa controllare (what to check), Gravità (severity), Glossario (glossary), Con chi verificare (who to check with), Cosa non fare (what not to do). The empty template is `plugin/templates/domain.template.md`. The complete example, `plugin/templates/domain/fintech.md`, holds every check of fintech-compliance.
+
+Some rules hold whatever the file. domain-review states the risk and who to check it with. It does not quote legal articles from memory and gives no legal advice. The rules under "Cosa non fare" add to these, they do not replace them. The generic agents hand items over to domain-review when they fall within the file's Ambito.
+
+### What is left to do in each project, and why
+
+- **`CLAUDE.md` and the domain rules.** They are the team's rules: thresholds, Definition of Ready and of Done, priorities, industry checks. The agents have no default values: whatever is missing ends up under the report's missing data.
+- **backlog-sync.** Its `tools:` line holds the real names of the connectors' read-only tools, which change from one computer to another. That is why it is not in the plugin: the skill creates it from the template, with placeholders.
+- **`.claude/settings.json`.** The project needs the permissions (allow, ask, deny) because plugin agents do not support `hooks`, `mcpServers` and `permissionMode`. The skill creates it from the template, with connector placeholders.
+- **Tool adapters.** One per tool, following `adapters/README.md`.
+
+The full steps are in `plugin/templates/CHECKLIST-nuovo-progetto.md` (in Italian).

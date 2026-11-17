@@ -16,7 +16,7 @@ Un sistema di agenti per Claude Code che aiuta un Product Owner Scrum a tenere i
 - Architettura a tre livelli: aggiungere un tool vuol dire scrivere un adapter, senza toccare gli agenti.
 - Provato su dati reali: un database Notion e uno spazio Jira Cloud, prima in una sessione cloud e poi sul Mac.
 - Ogni modifica proposta finisce in un file. Le applica la sessione principale, dopo il tuo OK, e la registra in un change-log.
-- Quattro agenti sono generici: regole e valori li leggono da `CLAUDE.md`. Per un progetto nuovo si parte da `template/`.
+- Quattro agenti sono generici: regole e valori li leggono da `CLAUDE.md`. Per un progetto nuovo c'è un plugin di Claude Code (sezione 15).
 
 ---
 
@@ -59,6 +59,7 @@ Note:
 12. [Problemi incontrati e come si risolvono](#12-problemi-incontrati-e-come-si-risolvono)
 13. [Storia del progetto](#13-storia-del-progetto)
 14. [Prossimi passi](#14-prossimi-passi)
+15. [Il plugin per altri progetti](#15-il-plugin-per-altri-progetti)
 
 ---
 
@@ -157,11 +158,15 @@ po-backlog-agents/
 │       ├── prioritizer.md
 │       ├── fintech-compliance.md
 │       └── sprint-prep.md
-├── template/                      punto di partenza per un progetto nuovo
-│   ├── CHECKLIST-nuovo-progetto.md   dieci passi, dalla cartella vuota al primo report
-│   ├── CLAUDE.template.md         CLAUDE.md con le sezioni da compilare
-│   ├── settings.template.json     permessi con i segnaposto dei connettori
-│   └── agents/                    i quattro agenti generici e backlog-sync.template.md
+├── TEST-plugin.md                 test del plugin, da eseguire in una sessione nuova
+├── .claude-plugin/
+│   └── marketplace.json           marketplace "surfab", con il plugin po-backlog-agents
+├── plugin/                        il plugin, installabile in qualsiasi progetto
+│   ├── .claude-plugin/plugin.json nome, versione, descrizione
+│   ├── agents/                    i quattro agenti generici e domain-review
+│   ├── skills/nuovo-progetto/     la skill che prepara un progetto
+│   └── templates/                 CLAUDE.template.md, settings, backlog-sync, checklist,
+│                                  schema, adapter di base, modello e esempio delle regole di dominio
 ├── adapters/
 │   ├── README.md                  come aggiungere un tool in 5 passi
 │   ├── notion.md
@@ -207,9 +212,9 @@ Solo backlog-sync tocca i connettori, e solo in lettura. Gli altri cinque lavora
 
 backlog-health, story-refiner, prioritizer e sprint-prep sono **generici**: non contengono regole di Conto Business. Formato story, scala di stima, framework di priorità, soglie, team e durata dello sprint li leggono da `CLAUDE.md`. Se un valore manca, non usano un default: saltano il controllo che ne dipende e lo scrivono tra i dati mancanti, con la sezione di `CLAUDE.md` da completare. Il test di non regressione in `TEST-generici.md` ha verificato che su Conto Business danno gli stessi risultati della versione precedente.
 
-fintech-compliance è un **agente di dominio**: vale solo per un prodotto di pagamenti. Gli agenti generici rimandano a lui quando un item rientra nei casi della sezione Agent di dominio di `CLAUDE.md`. Un altro progetto può avere agenti di dominio diversi, o nessuno.
+fintech-compliance è un **agente di dominio**: vale solo per un prodotto di pagamenti. Gli agenti generici rimandano a lui quando un item rientra nei casi della sezione Agent di dominio di `CLAUDE.md`. Nel plugin il suo posto lo prende domain-review, un agente di dominio unico che legge le regole da un file (sezione 15). La demo passerà a domain-review dopo i test di `TEST-plugin.md`.
 
-backlog-sync resta specifico del progetto, perché la riga `tools:` contiene i prefissi dei connettori. In `template/agents/` c'è come `backlog-sync.template.md`, con i segnaposto.
+backlog-sync resta specifico del progetto, perché la riga `tools:` contiene i prefissi dei connettori. Nel plugin c'è come `plugin/templates/backlog-sync.template.md`, con i segnaposto.
 
 ### Quale snapshot leggono gli agenti di analisi
 
@@ -217,7 +222,7 @@ Se il PO non ne indica uno, leggono il più recente in `backlog/`, ordinando per
 
 Se in `backlog/` non c'è nessuno snapshot, le due versioni si comportano in modo diverso, ed è una scelta voluta:
 
-- **Agenti del template** (`template/agents/`): si fermano e chiedono al PO di lanciare backlog-sync. In un progetto reale analizzare dati di esempio al posto del backlog vero darebbe report sbagliati senza che nessuno se ne accorga.
+- **Agenti del plugin** (`plugin/agents/`): si fermano e chiedono al PO di lanciare backlog-sync. In un progetto reale analizzare dati di esempio al posto del backlog vero darebbe report sbagliati senza che nessuno se ne accorga.
 - **Agenti di Conto Business** (`.claude/agents/`): ripiegano su `backlog/sample/`. Conto Business è una demo, e chi la prova senza connettori deve poter lanciare gli agenti subito sui dati di esempio.
 
 In entrambi i casi la sintesi del report cita il percorso esatto del file letto e il suo `generato_il`.
@@ -401,7 +406,7 @@ La procedura completa è in `adapters/README.md`. In sintesi:
 
 Gli agenti di analisi non si toccano.
 
-Per un **progetto nuovo**, non solo un tool nuovo, si parte da `template/` e si seguono i dieci passi di `template/CHECKLIST-nuovo-progetto.md`: si compila `CLAUDE.template.md`, si copiano gli agenti generici così come sono e si scrivono adapter e permessi per i propri connettori.
+Per un **progetto nuovo**, non solo un tool nuovo, si installa il plugin e si lancia la skill `nuovo-progetto`: vedi la sezione 15 e i dieci passi di `plugin/templates/CHECKLIST-nuovo-progetto.md`.
 
 ---
 
@@ -423,7 +428,7 @@ Per un **progetto nuovo**, non solo un tool nuovo, si parte da `template/` e si 
 - Il passaggio di una story completa attraverso la Definition of Done.
 - La lettura del corpo delle pagine Notion e dei commenti Jira: backlog-sync non lo fa.
 - La scrittura su un tool in modalità CSV: per definizione non c'è.
-- Il template su un secondo progetto: finora è stato provato solo su Conto Business.
+- Il plugin su un secondo progetto: finora gli agenti generici sono stati provati solo su Conto Business. I test del plugin sono in `TEST-plugin.md`.
 
 ---
 
@@ -507,4 +512,63 @@ Miglioramenti utili al sistema:
 - Una skill `/applica-proposte` per il ciclo proposta, OK, scrittura, change-log, oggi descritto solo in `CLAUDE.md`.
 - Confronto tra due snapshot, per vedere cosa è cambiato tra un refinement e l'altro. Con un file per sync e niente sovrascritture, ora i dati per farlo ci sono.
 - Una colonna "snapshot" in `proposte.md`, con il file da cui nasce ogni proposta: così la sessione principale rifiuta da sola le proposte nate da `backlog/sample/`.
-- Provare il template su un secondo progetto, con tool e regole diversi, per capire cosa manca davvero in `CLAUDE.template.md`.
+- Provare il plugin su un secondo progetto, con tool e regole diversi, per capire cosa manca davvero in `CLAUDE.template.md`.
+
+---
+
+## 15. Il plugin per altri progetti
+
+Gli agenti generici, la skill che prepara un progetto e i template sono anche un plugin di Claude Code, `po-backlog-agents`. Il repository è il suo marketplace, `surfab`. La demo Conto Business resta com'è e non usa il plugin.
+
+### Installazione
+
+Una volta per computer, da terminale:
+
+```bash
+claude plugin marketplace add Surfab/po-backlog-agents
+claude plugin install po-backlog-agents@surfab
+```
+
+Senza opzioni il plugin vale per tutti i tuoi progetti (scope `user`). Con `--scope project` vale solo per il progetto ed entra in `.claude/settings.json`; con `--scope local` vale solo per te e solo per quel progetto. Dopo l'installazione apri una sessione nuova: plugin e agenti si leggono all'avvio.
+
+Gli agenti del plugin hanno il nome del plugin davanti: `po-backlog-agents:backlog-health`, `po-backlog-agents:domain-review` e così via. "Lancia backlog-health" di solito basta. Attenzione: se il progetto ha in `.claude/agents/` un agente con lo stesso nome, vince quello del progetto.
+
+**Aggiornamenti.** `plugin.json` dichiara una versione (oggi 0.1.0). Chi ha installato il plugin riceve una modifica solo quando la versione cambia: a ogni modifica del plugin va alzata, e va scritta nel CHANGELOG. Per aggiornare: `claude plugin update po-backlog-agents@surfab`.
+
+### La skill nuovo-progetto
+
+In una sessione locale sulla cartella del progetto scrivi `/po-backlog-agents:nuovo-progetto`. La skill fa al massimo sei domande:
+
+1. prodotto, lingua dei report, dati reali o fittizi;
+2. tool di backlog, connettore o CSV, e fonte di verità;
+3. team e sprint;
+4. scala di stima;
+5. framework di priorità;
+6. dominio, oppure nessuno.
+
+Poi crea `CLAUDE.md`, `.claude/settings.json`, `.claude/agents/backlog-sync.md`, `schema/`, `adapters/README.md`, `adapters/csv.md` e, se hai indicato un dominio, `domain/<dominio>.md`. Compila solo quello che hai detto: il resto resta come segnaposto. Se un file esiste già non lo sovrascrive: si ferma e chiede. Alla fine elenca i segnaposto rimasti e i passi successivi della checklist.
+
+### L'agente di dominio intercambiabile
+
+domain-review è un solo agente per qualsiasi settore. Le regole non stanno nell'agente ma in un file del progetto, indicato in `CLAUDE.md`:
+
+```markdown
+## Agent di dominio
+
+File di regole: `domain/fintech.md`
+```
+
+Con `File di regole: Nessuno` domain-review non analizza niente e lo dice in una riga.
+
+Il file di regole ha sette sezioni fisse: Ruolo, Ambito (quali item), Cosa controllare, Gravità, Glossario, Con chi verificare, Cosa non fare. Il modello vuoto è `plugin/templates/domain.template.md`. L'esempio completo, `plugin/templates/domain/fintech.md`, contiene tutti i controlli di fintech-compliance.
+
+Alcune regole valgono qualunque sia il file. domain-review indica il rischio e con chi verificarlo. Non cita articoli di legge a memoria e non dà pareri legali. Le regole di "Cosa non fare" si aggiungono a queste, non le sostituiscono. Gli agenti generici rimandano a domain-review quando un item rientra nell'Ambito del file.
+
+### Cosa resta da fare in ogni progetto, e perché
+
+- **`CLAUDE.md` e le regole di dominio.** Sono le regole del team: soglie, Definition of Ready e of Done, priorità, controlli di settore. Gli agenti non hanno valori di default: quello che manca finisce tra i dati mancanti del report.
+- **backlog-sync.** La riga `tools:` contiene i nomi reali dei tool di sola lettura dei connettori, che cambiano da un computer all'altro. Per questo non sta nel plugin: la skill lo crea dal template, con i segnaposto.
+- **`.claude/settings.json`.** I permessi (allow, ask, deny) servono al progetto perché gli agenti dei plugin non supportano `hooks`, `mcpServers` e `permissionMode`. La skill lo crea dal template, con i segnaposto dei connettori.
+- **Gli adapter dei tool.** Uno per tool, seguendo `adapters/README.md`.
+
+I passi completi sono in `plugin/templates/CHECKLIST-nuovo-progetto.md`.

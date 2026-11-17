@@ -26,7 +26,7 @@ _I tre livelli del sistema. Di solito non si cambia._
 
 1. **Adapter** (`./adapters/<tool>.md`): come si legge e si scrive un tool, mappa dei campi e degli stati.
 2. **Modello comune** (`./schema/backlog-item.schema.json`): formato unico degli item.
-3. **Agent di analisi** (`.claude/agents/`): leggono solo `./backlog/AAAA-MM-GG_HHMM_snapshot.json` (uno per sync, mai sovrascritto). Ogni report cita il file esatto che ha letto.
+3. **Agent di analisi** (dal plugin po-backlog-agents; backlog-sync in `.claude/agents/`): leggono solo `./backlog/AAAA-MM-GG_HHMM_snapshot.json` (uno per sync, mai sovrascritto). Ogni report cita il file esatto che ha letto.
 
 Aggiungere un tool: `./adapters/README.md`.
 
@@ -71,7 +71,7 @@ _Come si riconosce un item di discovery validato e come si collega all'item di d
 
 ## Agent
 
-_Quando si lancia ogni agent. Aggiungi qui anche gli agent di dominio._
+_Quando si lancia ogni agent. Se non usi un dominio, togli la riga di domain-review._
 
 | Agent | Quando |
 |---|---|
@@ -80,15 +80,13 @@ _Quando si lancia ogni agent. Aggiungi qui anche gli agent di dominio._
 | story-refiner | su story indicate per id, prima del refinement |
 | prioritizer | prima del planning |
 | sprint-prep | 1-2 giorni prima del planning, o a fine sprint |
-| <agent di dominio> | <quando> |
+| domain-review | <per esempio prima che un item entri in sprint> |
 
 ## Agent di dominio
 
-_Agent specifici del settore (per esempio compliance, sicurezza, accessibilità). Gli agent generici rimandano a loro. Se non ce ne sono, scrivi "Nessuno"._
+_Il file di regole che domain-review usa per il settore del prodotto (per esempio pagamenti, sanità, accessibilità). Ambito, controlli e con chi verificare stanno nel file. Gli agent generici rimandano a domain-review per gli item che rientrano nel suo Ambito. Se il progetto non ha un dominio, scrivi "Nessuno" al posto del percorso._
 
-| Agent | Quando | Per quali item |
-|---|---|---|
-| <nome-agent> | <per esempio prima che un item entri in sprint> | <per esempio item che toccano dati personali o pagamenti> |
+File di regole: `domain/<dominio>.md`
 
 ## Scritture
 
@@ -173,6 +171,6 @@ _Cosa il sistema non fa o fa con riserva. Aggiornalo quando scopri un limite._
 
 ## Glossario di dominio
 
-_Termini del settore, con definizioni operative. Aiuta tutti gli agent a leggere le story. Non sono definizioni legali._
+_Termini del settore, con definizioni operative. Aiuta tutti gli agent a leggere le story. Non sono definizioni legali. Se hai un file di regole di dominio, i termini del dominio stanno nella sua sezione Glossario: qui metti quelli che servono a tutti gli agent._
 
 - **<Termine>**: <definizione in una riga>.
