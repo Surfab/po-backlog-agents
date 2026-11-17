@@ -1,6 +1,6 @@
 # Regole di dominio: fintech dei pagamenti
 
-Esempio completo, estratto da fintech-compliance, l'agent di dominio del progetto di riferimento Conto Business (pagamenti per PMI italiane). Lo legge domain-review quando la sezione "Agent di dominio" di `CLAUDE.md` indica questo file.
+Esempio completo, estratto da fintech-compliance, l'agent di dominio del progetto di riferimento Conto Business (pagamenti per PMI italiane), con in più gli ultimi tre controlli di "Cosa controllare". Lo legge domain-review quando la sezione "Agent di dominio" di `CLAUDE.md` indica questo file.
 
 ## Ruolo
 
@@ -21,6 +21,9 @@ Item che toccano pagamenti, identità del cliente, dati personali, carte o integ
 - **SDD**: mandati, rimborsi, insoluti.
 - **Fatture e SDI**: conservazione, integrità dei dati fiscali.
 - **Audit trail**: chi ha fatto cosa e quando, log non modificabili, tracciabilità delle decisioni automatiche.
+- **Beneficiari e perimetro della verifica**: beneficiario persona fisica o impresa (denominazione, nomi commerciali diversi dalla ragione sociale), canali coperti (app, API, terze parti come i PISP, pagamenti in blocco), lato "risposta" (le verifiche che altri prestatori chiedono sui nomi dei nostri clienti).
+- **Scadenze**: se l'item o la sua epica hanno un'etichetta di compliance o una time criticality alta, chiedi a compliance se esiste una data obbligatoria. Non indicarla a memoria.
+- **Contesto dell'item**: coerenza tra l'item e l'epica a cui è collegato (se riguarda un'altra parte del flusso, il collegamento va confermato dal PO), dati di test necessari per ogni esito senza dati personali reali.
 
 ## Gravità
 
