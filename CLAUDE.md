@@ -65,16 +65,14 @@ Valori letti dagli agent di analisi. Se ne manca uno, l'agent lo segnala tra i d
 | backlog-health | dopo ogni sync |
 | story-refiner | su story indicate per id, prima del refinement |
 | prioritizer | prima del planning |
-| fintech-compliance | prima che un item entri in sprint |
+| domain-review | prima che un item entri in sprint |
 | sprint-prep | 1-2 giorni prima del planning, o a fine sprint |
 
 ## Agent di dominio
 
-Agent specifici del dominio del prodotto. Gli agent di analisi generici rimandano a loro quando un item rientra nei casi indicati.
+File di regole: `domain/fintech.md`
 
-| Agent | Quando | Per quali item |
-|---|---|---|
-| fintech-compliance | prima che un item entri in sprint | item che toccano pagamenti, identità del cliente, dati personali, carte o integrazioni con terzi |
+domain-review legge le regole da questo file. Gli agent di analisi generici rimandano a domain-review quando un item rientra nella sezione Ambito del file: oggi pagamenti, identità del cliente, dati personali, carte o integrazioni con terzi.
 
 ## Scritture
 
@@ -138,7 +136,7 @@ Una story è pronta per lo sprint se:
 3. È stimata dal team e non supera 13 punti.
 4. È collegata a un'epica.
 5. Le dipendenze sono note, collegate e non bloccanti per lo sprint.
-6. Gli impatti di compliance e sicurezza sono stati valutati (passaggio da fintech-compliance, e parere di compliance o legal se è emerso un rischio critico).
+6. Gli impatti di compliance e sicurezza sono stati valutati (passaggio da domain-review, e parere di compliance o legal se è emerso un rischio critico).
 7. Dati di test e ambienti necessari sono disponibili.
 8. Mockup o contratto API disponibili, se servono.
 

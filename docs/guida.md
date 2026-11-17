@@ -81,7 +81,7 @@ Scrivi le richieste in linguaggio normale. Esempi:
 | Inizio sessione | "Lancia backlog-sync" |
 | Subito dopo | "Lancia backlog-health sullo snapshot di oggi" |
 | Prima del refinement | "Lancia story-refiner su `DEMO-14` e `DEMO-15`" |
-| Prima che una story entri in sprint | "Lancia fintech-compliance su `DEMO-5`" |
+| Prima che una story entri in sprint | "Lancia domain-review su `DEMO-5`" |
 | Prima del planning | "Lancia prioritizer", poi "Lancia sprint-prep su `PAY Sprint 1`" |
 | Per applicare le proposte | "Mostrami le proposte in attesa" e poi "OK per la riga 3" |
 
@@ -117,7 +117,7 @@ Il sistema ha tre livelli.
      backlog/AAAA-MM-GG_HHMM_snapshot.json      Livello 2: formato unico
                      |
    backlog-health  story-refiner  prioritizer   Livello 3: analisi
-   fintech-compliance  sprint-prep
+   domain-review  sprint-prep
                      |
         output/report e output/proposte
                      |
@@ -156,7 +156,7 @@ po-backlog-agents/
 │       ├── backlog-health.md
 │       ├── story-refiner.md
 │       ├── prioritizer.md
-│       ├── fintech-compliance.md
+│       ├── domain-review.md
 │       └── sprint-prep.md
 ├── TEST-plugin.md                 test del plugin, da eseguire in una sessione nuova
 ├── .claude-plugin/
@@ -167,6 +167,10 @@ po-backlog-agents/
 │   ├── skills/nuovo-progetto/     la skill che prepara un progetto
 │   └── templates/                 CLAUDE.template.md, settings, backlog-sync, checklist,
 │                                  schema, adapter di base, modello e esempio delle regole di dominio
+├── domain/
+│   └── fintech.md                 regole di dominio lette da domain-review
+├── archivio/
+│   └── agents/fintech-compliance.md   il vecchio agente di dominio, non più usato
 ├── adapters/
 │   ├── README.md                  come aggiungere un tool in 5 passi
 │   ├── notion.md
@@ -203,7 +207,7 @@ Tutti hanno `model: inherit`, cioè usano il modello della sessione.
 | **backlog-health** | Dopo ogni sync | Duplicati anche tra tool, item fermi oltre la soglia di `CLAUDE.md`, story senza criteri o stima, stime fuori scala, dipendenze rotte, epiche vuote, item senza epica, item validati senza collegamento alla delivery, item bloccati senza motivo, valori di priorità mancanti, contraddizioni tra criteri | Read, Grep, Glob, Write |
 | **story-refiner** | Prima del refinement, su id indicati | Riscrive la story nel formato di `CLAUDE.md` ("Come… voglio… per…"), verifica INVEST, scrive i criteri in blocchi Gherkin con uno `Scenario` per caso, propone uno split se supera il massimo della scala o non è testabile | Read, Grep, Glob, Write |
 | **prioritizer** | Prima del planning | Applica il framework della sezione Prioritizzazione di `CLAUDE.md` (qui WSJF su opportunità ed epiche), mostra calcolo e razionale, rifiuta di calcolare se manca un valore | Read, Grep, Glob, Write |
-| **fintech-compliance** | Prima che un item entri in sprint | Segnala impatti su PSD2 e SCA, Verification of Payee, AML, KYC e KYB, GDPR, DORA, carte, SDD, SDI, audit trail. Non cita articoli di legge: indica il rischio e con chi verificarlo | Read, Grep, Glob, Write |
+| **domain-review** | Prima che un item entri in sprint | Applica le regole di `domain/fintech.md`: impatti su PSD2 e SCA, Verification of Payee, AML, KYC e KYB, GDPR, DORA, carte, SDD, SDI, audit trail, beneficiari e perimetro della verifica, scadenze, contesto dell'item. Non cita articoli di legge: indica il rischio e con chi verificarlo | Read, Grep, Glob, Write |
 | **sprint-prep** | 1-2 giorni prima del planning | Bozza di sprint goal, verifica della Definition of Ready sui candidati, capacità rispetto alla velocity degli ultimi sprint chiusi (quanti, lo dice `CLAUDE.md`), scalette di review e retrospettiva | Read, Grep, Glob, Write |
 
 Solo backlog-sync tocca i connettori, e solo in lettura. Gli altri cinque lavorano sui file.
@@ -212,7 +216,7 @@ Solo backlog-sync tocca i connettori, e solo in lettura. Gli altri cinque lavora
 
 backlog-health, story-refiner, prioritizer e sprint-prep sono **generici**: non contengono regole di Conto Business. Formato story, scala di stima, framework di priorità, soglie, team e durata dello sprint li leggono da `CLAUDE.md`. Se un valore manca, non usano un default: saltano il controllo che ne dipende e lo scrivono tra i dati mancanti, con la sezione di `CLAUDE.md` da completare. Il test di non regressione in `TEST-generici.md` ha verificato che su Conto Business danno gli stessi risultati della versione precedente.
 
-fintech-compliance è un **agente di dominio**: vale solo per un prodotto di pagamenti. Gli agenti generici rimandano a lui quando un item rientra nei casi della sezione Agent di dominio di `CLAUDE.md`. Nel plugin il suo posto lo prende domain-review, un agente di dominio unico che legge le regole da un file (sezione 15). La demo passerà a domain-review dopo i test di `TEST-plugin.md`.
+domain-review è l'**agente di dominio**: non contiene regole proprie, le legge dal file indicato nella sezione Agent di dominio di `CLAUDE.md`, qui `domain/fintech.md` (sezione 15). Gli agenti generici rimandano a lui quando un item rientra nella sezione Ambito di quel file. Fino al 17 novembre 2026 la demo usava fintech-compliance, un agente con le regole di pagamento scritte dentro: è spostato in `archivio/agents/` e i suoi controlli sono tutti in `domain/fintech.md`. I report vecchi in `output/` portano ancora il suo nome.
 
 backlog-sync resta specifico del progetto, perché la riga `tools:` contiene i prefissi dei connettori. Nel plugin c'è come `plugin/templates/backlog-sync.template.md`, con i segnaposto.
 
@@ -364,7 +368,7 @@ Stanno in `CLAUDE.md` e valgono per tutti gli agenti. Gli agenti generici le cer
 
 - **Parametri del backlog:** item fermi dopo 28 giorni senza aggiornamenti, team di 6 sviluppatori e 1 QA, sprint di 2 settimane, velocity sugli ultimi 3 sprint chiusi.
 - **Collegamento discovery-delivery:** un'opportunità Notion è validata quando lo stato è "Validata", e da quel momento deve avere un'epica Jira collegata (dipendenza `realizza` o campo "Epica Jira"). Opportunità ed epica collegate non sono duplicati.
-- **Agent di dominio:** fintech-compliance, per gli item che toccano pagamenti, identità del cliente, dati personali, carte o integrazioni con terzi.
+- **Agent di dominio:** file di regole `domain/fintech.md`, letto da domain-review per gli item che toccano pagamenti, identità del cliente, dati personali, carte o integrazioni con terzi.
 - **Formato story:** "Come <utente> voglio <azione> per ottenere <beneficio>", con un utente del dominio (titolare di PMI, addetto all'amministrazione, dipendente con carta, commercialista). Criteri INVEST. Acceptance criteria in blocchi Gherkin, uno `Scenario` per caso con `Dato`, `Quando`, `Allora` su righe separate: una lista numerata in prosa non basta. Casi limite da coprire: importi, timeout, stati del pagamento.
 - **Stima:** story point Fibonacci 1, 2, 3, 5, 8, 13. Oltre 13 la story si divide. Stima il team, non il PO né gli agenti.
 - **Prioritizzazione:** framework WSJF, (business value + time criticality + risk reduction) / job size, tutto sulla scala 1-13. Si calcola su opportunità ed epiche. Il job size è il valore esplicito "Job Size" dell'opportunità su Notion, non la somma dei figli. L'epica collegata eredita i quattro valori. Le story dentro un'epica le ordina a mano il PO. Se manca un valore, il punteggio non si calcola. A parità viene prima l'item con time criticality più alta.
@@ -518,7 +522,7 @@ Miglioramenti utili al sistema:
 
 ## 15. Il plugin per altri progetti
 
-Gli agenti generici, la skill che prepara un progetto e i template sono anche un plugin di Claude Code, `po-backlog-agents`. Il repository è il suo marketplace, `surfab`. La demo Conto Business resta com'è e non usa il plugin.
+Gli agenti generici, la skill che prepara un progetto e i template sono anche un plugin di Claude Code, `po-backlog-agents`. Il repository è il suo marketplace, `surfab`. La demo Conto Business non usa il plugin: ha le sue copie degli agenti in `.claude/agents/`, domain-review compreso, che senza snapshot ripiegano su `backlog/sample/`.
 
 ### Installazione
 

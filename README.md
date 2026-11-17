@@ -69,7 +69,7 @@ Due sprint, sola lettura, con l'ok di security sull'uso dell'AI con i dati di ba
      backlog/AAAA-MM-GG_HHMM_snapshot.json      Livello 2: formato unico
                      |
    backlog-health  story-refiner  prioritizer   Livello 3: analisi
-   fintech-compliance  sprint-prep
+   domain-review  sprint-prep
                      |
         output/report e output/proposte
                      |

@@ -228,7 +228,7 @@ footer{padding:36px 0 56px}
     </li>
 
     <li>
-      <button type="button" class="node" aria-expanded="false" aria-controls="p-agents"><span><b class="it">5 agenti di analisi</b><b class="en">5 analysis agents</b><small>backlog-health, story-refiner, prioritizer, fintech-compliance, sprint-prep</small></span><span class="ic" aria-hidden="true">+</span></button>
+      <button type="button" class="node" aria-expanded="false" aria-controls="p-agents"><span><b class="it">5 agenti di analisi</b><b class="en">5 analysis agents</b><small>backlog-health, story-refiner, prioritizer, domain-review, sprint-prep</small></span><span class="ic" aria-hidden="true">+</span></button>
       <div class="panel" id="p-agents" hidden>
         <dl class="it"><dt>Legge</dt><dd>Solo lo snapshot e le regole del progetto in CLAUDE.md.</dd><dt>Produce</dt><dd>Un report: sintesi, problemi Critico, Medio, Basso, azioni, dati mancanti.</dd><dt>Non fa mai</dt><dd>Interrogare i tool, scrivere sui tool, usare un valore suo se ne manca uno.</dd></dl>
         <dl class="en"><dt>Reads</dt><dd>Only the snapshot and the project rules in CLAUDE.md.</dd><dt>Produces</dt><dd>A report: summary, Critical, Medium, Low problems, actions, missing data.</dd><dt>Never</dt><dd>Queries the tools, writes to the tools, uses a value of its own when one is missing.</dd></dl>
@@ -295,9 +295,9 @@ footer{padding:36px 0 56px}
       <p class="it"><span class="lab">Quando:</span> prima del planning.</p><p class="en"><span class="lab">When:</span> before planning.</p>
       <p class="it"><span class="lab">Fa:</span> ordina opportunità ed epiche con WSJF, mostrando il calcolo.</p><p class="en"><span class="lab">Does:</span> ranks opportunities and epics with WSJF, showing the calculation.</p>
       <p class="it"><span class="lab">Mai:</span> calcola se manca un valore, né ne propone uno suo.</p><p class="en"><span class="lab">Never:</span> computes when a value is missing, or proposes one of its own.</p></article>
-    <article class="card"><h3>fintech-compliance</h3>
+    <article class="card"><h3>domain-review</h3>
       <p class="it"><span class="lab">Quando:</span> prima che un item entri in sprint.</p><p class="en"><span class="lab">When:</span> before an item enters a sprint.</p>
-      <p class="it"><span class="lab">Controlla:</span> pagamenti, identità del cliente, dati personali, carte, terzi. Per esempio SCA e KYB.</p><p class="en"><span class="lab">Checks:</span> payments, customer identity, personal data, cards, third parties. For example SCA and KYB.</p>
+      <p class="it"><span class="lab">Controlla:</span> le regole di <code>domain/fintech.md</code>: pagamenti, identità del cliente, dati personali, carte, terzi. Per esempio SCA e KYB.</p><p class="en"><span class="lab">Checks:</span> the rules in <code>domain/fintech.md</code>: payments, customer identity, personal data, cards, third parties. For example SCA and KYB.</p>
       <p class="it"><span class="lab">Mai:</span> dà pareri legali. Indica il rischio e con chi verificarlo.</p><p class="en"><span class="lab">Never:</span> gives legal advice. It names the risk and who to check it with.</p></article>
     <article class="card"><h3>sprint-prep</h3>
       <p class="it"><span class="lab">Quando:</span> 1-2 giorni prima del planning.</p><p class="en"><span class="lab">When:</span> 1-2 days before planning.</p>
