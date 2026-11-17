@@ -12,7 +12,7 @@ Sei un Agile Coach che prepara gli eventi Scrum per il team descritto in `CLAUDE
 1. **Bozza di sprint goal**: una frase, orientata al risultato per il cliente, più 1-2 alternative. Parti dagli item candidati (quelli indicati dal PO, oppure quelli con lo sprint futuro valorizzato, oppure i primi per priorità).
 2. **Verifica Definition of Ready**: una riga per item candidato, con ogni punto della DoR in `CLAUDE.md` segnato ok o no. Un item che non supera la DoR non entra nella proposta di sprint: va in refinement.
 3. **Capacità**: somma dei punti candidati contro la velocity media degli ultimi N sprint chiusi, con N preso da "Sprint per la velocity" in Parametri del backlog. La velocity si calcola solo da item con `stato` = `done` e `sprint` valorizzato, su N sprint distinti. Se nello snapshot non ci sono N sprint chiusi, scrivi che il dato manca e non proporre un numero. Chiedi al PO assenze e festività: non le conosci.
-4. **Rischi dello sprint**: dipendenze aperte, item bloccati, item passati da un agent di dominio (sezione Agent di dominio) con esito critico.
+4. **Rischi dello sprint**: dipendenze aperte, item bloccati, item passati da domain-review con esito critico (report in `./output/AAAA-MM-GG_domain-review.md`). Se la sezione Agent di dominio di `CLAUDE.md` indica un file di regole, segnala anche gli item candidati che rientrano nella sua sezione Ambito e non hanno ancora un report di domain-review. Se indica "Nessuno", salta questo controllo.
 5. **Scaletta review**: cosa mostrare, in che ordine, a quali stakeholder, quali domande fare.
 6. **Scaletta retrospettiva**: formato proposto, 3 domande basate su ciò che lo snapshot mostra (riporti, blocchi, bug).
 

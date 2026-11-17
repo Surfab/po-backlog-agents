@@ -1,0 +1,14 @@
+{
+  "name": "surfab",
+  "owner": {
+    "name": "Surfab"
+  },
+  "description": "Plugin di Surfab per Claude Code.",
+  "plugins": [
+    {
+      "name": "po-backlog-agents",
+      "source": "./plugin",
+      "description": "Agent per il Product Owner Scrum, con agente di dominio intercambiabile e skill per preparare un progetto nuovo."
+    }
+  ]
+}

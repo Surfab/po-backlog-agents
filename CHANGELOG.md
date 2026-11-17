@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-11-17, plugin po-backlog-agents 0.1.0
+
+- Il repository diventa un marketplace di Claude Code, `surfab` (`.claude-plugin/marketplace.json`), con il plugin `po-backlog-agents` nella cartella `plugin/`.
+- Il plugin contiene i quattro agenti generici, il nuovo agente di dominio domain-review e la skill `nuovo-progetto`, che prepara un progetto con al massimo sei domande e non sovrascrive file esistenti.
+- `template/` spostata in `plugin/`: gli agenti in `plugin/agents/`, template e checklist in `plugin/templates/`. Nei template anche schema e adapter di base (README e CSV), perché un plugin installato non vede i file fuori dalla sua cartella.
+- domain-review legge le regole dal file indicato nella sezione Agent di dominio di `CLAUDE.md`, oppure non analizza niente se la sezione dice "Nessuno". Modello vuoto in `plugin/templates/domain.template.md`, esempio completo in `plugin/templates/domain/fintech.md`, con tutti i controlli di fintech-compliance.
+- story-refiner e sprint-prep rimandano a domain-review. Il template di `CLAUDE.md` ha la nuova forma della sezione Agent di dominio.
+- Nuovo `TEST-plugin.md`: validazione, installazione in una cartella di prova, skill, backlog-health e domain-review.
+- README e guide: installazione, skill, agente di dominio e cosa resta da fare in ogni progetto. La demo Conto Business usa ancora fintech-compliance: passa a domain-review dopo i test.
+
 ## 2026-11-14, screenshot nel README
 
 - README: screenshot del flusso con il pannello di backlog-sync aperto, in versione chiara e scura (GitHub sceglie in base al tema), cliccabile verso la pagina interattiva.
