@@ -1,6 +1,6 @@
 ---
 name: nuovo-progetto
-description: "Prepara la cartella di un progetto per gli agent del Product Owner: fa al massimo 6 domande e crea CLAUDE.md, .claude/settings.json, .claude/agents/backlog-sync.md, schema, adapter di base e, se serve, il file di regole di dominio, partendo dai template del plugin. Non sovrascrive mai un file esistente."
+description: "Prepara la cartella di un progetto per gli agent del Product Owner: fa al massimo 6 domande e crea CLAUDE.md, .claude/settings.json, .claude/agents/backlog-sync.md, schema, adapter di base (CSV, più i modelli di Jira e Notion se il team li usa) e, se serve, il file di regole di dominio, partendo dai template del plugin. Non sovrascrive mai un file esistente."
 disable-model-invocation: true
 ---
 
@@ -18,6 +18,8 @@ I template stanno in `${CLAUDE_PLUGIN_ROOT}/templates/`:
 | `schema/backlog-item.schema.json` | `schema/backlog-item.schema.json` |
 | `adapters/README.md` | `adapters/README.md` |
 | `adapters/csv.md` | `adapters/csv.md` |
+| `adapters/jira.md` | `adapters/jira.md`, solo se il PO ha indicato Jira tra i tool |
+| `adapters/notion.md` | `adapters/notion.md`, solo se il PO ha indicato Notion tra i tool |
 | `domain.template.md` oppure `domain/fintech.md` | `domain/<dominio>.md`, solo se il progetto ha un dominio |
 | `CHECKLIST-nuovo-progetto.md` | nessuno: lo leggi per i passi finali |
 
@@ -48,6 +50,7 @@ Leggi ogni template con Read dal percorso `${CLAUDE_PLUGIN_ROOT}/templates/...` 
 - **`.claude/settings.json`**: copia il template così com'è. I segnaposto dei connettori restano: si compilano quando i connettori sono collegati.
 - **`.claude/agents/backlog-sync.md`**: copia il template così com'è, con i segnaposto nella riga `tools:`.
 - **`schema/backlog-item.schema.json`**, **`adapters/README.md`**, **`adapters/csv.md`**: copia così come sono.
+- **`adapters/jira.md`**, **`adapters/notion.md`**: solo per i tool che il PO ha indicato alla domanda 2, anche se li usa via CSV (l'adapter CSV prende da lì la mappa degli stati). Copia così come sono, con i segnaposto: sito, chiave dello spazio, id dei campi custom e proprietà del database si scoprono leggendo item reali, dopo aver collegato il connettore. Per un tool diverso da Jira e Notion non creare niente: l'adapter si scrive seguendo `adapters/README.md`.
 - **`domain/<dominio>.md`**, solo se il dominio non è "Nessuno". Il nome del file è il nome del dominio in minuscolo, con trattini al posto degli spazi e senza accenti (per esempio `domain/sanita.md`). Dall'esempio `domain/fintech.md` se il PO l'ha scelto, altrimenti da `domain.template.md` con il nome del dominio nel titolo. Non compilare tu le altre sezioni del modello: le regole di dominio le scrive il team.
 - Crea le cartelle `backlog/import/` e `output/` se non esistono.
 
@@ -57,7 +60,7 @@ Scrivi al PO, in breve:
 
 1. I file creati e quelli saltati.
 2. I segnaposto rimasti: cerca il testo `<` seguito da maiuscole, da minuscole o da `ID-` nei file creati e riporta file e riga.
-3. Cosa resta da fare in questo progetto, dai passi 6-10 di `${CLAUDE_PLUGIN_ROOT}/templates/CHECKLIST-nuovo-progetto.md`: collegare i connettori, mettere i nomi esatti dei tool di lettura in `backlog-sync.md` e nei permessi, scrivere un adapter per ogni tool, compilare il file di dominio, riaprire la sessione, primo sync e primo report.
+3. Cosa resta da fare in questo progetto, dai passi 6-10 di `${CLAUDE_PLUGIN_ROOT}/templates/CHECKLIST-nuovo-progetto.md`: collegare i connettori, mettere i nomi esatti dei tool di lettura in `backlog-sync.md` e nei permessi, compilare i modelli di adapter copiati (Jira, Notion) e scrivere un adapter per ogni altro tool, compilare il file di dominio, riaprire la sessione, primo sync e primo report.
 4. Perché tre cose restano per progetto: `CLAUDE.md` e le regole di dominio sono del team; `backlog-sync.md` contiene i nomi reali dei tool di sola lettura dei connettori; `.claude/settings.json` serve perché gli agent dei plugin non possono dichiarare hooks, server MCP né permessi.
 
 ## Regole

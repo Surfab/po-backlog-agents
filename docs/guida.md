@@ -166,7 +166,7 @@ po-backlog-agents/
 │   ├── agents/                    i quattro agenti generici e domain-review
 │   ├── skills/nuovo-progetto/     la skill che prepara un progetto
 │   └── templates/                 CLAUDE.template.md, settings, backlog-sync, checklist,
-│                                  schema, adapter di base, modello e esempio delle regole di dominio
+│                                  schema, adapter di base e modelli di Jira e Notion, modello e esempio delle regole di dominio
 ├── domain/
 │   └── fintech.md                 regole di dominio lette da domain-review
 ├── archivio/
@@ -404,7 +404,7 @@ La procedura completa è in `adapters/README.md`. In sintesi:
 
 1. Collega il connettore e chiedi a Claude l'elenco esatto dei tool, divisi in lettura e scrittura. Senza connettore: esporta un CSV in `backlog/import/<tool>_<progetto>.csv`.
 2. Leggi 2-3 item reali per scoprire nomi dei campi, id dei campi custom e valori degli stati.
-3. Scrivi `adapters/<tool>.md` copiando la struttura di `notion.md`.
+3. Scrivi `adapters/<tool>.md` copiando la struttura di `notion.md`. In un progetto nuovo, per Jira e Notion parti dai modelli del plugin, `plugin/templates/adapters/jira.md` e `notion.md`.
 4. Aggiungi i tool di lettura a backlog-sync, quelli di scrittura in "ask" in `settings.json`, il tool in `CLAUDE.md`.
 5. Lancia backlog-sync e controlla lo snapshot, poi backlog-health.
 
@@ -550,7 +550,7 @@ In una sessione locale sulla cartella del progetto scrivi `/po-backlog-agents:nu
 5. framework di priorità;
 6. dominio, oppure nessuno.
 
-Poi crea `CLAUDE.md`, `.claude/settings.json`, `.claude/agents/backlog-sync.md`, `schema/`, `adapters/README.md`, `adapters/csv.md` e, se hai indicato un dominio, `domain/<dominio>.md`. Compila solo quello che hai detto: il resto resta come segnaposto. Se un file esiste già non lo sovrascrive: si ferma e chiede. Alla fine elenca i segnaposto rimasti e i passi successivi della checklist.
+Poi crea `CLAUDE.md`, `.claude/settings.json`, `.claude/agents/backlog-sync.md`, `schema/`, `adapters/README.md`, `adapters/csv.md`, i modelli `adapters/jira.md` e `adapters/notion.md` se hai indicato quei tool e, se hai indicato un dominio, `domain/<dominio>.md`. Compila solo quello che hai detto: il resto resta come segnaposto. Se un file esiste già non lo sovrascrive: si ferma e chiede. Alla fine elenca i segnaposto rimasti e i passi successivi della checklist.
 
 ### L'agente di dominio intercambiabile
 
@@ -573,6 +573,6 @@ Alcune regole valgono qualunque sia il file. domain-review indica il rischio e c
 - **`CLAUDE.md` e le regole di dominio.** Sono le regole del team: soglie, Definition of Ready e of Done, priorità, controlli di settore. Gli agenti non hanno valori di default: quello che manca finisce tra i dati mancanti del report.
 - **backlog-sync.** La riga `tools:` contiene i nomi reali dei tool di sola lettura dei connettori, che cambiano da un computer all'altro. Per questo non sta nel plugin: la skill lo crea dal template, con i segnaposto.
 - **`.claude/settings.json`.** I permessi (allow, ask, deny) servono al progetto perché gli agenti dei plugin non supportano `hooks`, `mcpServers` e `permissionMode`. La skill lo crea dal template, con i segnaposto dei connettori.
-- **Gli adapter dei tool.** Uno per tool, seguendo `adapters/README.md`.
+- **Gli adapter dei tool.** Uno per tool. Per Jira e Notion la skill copia un modello già scritto: restano da compilare prefisso del connettore, sito e chiave dello spazio, id dei campi custom, proprietà e stati del database, che cambiano in ogni progetto. Per gli altri tool si segue `adapters/README.md`.
 
 I passi completi sono in `plugin/templates/CHECKLIST-nuovo-progetto.md`.

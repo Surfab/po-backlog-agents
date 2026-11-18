@@ -96,14 +96,14 @@ Esito: **superato** se il plugin risulta attivo in entrambe le cartelle.
 Controlla:
 
 - La skill ha fatto al massimo 6 domande.
-- Esistono `CLAUDE.md`, `.claude/settings.json`, `.claude/agents/backlog-sync.md`, `schema/backlog-item.schema.json`, `adapters/README.md`, `adapters/csv.md`, `domain/sicurezza-alimentare.md` e le cartelle `backlog/import/` e `output/`.
+- Esistono `CLAUDE.md`, `.claude/settings.json`, `.claude/agents/backlog-sync.md`, `schema/backlog-item.schema.json`, `adapters/README.md`, `adapters/csv.md`, `adapters/jira.md` (Jira è indicato via CSV), `domain/sicurezza-alimentare.md` e le cartelle `backlog/import/` e `output/`.
 - In `CLAUDE.md` ci sono le risposte (21 giorni, 4 sviluppatori, 1 QA, 2 settimane, 3 sprint, scala 1-13) e la riga ``File di regole: `domain/sicurezza-alimentare.md` ``. La sezione Prioritizzazione ha ancora i segnaposto: nessun framework inventato. Definition of Ready e of Done hanno ancora i segnaposto.
 - I titoli delle sezioni di `CLAUDE.md` sono quelli del template.
 - `domain/sicurezza-alimentare.md` ha le sette sezioni del modello (Ruolo, Ambito, Cosa controllare, Gravità, Glossario, Con chi verificare, Cosa non fare), con i segnaposto: la skill non scrive regole al posto del team.
 - Nel Terminale, i file copiati sono identici ai template (nessun output = identici):
 
   ```bash
-  cd ~/Developer/po-plugin-test-A && T=~/Developer/po-backlog-agents/plugin/templates && diff .claude/settings.json $T/settings.template.json; diff .claude/agents/backlog-sync.md $T/backlog-sync.template.md; diff schema/backlog-item.schema.json $T/schema/backlog-item.schema.json; diff adapters/README.md $T/adapters/README.md; diff adapters/csv.md $T/adapters/csv.md
+  cd ~/Developer/po-plugin-test-A && T=~/Developer/po-backlog-agents/plugin/templates && diff .claude/settings.json $T/settings.template.json; diff .claude/agents/backlog-sync.md $T/backlog-sync.template.md; diff schema/backlog-item.schema.json $T/schema/backlog-item.schema.json; diff adapters/README.md $T/adapters/README.md; diff adapters/csv.md $T/adapters/csv.md; diff adapters/jira.md $T/adapters/jira.md; test -e adapters/notion.md && echo "adapters/notion.md non doveva esserci"
   ```
 
 - Alla fine la skill ha elencato i segnaposto rimasti e i passi successivi.

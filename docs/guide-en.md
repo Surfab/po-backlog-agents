@@ -176,7 +176,7 @@ po-backlog-agents/
 │   ├── agents/                    the four generic agents and domain-review
 │   ├── skills/nuovo-progetto/     the skill that sets up a project
 │   └── templates/                 CLAUDE.template.md, settings, backlog-sync, checklist,
-│                                  schema, base adapters, empty and example domain rules
+│                                  schema, base adapters and Jira and Notion templates, empty and example domain rules
 ├── domain/
 │   └── fintech.md                 domain rules read by domain-review
 ├── archivio/
@@ -414,7 +414,7 @@ The full procedure is in `adapters/README.md`. In short:
 
 1. Connect the connector and ask Claude for the exact list of tools, split into read and write. Without a connector: export a CSV to `backlog/import/<tool>_<project>.csv`.
 2. Read 2-3 real items to find field names, custom field ids and status values.
-3. Write `adapters/<tool>.md`, copying the structure of `notion.md`.
+3. Write `adapters/<tool>.md`, copying the structure of `notion.md`. In a new project, start Jira and Notion from the plugin templates, `plugin/templates/adapters/jira.md` and `notion.md`.
 4. Add the read tools to backlog-sync, the write tools to "ask" in `settings.json`, and the tool to `CLAUDE.md`.
 5. Run backlog-sync and check the snapshot, then backlog-health.
 
@@ -560,7 +560,7 @@ In a local session on the project folder, type `/po-backlog-agents:nuovo-progett
 5. priority framework;
 6. domain, or none.
 
-It then creates `CLAUDE.md`, `.claude/settings.json`, `.claude/agents/backlog-sync.md`, `schema/`, `adapters/README.md`, `adapters/csv.md` and, if you named a domain, `domain/<domain>.md`. It fills in only what you said: everything else stays as a placeholder. If a file already exists it does not overwrite it: it stops and asks. At the end it lists the remaining placeholders and the next steps of the checklist.
+It then creates `CLAUDE.md`, `.claude/settings.json`, `.claude/agents/backlog-sync.md`, `schema/`, `adapters/README.md`, `adapters/csv.md`, the `adapters/jira.md` and `adapters/notion.md` templates if you named those tools and, if you named a domain, `domain/<domain>.md`. It fills in only what you said: everything else stays as a placeholder. If a file already exists it does not overwrite it: it stops and asks. At the end it lists the remaining placeholders and the next steps of the checklist.
 
 ### The interchangeable domain agent
 
@@ -583,6 +583,6 @@ Some rules hold whatever the file. domain-review states the risk and who to chec
 - **`CLAUDE.md` and the domain rules.** They are the team's rules: thresholds, Definition of Ready and of Done, priorities, industry checks. The agents have no default values: whatever is missing ends up under the report's missing data.
 - **backlog-sync.** Its `tools:` line holds the real names of the connectors' read-only tools, which change from one computer to another. That is why it is not in the plugin: the skill creates it from the template, with placeholders.
 - **`.claude/settings.json`.** The project needs the permissions (allow, ask, deny) because plugin agents do not support `hooks`, `mcpServers` and `permissionMode`. The skill creates it from the template, with connector placeholders.
-- **Tool adapters.** One per tool, following `adapters/README.md`.
+- **Tool adapters.** One per tool. For Jira and Notion the skill copies a ready-made template: what is left to fill in is the connector prefix, site and space key, custom field ids, database properties and statuses, which differ in every project. For other tools, follow `adapters/README.md`.
 
 The full steps are in `plugin/templates/CHECKLIST-nuovo-progetto.md` (in Italian).
