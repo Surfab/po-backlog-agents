@@ -1,6 +1,6 @@
 # Regole di dominio: fintech dei pagamenti
 
-Esempio completo, estratto da fintech-compliance, l'agent di dominio del progetto di riferimento Conto Business (pagamenti per PMI italiane), con in più gli ultimi quattro controlli di "Cosa controllare". Lo legge domain-review quando la sezione "Agent di dominio" di `CLAUDE.md` indica questo file.
+Esempio completo, estratto da fintech-compliance, l'agent di dominio del progetto di riferimento Conto Business (pagamenti per PMI italiane), con in più i controlli aggiunti dopo i test del plugin (vedi CHANGELOG). Lo legge domain-review quando la sezione "Agent di dominio" di `CLAUDE.md` indica questo file.
 
 ## Ruolo
 
@@ -12,19 +12,22 @@ Item che toccano pagamenti, identità del cliente, dati personali, carte o integ
 
 ## Cosa controllare
 
-- **PSD2 e SCA**: autenticazione forte su accessi e disposizioni, esenzioni, accesso di terze parti (AISP, PISP), consenso.
+- **PSD2 e SCA**: autenticazione forte su accessi e disposizioni, esenzioni, accesso di terze parti (AISP, PISP), consenso. Se prima dell'autorizzazione c'è una verifica (beneficiario, limiti, identità), controlla l'ordine tra verifica e autorizzazione e se la verifica si ripete quando i dati verificati cambiano prima della conferma.
 - **Bonifici istantanei e Verification of Payee**: verifica del beneficiario prima dell'invio, gestione dell'esito (corrisponde, simile, non corrisponde, non disponibile), irrevocabilità, limiti.
 - **Controlli sulle sanzioni**: se l'item fa partire, riceve o modifica un pagamento, o aggiunge un beneficiario, controlla se dice quando e su chi si fanno i controlli sulle liste delle sanzioni (beneficiario, ordinante, canale) e cosa succede al pagamento se il controllo trova una corrispondenza o non risponde. Se l'item non ne parla, è un impatto da segnalare.
+- **Stati del pagamento**: per ogni pagamento che l'item fa partire, controlla che ogni caso abbia un esito certo: timeout, errore del circuito, risposta in ritardo. Cosa vede il cliente, come si ricava lo stato finale, cosa impedisce un secondo invio dello stesso pagamento. Con chi: Operations e Sicurezza.
 - **AML, KYC, KYB**: identificazione del cliente e del titolare effettivo, monitoraggio delle operazioni, segnalazioni, conservazione dei documenti.
 - **GDPR**: base giuridica, minimizzazione, tempi di conservazione, dati mostrati a terzi (es. nome del titolare di un IBAN), diritti dell'interessato, fornitori che trattano dati.
+- **Uso improprio della funzione**: se l'item restituisce o mostra dati su terzi (nomi, titolarità o esistenza di un conto, saldi, esiti di una verifica), controlla se prevede limiti di frequenza e un monitoraggio contro l'uso ripetuto per ricavare quei dati, per esempio molte richieste su IBAN diversi in poco tempo. Se l'item non ne parla, è un impatto da segnalare. Con chi: Antifrode e DPO.
 - **DORA**: fornitori ICT critici, continuità operativa, gestione e notifica degli incidenti, test.
 - **Carte**: dati della carta, chargeback, frodi.
 - **SDD**: mandati, rimborsi, insoluti.
 - **Fatture e SDI**: conservazione, integrità dei dati fiscali.
 - **Audit trail**: chi ha fatto cosa e quando, log non modificabili, tracciabilità delle decisioni automatiche.
+- **Testi per il cliente**: se l'item mostra messaggi su esiti, errori o attese, controlla che dicano al cliente cosa fare dopo (per esempio non ripetere un'operazione ancora in elaborazione) e che siano previsti tra i testi da far approvare. Con chi: Legal.
 - **Beneficiari e perimetro della verifica**: beneficiario persona fisica o impresa (denominazione, nomi commerciali diversi dalla ragione sociale), canali coperti (app, API, terze parti come i PISP, pagamenti in blocco), lato "risposta" (le verifiche che altri prestatori chiedono sui nomi dei nostri clienti).
 - **Scadenze**: se l'item o la sua epica hanno un'etichetta di compliance o una time criticality alta, chiedi a compliance se esiste una data obbligatoria. Non indicarla a memoria.
-- **Contesto dell'item**: coerenza tra l'item e l'epica a cui è collegato (se riguarda un'altra parte del flusso, il collegamento va confermato dal PO), dati di test necessari per ogni esito senza dati personali reali.
+- **Contesto dell'item**: coerenza tra l'item e l'epica a cui è collegato (se riguarda un'altra parte del flusso, il collegamento va confermato dal PO), dati di test necessari per ogni esito senza dati personali reali, item bloccato o con flag di impedimento senza causa né dipendenza collegata.
 - **Numeri senza fonte**: per ogni soglia, tempo, limite o importo scritto nell'item (per esempio un timeout in secondi, un massimale, un numero di tentativi), chiedi da dove viene e chi l'ha deciso: normativa, circuito, fornitore o scelta di prodotto. Se l'item non lo dice, segnalalo e indica con chi verificarlo. Non proporre tu un valore.
 
 ## Gravità

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-11-18, plugin 0.2.4: controlli espliciti, criterio di superamento per gravità
+
+- `domain/fintech.md` e `plugin/templates/domain/fintech.md`, sezione Cosa controllare: voce nuova "Uso improprio della funzione" (dati su terzi restituiti o mostrati: limiti di frequenza e monitoraggio contro l'uso ripetuto, con Antifrode e DPO). Motivo: nel secondo test 5 pulito del 18/11 il lancio 3 non cita l'uso della verifica per ricavare i nomi dei titolari (C3), l'unico impatto del riferimento senza una voce né un criterio che lo faccia trovare.
+- Stessi file, altre voci per gli impatti che si trovavano solo grazie agli esempi dei criteri di Gravità, scritte in modo valido anche fuori da Conto Business: voce nuova "Stati del pagamento" (C7), voce nuova "Testi per il cliente" (B1 e B3), ordine tra verifica e autorizzazione forte nella voce "PSD2 e SCA" (C5), item bloccato senza causa nella voce "Contesto dell'item" (M7). La frase iniziale non conta più i controlli aggiunti e rimanda al CHANGELOG. I due file restano identici.
+- Tutti gli agent che scrivono proposte, in `plugin/agents/` e in `.claude/agents/`, e la sezione Scritture di `CLAUDE.md` e `plugin/templates/CLAUDE.template.md`: l'id è sempre quello dello snapshot, nel formato tool:chiave. Motivo: nelle proposte del lancio 1 gli id erano senza prefisso del tool.
+- `TEST-plugin.md`, test 5: un lancio è superato se trova tutti gli impatti Critico (C1-C8) con gravità Critico e manca al massimo un impatto Medio o Basso. Il test è superato se lo sono i 3 lanci e nessun impatto Medio o Basso manca in due lanci; un impatto che manca in due lanci diventa una voce di "Cosa controllare". Registrato l'esito del secondo test pulito del 18/11 (non superato). Il test non è stato rieseguito con questa versione.
+- Versione del plugin 0.2.4.
+
 ## 2026-11-18, plugin 0.2.3: regole dopo il test 5 pulito, proposte con testo esatto
 
 - `domain/fintech.md` e `plugin/templates/domain/fintech.md`, sezione Cosa controllare: i controlli sulle sanzioni sono una voce a sé, fuori da quella sui bonifici istantanei. Voce nuova sui numeri senza fonte (soglie, tempi, limiti): chiedere da dove vengono e chi li ha decisi. Motivo: nel test 5 pulito del 18/11 il lancio 3 non cita i controlli sulle sanzioni (M5) e l'origine della soglia di 5 secondi (C4) esce solo nel lancio 1. I due file restano identici.

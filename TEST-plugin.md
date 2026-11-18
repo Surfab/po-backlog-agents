@@ -150,7 +150,7 @@ Esito: **superato** se trova 7 su 7 e non segnala come problema i due casi sani.
 
 ## Test 5: domain-review ritrova gli impatti di fintech-compliance
 
-**Da rifare con il plugin 0.2.3.** L'esito del 18/11 nella tabella Esiti è precedente alle correzioni su controlli sulle sanzioni, numeri senza fonte, G5 e testo esatto nelle proposte.
+**Da rifare con il plugin 0.2.4.** Il secondo test pulito del 18/11, con le regole 0.2.3, non è superato (vedi Esiti). La 0.2.4 aggiunge controlli espliciti in `fintech.md` e cambia il criterio di superamento.
 
 Sulla cartella B, 3 lanci, uno alla volta, ognuno in una sessione nuova. Il lancio successivo parte solo quando il precedente ha finito: lanci in parallelo sulla stessa cartella si sovrascrivono report e proposte.
 
@@ -203,12 +203,12 @@ Completa tutti e 3 i lanci anche se uno fallisce: serve a capire se il problema 
 
 Un lancio è **superato** se:
 
-1. trova tutte le 21 righe;
-2. nessun impatto da C1 a C8 risulta Medio o Basso, a meno che la voce citi un criterio della sezione Gravità di `domain/fintech.md` (G1-G9) e dica quale elemento dell'item esclude i criteri da Critico. Una gravità più bassa senza motivazione, o con una motivazione che non rimanda ai criteri ("rischio basso", "dietro feature flag"), fa fallire il lancio.
+1. trova tutti gli impatti Critico del riferimento, da C1 a C8, e ognuno ha gravità Critico;
+2. tra gli impatti Medio e Basso (da M1 a M9 e da B1 a B4) ne manca al massimo uno.
 
-Le altre gravità diverse da quella attesa vanno nelle note ma non fanno fallire il lancio.
+Le gravità di Medio e Basso diverse da quella attesa vanno nelle note ma non fanno fallire il lancio.
 
-Esito del test: **superato** solo se sono superati tutti e 3 i lanci. **Se manca anche un solo impatto in un lancio, avvisa il PO**: la demo non passa a domain-review finché il file di regole non è corretto.
+Esito del test: **superato** se sono superati tutti e 3 i lanci e nessun impatto Medio o Basso manca in due lanci. **Un impatto che manca in due lanci fa fallire il test e diventa una voce di "Cosa controllare"** in `domain/fintech.md` e in `plugin/templates/domain/fintech.md`. Se il test non è superato, avvisa il PO: la demo non passa a domain-review finché il file di regole non è corretto.
 
 Il report del 12/11 viene da un lancio molto approfondito: il 17/11 fintech-compliance, rilanciato sugli stessi item, ne ha ritrovati 17 su 21. Lo stesso agente con le stesse regole può dare report diversi. Per questo un impatto che deve uscire sempre va scritto come controllo in "Cosa controllare", e non lasciato al giudizio del modello.
 
@@ -250,4 +250,5 @@ Controlla con `claude plugin list` che il plugin non compaia più. Le cartelle d
 | 5 domain-review | 2026-11-17 | superato dopo una correzione | Primo lancio 15 su 21 (mancavano M3, M4, M8, M9, B2, B4); fintech-compliance rilanciato lo stesso giorno 17 su 21. Aggiunti a `fintech.md` tre controlli espliciti: secondo lancio 21 su 21. Gravità diverse dal 12/11: C4, C5, C8 e B2 Medio, C6 e M7 Basso. Caso "Nessuno": nessuna analisi, nessun file scritto. |
 | 5 domain-review | 2026-11-18 | da confermare | Tre lanci in sequenza, dopo un primo tentativo in parallelo fallito perché i lanci si sono sovrascritti a vicenda. Gravità: da C1 a C8 Critico in tutti e 3 i lanci, ognuno con il criterio. Voci Critico nel report: 7, 8, 7 (il 12/11 erano 8). Impatti: 21 su 21 in tutti e 3, ma in `output/` c'era `2026-11-17_proposte.md` e tutti e 3 lo citano: il risultato va confermato con un lancio senza proposte precedenti. L'origine della soglia di 5 secondi (C4) esce solo nel lancio 1. G5 su DEMO-7 come caso dubbio nei lanci 1 e 2, con il campo sprint vuoto: G5 corretta in `fintech.md`. Preparazione del test corretta: lanci uno alla volta, report e proposte spostati in `lanci/`. |
 | 5 domain-review | 2026-11-18 | non superato, da rifare | Test pulito: 3 lanci in sequenza, `output/` senza file precedenti, modello non indicato. Gravità: da C1 a C8 Critico in tutti e 3 i lanci, ognuno con il criterio. Voci Critico nel report: 8, 9, 7. Impatti: 21, 21, 20: il lancio 3 non cita i controlli sulle sanzioni (M5). L'origine della soglia di 5 secondi (C4) esce solo nel lancio 1. G5 su DEMO-7 nei lanci 1 e 2, con il ragionamento "la review si fa prima dello sprint, quindi è candidato". Regola di G5 della 0.2.2 presente nella cartella B: non indicato. Proposte: i lanci 1 e 2 mettono 9-10 scenari in una sola riga, con un rimando a una sezione del report. Corretti nella 0.2.3 `fintech.md` (sanzioni, numeri senza fonte, G5) e le istruzioni sulle proposte. Il test va rifatto dopo questa modifica. |
+| 5 domain-review | 2026-11-18 | non superato | Secondo test pulito, regole 0.2.3, 3 lanci in sequenza (10:00, 10:05, 13:36). Impatti: 21, 21, 20: il lancio 3 non cita l'uso ripetuto della verifica per ricavare i nomi dei titolari (C3), che non è una voce di "Cosa controllare". Sanzioni (M5) in 3 lanci su 3: Critico (G4, caso dubbio) nei lanci 1 e 2, Medio (G6) nel lancio 3. Origine della soglia di 5 secondi (C4) in 3 lanci su 3. G5 su DEMO-7 non applicato in 3 lanci su 3. Una riga di proposte per ogni scenario in 3 lanci su 3. Voci Critico nel report: 8, 8, 7. Nelle proposte del lancio 1 gli id sono senza prefisso del tool. Anche con il criterio della 0.2.4 il lancio 3 non è superato, perché C3 è Critico. Nella 0.2.4: voce "Uso improprio della funzione" e altre quattro voci per gli impatti trovati solo grazie agli esempi dei criteri, id delle proposte nel formato tool:chiave, nuovo criterio di superamento. Il test va rifatto con la 0.2.4. |
 | 6 disinstallazione | 2026-11-17 | superato | Il marketplace tolto nella cartella A ha disinstallato anche la copia della B, ma ne ha lasciato le dichiarazioni in `settings.local.json`, tolte a mano. Istruzioni del test corrette. |
