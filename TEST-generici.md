@@ -1,6 +1,6 @@
 # Test di non regressione degli agent generici
 
-Verifica che i quattro agent generici (backlog-health, story-refiner, prioritizer, sprint-prep) diano su Conto Business gli stessi risultati della versione precedente. Dove trovare la versione precedente: `archivio/agents-v1/` nella cartella di lavoro; nel repository pubblico, [`.claude/agents/` al commit fccd388](https://github.com/Surfab/po-backlog-agents/tree/fccd388eb661cd99c0a9e91aa2e3deac5cd973aa/.claude/agents).
+Verifica che i quattro agent generici (backlog-health, story-refiner, prioritizer, sprint-prep) diano su Conto Business gli stessi risultati della versione precedente. Dove trovare la versione precedente: `versioni-precedenti/agents-v1/` nella cartella di lavoro; nel repository pubblico, [`.claude/agents/` al commit fccd388](https://github.com/Surfab/po-backlog-agents/tree/fccd388eb661cd99c0a9e91aa2e3deac5cd973aa/.claude/agents).
 
 ## Preparazione
 
@@ -9,7 +9,7 @@ Verifica che i quattro agent generici (backlog-health, story-refiner, prioritize
 3. Controlla che la sessione veda gli agent: "Elenca gli agent di progetto disponibili". Devono essere 6.
 4. **Le proposte prodotte durante i test non si applicano mai**, nemmeno quando gli id somigliano a item reali. Il campione copia alla lettera i titoli di DEMO-2, 3, 4, 5, 7 e 9 con chiavi diverse (PAY-…). Le opportunità PAYDISC-1, 2 e 3 hanno lo stesso id e lo stesso titolo che su Notion.
 
-Per ogni test scrivi l'esito nella tabella in fondo. **Se il test 3 (prioritizer) dà un risultato diverso, fermati e avvisa il PO**: decide lui se tornare alla versione precedente: `archivio/agents-v1/` nella cartella di lavoro; nel repository pubblico, [`.claude/agents/` al commit fccd388](https://github.com/Surfab/po-backlog-agents/tree/fccd388eb661cd99c0a9e91aa2e3deac5cd973aa/.claude/agents).
+Per ogni test scrivi l'esito nella tabella in fondo. **Se il test 3 (prioritizer) dà un risultato diverso, fermati e avvisa il PO**: decide lui se tornare alla versione precedente: `versioni-precedenti/agents-v1/` nella cartella di lavoro; nel repository pubblico, [`.claude/agents/` al commit fccd388](https://github.com/Surfab/po-backlog-agents/tree/fccd388eb661cd99c0a9e91aa2e3deac5cd973aa/.claude/agents).
 
 ## Test 1: backlog-health sui dati di prova
 

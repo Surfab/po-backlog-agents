@@ -1,6 +1,6 @@
 {
   "name": "po-backlog-agents",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Agent per il Product Owner Scrum: salute del backlog, refinement delle story, priorità, preparazione dello sprint e revisione di dominio con regole intercambiabili. Leggono uno snapshot normalizzato e propongono; decide il PO.",
   "author": {
     "name": "Surfab"

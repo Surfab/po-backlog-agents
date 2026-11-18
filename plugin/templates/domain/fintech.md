@@ -27,9 +27,27 @@ Item che toccano pagamenti, identità del cliente, dati personali, carte o integ
 
 ## Gravità
 
-- Critico: la funzione non può andare in produzione senza un parere (movimenta denaro, identifica clienti, espone dati personali a terzi).
-- Medio: serve una verifica, ma si può partire con lo sviluppo.
-- Basso: buona pratica (log, messaggi all'utente).
+Ogni impatto ha una gravità e il criterio che la decide, scritto nella voce: per esempio "Critico (G1)". Scorri i criteri in ordine da G1: vale il primo che si applica. Valuta l'item com'è scritto oggi. La probabilità del caso, il feature flag o le intenzioni dello sviluppo non abbassano la gravità. La abbassa solo un elemento dell'item che esclude il caso (per esempio uno scenario che blocca il bonifico): in quel caso la voce lo cita insieme al criterio.
+
+**Critico**: la funzione non va in produzione senza il parere del ruolo indicato in "Con chi verificare" (Definition of Ready, punto 6).
+
+- G1. Può far partire, duplicare o lasciare senza esito certo un movimento di denaro, o mandarlo a un beneficiario diverso da quello voluto. Esempio: con "verifica non disponibile" il cliente conferma un bonifico istantaneo, che parte senza verifica e non si revoca.
+- G2. Tocca l'identificazione del cliente o del titolare effettivo (KYC, KYB, AML) o l'autenticazione forte di un accesso o di una disposizione. Esempio: il cliente autorizza con SCA un beneficiario diverso da quello verificato, perché IBAN o nome sono cambiati dopo la verifica.
+- G3. Mostra o comunica a terzi dati personali, o permette di ricavarli. Esempio: con esito "simile" il cliente vede il nome del titolare di un IBAN.
+- G4. Può far scattare un obbligo di segnalazione o di notifica (incidente operativo, operazione sospetta) e non si sa ancora se scatta. Esempio: un timeout del circuito che lascia bonifici in stato incerto, senza dati su ambiente e frequenza.
+- G5. L'item è in corso o candidato allo sprint con un impatto da G1 a G4 non ancora valutato dal ruolo indicato. Esempio: la story è "In corso" e non risulta un parere di compliance.
+
+**Medio**: serve una verifica, ma lo sviluppo può partire.
+
+- G6. Manca un requisito che un ruolo di "Con chi verificare" deve definire, e la risposta cambia cosa si sviluppa: perimetro, tipi di beneficiario, canali, fornitori, conservazione dei dati, scadenze. Esempio: la story non dice se la verifica vale per beneficiari impresa e nomi commerciali.
+- G7. Manca un requisito della Definition of Done su tracciabilità e log: audit trail, dati personali o di pagamento fuori dai log applicativi. Esempio: esito della verifica e scelta del cliente non finiscono nell'audit trail.
+- G8. Manca un dato senza il quale l'item non si valuta: causa di un blocco, dipendenza, volumi. Esempio: flag "Impediment" senza causa né dipendenza collegata.
+
+**Basso**: buona pratica. Si sistema durante lo sviluppo senza cambiare il perimetro della funzione.
+
+- G9. Testi per il cliente da far approvare, dati di test, collegamenti da confermare, formato degli item. Esempio: il messaggio "in elaborazione" va riscritto per dire al cliente di non ripetere il bonifico.
+
+**Casi dubbi**: se un impatto sta tra due livelli, o un criterio del livello più alto si applica "forse" perché manca un dato, scegli il livello più alto. Nella voce scrivi quale criterio, quale dato manca e cosa farebbe scendere la gravità. Il dato va anche in "Dati mancanti". Esempio: "Critico (G4, caso dubbio): non si sa se il timeout avviene in produzione. Se compliance esclude l'obbligo di notifica, scende a Medio (G8)."
 
 ## Glossario
 

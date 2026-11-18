@@ -23,11 +23,21 @@ _Una voce per area. Nome dell'area in grassetto, poi cosa guardare in concreto. 
 
 ## Gravità
 
-_Cosa rende un impatto Critico, Medio o Basso in questo dominio._
+_Cosa rende un impatto Critico, Medio o Basso in questo dominio. Criteri numerati (G1, G2...) che si decidono con un sì o un no, ognuno con un esempio dal dominio. La voce del report cita il criterio, per esempio "Critico (G1)". Si scorrono in ordine da G1: vale il primo che si applica._
 
-- Critico: <quando la funzione non può andare in produzione senza un parere>.
-- Medio: <quando serve una verifica, ma si può partire con lo sviluppo>.
-- Basso: <buone pratiche>.
+**Critico**: la funzione non va in produzione senza un parere.
+
+- G1. <criterio>. Esempio: <caso del dominio>.
+
+**Medio**: serve una verifica, ma lo sviluppo può partire.
+
+- G2. <criterio>. Esempio: <caso del dominio>.
+
+**Basso**: buona pratica, si sistema durante lo sviluppo.
+
+- G3. <criterio>. Esempio: <caso del dominio>.
+
+**Casi dubbi**: se un impatto sta tra due livelli, o un criterio del livello più alto si applica "forse" perché manca un dato, scegli il livello più alto. Nella voce scrivi quale criterio, quale dato manca e cosa farebbe scendere la gravità. Il dato va anche in "Dati mancanti".
 
 ## Glossario
 

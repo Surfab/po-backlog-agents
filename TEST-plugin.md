@@ -150,35 +150,35 @@ Esito: **superato** se trova 7 su 7 e non segnala come problema i due casi sani.
 
 ## Test 5: domain-review ritrova gli impatti di fintech-compliance
 
-Nella stessa sessione sulla cartella B.
+Sulla cartella B, 3 lanci, ognuno in una sessione nuova.
 
 Richiesta: "Lancia domain-review su `jira:DEMO-5` e `jira:DEMO-7` usando `backlog/2026-11-12_snapshot.json`".
 
-Report atteso: `output/AAAA-MM-GG_domain-review.md`. Confrontalo con `output/2026-11-12_fintech-compliance.md` nel repository, che ha valutato gli stessi item sullo stesso snapshot. Conta il contenuto dell'impatto, non le parole. Segna ogni riga:
+Report atteso: `output/AAAA-MM-GG_domain-review.md`. Confrontalo con `output/2026-11-12_fintech-compliance.md` nel repository, che ha valutato gli stessi item sullo stesso snapshot. Conta il contenuto dell'impatto, non le parole. La gravità attesa è quella del 12/11, confermata dai criteri della sezione Gravità di `domain/fintech.md`. Segna ogni riga per ogni lancio (L1, L2, L3), per esempio `sì, Critico (G1)`:
 
-| # | Item | Impatto atteso | Gravità del 12/11 | Trovato | Gravità ora |
-|---|---|---|---|---|---|
-| C1 | DEMO-5 | nome del titolare mostrato con esito "simile" (dati personali di un terzo) | Critico | | |
-| C2 | DEMO-5 | esito "non corrisponde" assente dai criteri | Critico | | |
-| C3 | DEMO-5 | uso del servizio per ricavare nomi da IBAN (abuso, limiti di frequenza) | Critico | | |
-| C4 | DEMO-5 | "verifica non disponibile": si procede su un bonifico irrevocabile; origine della soglia di 5 secondi | Critico | | |
-| C5 | DEMO-5 | ordine tra verifica e SCA; nuova verifica dopo una modifica | Critico | | |
-| C6 | DEMO-5 | story già "In corso" senza valutazione di compliance (DoR punto 6) | Critico | | |
-| C7 | DEMO-7 | esito ignoto di un bonifico irrevocabile dopo il timeout (doppio pagamento) | Critico | | |
-| C8 | DEMO-7 | possibile incidente operativo da valutare (DORA) | Critico | | |
-| M1 | DEMO-5 | audit trail della verifica, dati fuori dai log applicativi | Medio | | |
-| M2 | DEMO-5 | fornitore del servizio di verifica (trattamento dati, fornitore ICT) | Medio | | |
-| M3 | DEMO-5 | beneficiari che sono imprese (denominazione, nomi commerciali) | Medio | | |
-| M4 | DEMO-5 e DEMO-2 | perimetro dei canali (PISP, API, bonifici in blocco) | Medio | | |
-| M5 | DEMO-5 | controlli sulle sanzioni e antifrode non citati | Medio | | |
-| M6 | DEMO-7 | tracciabilità dei cambi di stato e degli interventi manuali | Medio | | |
-| M7 | DEMO-7 | flag "Impediment" senza causa né dipendenza | Medio | | |
-| M8 | DEMO-2 | lato "risposta" alle verifiche richieste da altri prestatori | Medio | | |
-| M9 | DEMO-2 e PAYDISC-1 | scadenza normativa non indicata, da verificare con compliance | Medio | | |
-| B1 | DEMO-5 | testi degli avvisi da far approvare | Basso | | |
-| B2 | DEMO-5 | dati di test per i quattro esiti, nessun nome reale | Basso | | |
-| B3 | DEMO-7 | messaggio al cliente che non spinga a ripetere il bonifico | Basso | | |
-| B4 | DEMO-7 | collegamento all'epica DEMO-2 da confermare | Basso | | |
+| # | Item | Impatto atteso | Gravità attesa | L1 | L2 | L3 |
+|---|---|---|---|---|---|---|
+| C1 | DEMO-5 | nome del titolare mostrato con esito "simile" (dati personali di un terzo) | Critico | | | |
+| C2 | DEMO-5 | esito "non corrisponde" assente dai criteri | Critico | | | |
+| C3 | DEMO-5 | uso del servizio per ricavare nomi da IBAN (abuso, limiti di frequenza) | Critico | | | |
+| C4 | DEMO-5 | "verifica non disponibile": si procede su un bonifico irrevocabile; origine della soglia di 5 secondi | Critico | | | |
+| C5 | DEMO-5 | ordine tra verifica e SCA; nuova verifica dopo una modifica | Critico | | | |
+| C6 | DEMO-5 | story già "In corso" senza valutazione di compliance (DoR punto 6) | Critico | | | |
+| C7 | DEMO-7 | esito ignoto di un bonifico irrevocabile dopo il timeout (doppio pagamento) | Critico | | | |
+| C8 | DEMO-7 | possibile incidente operativo da valutare (DORA) | Critico | | | |
+| M1 | DEMO-5 | audit trail della verifica, dati fuori dai log applicativi | Medio | | | |
+| M2 | DEMO-5 | fornitore del servizio di verifica (trattamento dati, fornitore ICT) | Medio | | | |
+| M3 | DEMO-5 | beneficiari che sono imprese (denominazione, nomi commerciali) | Medio | | | |
+| M4 | DEMO-5 e DEMO-2 | perimetro dei canali (PISP, API, bonifici in blocco) | Medio | | | |
+| M5 | DEMO-5 | controlli sulle sanzioni e antifrode non citati | Medio | | | |
+| M6 | DEMO-7 | tracciabilità dei cambi di stato e degli interventi manuali | Medio | | | |
+| M7 | DEMO-7 | flag "Impediment" senza causa né dipendenza | Medio | | | |
+| M8 | DEMO-2 | lato "risposta" alle verifiche richieste da altri prestatori | Medio | | | |
+| M9 | DEMO-2 e PAYDISC-1 | scadenza normativa non indicata, da verificare con compliance | Medio | | | |
+| B1 | DEMO-5 | testi degli avvisi da far approvare | Basso | | | |
+| B2 | DEMO-5 | dati di test per i quattro esiti, nessun nome reale | Basso | | | |
+| B3 | DEMO-7 | messaggio al cliente che non spinga a ripetere il bonifico | Basso | | | |
+| B4 | DEMO-7 | collegamento all'epica DEMO-2 da confermare | Basso | | | |
 
 Controlla anche:
 
@@ -186,12 +186,22 @@ Controlla anche:
 - Nessun articolo, comma, numero di regolamento o data di entrata in vigore. Le norme sono nominate solo per area.
 - Ogni "con chi verificare" è uno dei ruoli di `domain/fintech.md`: compliance, legal, DPO, sicurezza, antifrode, operations.
 - Acceptance criteria e task sono proposte, non requisiti certi, e ci sono righe nuove in `output/AAAA-MM-GG_proposte.md`.
+- Ogni voce del report cita il criterio di gravità (G1-G9).
 
-Esito: **superato** se tutte le 21 righe sono trovate. Una gravità diversa da quella del 12/11 va scritta nelle note ma non fa fallire il test. **Se manca anche un solo impatto, fermati e avvisa il PO**: la demo non passa a domain-review finché il file di regole non è corretto.
+Prima di ogni lancio sposta il report precedente in `output/AAAA-MM-GG_domain-review_lancioN.md`. Completa tutti e 3 i lanci anche se uno fallisce: serve a capire se il problema si ripete.
+
+Un lancio è **superato** se:
+
+1. trova tutte le 21 righe;
+2. nessun impatto da C1 a C8 risulta Medio o Basso, a meno che la voce citi un criterio della sezione Gravità di `domain/fintech.md` (G1-G9) e dica quale elemento dell'item esclude i criteri da Critico. Una gravità più bassa senza motivazione, o con una motivazione che non rimanda ai criteri ("rischio basso", "dietro feature flag"), fa fallire il lancio.
+
+Le altre gravità diverse da quella attesa vanno nelle note ma non fanno fallire il lancio.
+
+Esito del test: **superato** solo se sono superati tutti e 3 i lanci. **Se manca anche un solo impatto in un lancio, avvisa il PO**: la demo non passa a domain-review finché il file di regole non è corretto.
 
 Il report del 12/11 viene da un lancio molto approfondito: il 17/11 fintech-compliance, rilanciato sugli stessi item, ne ha ritrovati 17 su 21. Lo stesso agente con le stesse regole può dare report diversi. Per questo un impatto che deve uscire sempre va scritto come controllo in "Cosa controllare", e non lasciato al giudizio del modello.
 
-Per ripetere il test nello stesso giorno, prima sposta il report precedente, per esempio in `output/AAAA-MM-GG_domain-review_lancio1.md`, e apri una sessione nuova. Se il report del giorno esiste già, l'agente può decidere di non riscriverlo.
+Il report va spostato prima di ogni lancio perché, se il report del giorno esiste già, l'agente può decidere di non riscriverlo.
 
 Poi verifica il caso "Nessuno":
 
