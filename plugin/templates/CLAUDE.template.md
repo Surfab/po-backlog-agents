@@ -95,6 +95,7 @@ File di regole: `domain/<dominio>.md`
 _Il ciclo proposta, OK, scrittura, change-log. Di solito non si cambia._
 
 - Gli agent scrivono le modifiche proposte in `./output/AAAA-MM-GG_proposte.md`, un file al giorno, una riga per modifica: id, tool, campo, valore attuale, valore proposto, motivo. Il motivo comincia con il nome del report da cui viene la riga.
+- Il valore proposto è il testo esatto da scrivere, mai un rimando al report. Una riga per ogni scenario Gherkin e una per ogni campo. Nella cella le righe di uno scenario sono separate da `<br>`: chi applica la riga le scrive su righe separate.
 - Le applica solo la sessione principale. Per ogni riga: controlla la fonte di verità, traduci campo e valore con l'adapter del tool, mostra la chiamata che stai per fare, aspetta l'OK, esegui, annota l'esito in `./output/AAAA-MM-GG_change-log.md`.
 - Una modifica alla volta. Un OK vale per una riga, non per le successive.
 - Per un tool in modalità CSV non c'è scrittura: la proposta resta nel file e la applica il PO a mano.
