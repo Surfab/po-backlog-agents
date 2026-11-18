@@ -91,14 +91,16 @@ L'ordine consigliato è sempre: **sync, poi analisi, poi decisioni**. Gli agenti
 
 ### Cosa leggere dopo ogni agente
 
-Ogni agente scrive un report in `output/AAAA-MM-GG_<agent>.md`, sempre con lo stesso formato:
+Ogni agente scrive un report in `output/AAAA-MM-GG_HHMM_<agent>.md`, con data e ora reali del lancio, sempre con lo stesso formato:
 
 1. Sintesi in 3 righe.
 2. Problemi divisi in Critico, Medio, Basso, ognuno con l'id dell'item.
 3. Azioni proposte.
 4. Dati mancanti.
 
-Le modifiche concrete che propone finiscono in `output/AAAA-MM-GG_proposte.md`.
+Le modifiche concrete che propone finiscono in `output/AAAA-MM-GG_proposte.md`, un file al giorno. Il motivo di ogni riga comincia con il nome del report da cui viene.
+
+Un report non si sovrascrive mai: se il file con lo stesso nome esiste già, l'agente si ferma. I report scritti fino al 18 novembre 2026 hanno solo la data nel nome e restano così.
 
 ---
 
@@ -188,7 +190,7 @@ po-backlog-agents/
 │       ├── 2026-11-12_snapshot.json   10 item fittizi con difetti piantati
 │       └── README.md                  elenco dei difetti, per provare gli agent
 └── output/
-    ├── AAAA-MM-GG_<agent>.md      report degli agent
+    ├── AAAA-MM-GG_HHMM_<agent>.md report degli agent, uno per lancio
     ├── AAAA-MM-GG_proposte.md     modifiche proposte, con colonna "stato"
     └── AAAA-MM-GG_change-log.md   modifiche applicate
 ```
@@ -231,7 +233,7 @@ Se in `backlog/` non c'è nessuno snapshot, le due versioni si comportano in mod
 
 In entrambi i casi la sintesi del report cita il percorso esatto del file letto e il suo `generato_il`.
 
-backlog-sync riceve dalla sessione principale data e ora reali (`date "+%Y-%m-%dT%H:%M:%S%z"`). Se il prompt non contiene l'ora, non scrive lo snapshot e la chiede.
+Ogni agente riceve dalla sessione principale data e ora reali del lancio (`date "+%Y-%m-%dT%H:%M:%S%z"`): backlog-sync le usa per lo snapshot, gli agenti di analisi per il report. Se il prompt non contiene l'ora, l'agente non scrive niente e la chiede. La regola vera è in `CLAUDE.md`, tabella Agent: gli agenti non hanno un tool per leggere l'orologio, e uno stop costa un rilancio.
 
 Gli agenti scrivono solo in `backlog/` (backlog-sync) e in `output/` (tutti gli altri). Il frontmatter di un agente non può limitare la scrittura a una cartella: il vincolo sta nelle istruzioni di ogni agente e nei permessi.
 

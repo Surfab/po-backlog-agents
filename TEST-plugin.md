@@ -150,11 +150,19 @@ Esito: **superato** se trova 7 su 7 e non segnala come problema i due casi sani.
 
 ## Test 5: domain-review ritrova gli impatti di fintech-compliance
 
-Sulla cartella B, 3 lanci, ognuno in una sessione nuova.
+Sulla cartella B, 3 lanci, uno alla volta, ognuno in una sessione nuova. Il lancio successivo parte solo quando il precedente ha finito: lanci in parallelo sulla stessa cartella si sovrascrivono report e proposte.
+
+**Prima di ogni lancio**, nel Terminale, sposta fuori da `output/` della cartella B, nella cartella `lanci/`, i report di domain-review e tutti i file di proposte, anche quelli dei giorni precedenti. Al posto di N metti il numero del lancio che stai per fare:
+
+```bash
+cd ~/Developer/po-plugin-test-B && mkdir -p lanci/lancioN && mv output/*domain-review*.md output/*proposte.md lanci/lancioN/ 2>/dev/null; ls output
+```
+
+`ls output` non deve mostrare report di domain-review né file di proposte. Così il lancio non legge le proposte di un lancio precedente e non le cita. In `lanci/lancioN` finiscono i file rimasti dai lanci precedenti. Il report dell'ultimo lancio resta in `output/`.
 
 Richiesta: "Lancia domain-review su `jira:DEMO-5` e `jira:DEMO-7` usando `backlog/2026-11-12_snapshot.json`".
 
-Report atteso: `output/AAAA-MM-GG_domain-review.md`. Confrontalo con `output/2026-11-12_fintech-compliance.md` nel repository, che ha valutato gli stessi item sullo stesso snapshot. Conta il contenuto dell'impatto, non le parole. La gravità attesa è quella del 12/11, confermata dai criteri della sezione Gravità di `domain/fintech.md`. Segna ogni riga per ogni lancio (L1, L2, L3), per esempio `sì, Critico (G1)`:
+Report atteso: `output/AAAA-MM-GG_HHMM_domain-review.md`, con data e ora del lancio passate dalla sessione principale. Confrontalo con `output/2026-11-12_fintech-compliance.md` nel repository, che ha valutato gli stessi item sullo stesso snapshot. Conta il contenuto dell'impatto, non le parole. La gravità attesa è quella del 12/11, confermata dai criteri della sezione Gravità di `domain/fintech.md`. Segna ogni riga per ogni lancio (L1, L2, L3), per esempio `sì, Critico (G1)`:
 
 | # | Item | Impatto atteso | Gravità attesa | L1 | L2 | L3 |
 |---|---|---|---|---|---|---|
@@ -185,10 +193,11 @@ Controlla anche:
 - La sintesi cita lo snapshot `backlog/2026-11-12_snapshot.json` (ora non nota) e il file di regole `domain/fintech.md`.
 - Nessun articolo, comma, numero di regolamento o data di entrata in vigore. Le norme sono nominate solo per area.
 - Ogni "con chi verificare" è uno dei ruoli di `domain/fintech.md`: compliance, legal, DPO, sicurezza, antifrode, operations.
-- Acceptance criteria e task sono proposte, non requisiti certi, e ci sono righe nuove in `output/AAAA-MM-GG_proposte.md`.
+- Acceptance criteria e task sono proposte, non requisiti certi, e ci sono righe nuove in `output/AAAA-MM-GG_proposte.md`. Il motivo di ogni riga comincia con il nome del report.
+- G5 non si applica a DEMO-7: nello snapshot è `blocked` con `sprint` vuoto. In "Dati mancanti" c'è che non si sa se è in sprint o candidato.
 - Ogni voce del report cita il criterio di gravità (G1-G9).
 
-Prima di ogni lancio sposta il report precedente in `output/AAAA-MM-GG_domain-review_lancioN.md`. Completa tutti e 3 i lanci anche se uno fallisce: serve a capire se il problema si ripete.
+Completa tutti e 3 i lanci anche se uno fallisce: serve a capire se il problema si ripete.
 
 Un lancio è **superato** se:
 
@@ -201,7 +210,7 @@ Esito del test: **superato** solo se sono superati tutti e 3 i lanci. **Se manca
 
 Il report del 12/11 viene da un lancio molto approfondito: il 17/11 fintech-compliance, rilanciato sugli stessi item, ne ha ritrovati 17 su 21. Lo stesso agente con le stesse regole può dare report diversi. Per questo un impatto che deve uscire sempre va scritto come controllo in "Cosa controllare", e non lasciato al giudizio del modello.
 
-Il report va spostato prima di ogni lancio perché, se il report del giorno esiste già, l'agente può decidere di non riscriverlo.
+Report e proposte vanno spostati prima di ogni lancio per due motivi. Un file di proposte in `output/` entra nel lancio: il 18/11 tutti e 3 i lanci hanno citato `2026-11-17_proposte.md`, e non si sa quanti impatti abbiano ritrovato da soli. E se il report con lo stesso nome esiste già, l'agente si ferma e non scrive.
 
 Poi verifica il caso "Nessuno":
 
@@ -237,4 +246,5 @@ Controlla con `claude plugin list` che il plugin non compaia più. Le cartelle d
 | 3 nuovo-progetto | 2026-11-17 | superato | 6 domande, 7 file e 2 cartelle, copie identiche ai template, nessun valore inventato. Al secondo lancio si ferma e chiede per tutti i file insieme, non file per file. Nessun file cambiato. |
 | 4 backlog-health | 2026-11-17 | superato | 7 su 7, PAYDISC-1 / PAY-101 non segnalati. PAY-112 segnalata come osservazione fuori dai controlli, per i criteri in prosa e non in Gherkin, coerente con il Formato story. Sospetto duplicato PAYDISC-3 / PAY-102 come il 14/11. Report datato con la data dello snapshot. |
 | 5 domain-review | 2026-11-17 | superato dopo una correzione | Primo lancio 15 su 21 (mancavano M3, M4, M8, M9, B2, B4); fintech-compliance rilanciato lo stesso giorno 17 su 21. Aggiunti a `fintech.md` tre controlli espliciti: secondo lancio 21 su 21. Gravità diverse dal 12/11: C4, C5, C8 e B2 Medio, C6 e M7 Basso. Caso "Nessuno": nessuna analisi, nessun file scritto. |
+| 5 domain-review | 2026-11-18 | da confermare | Tre lanci in sequenza, dopo un primo tentativo in parallelo fallito perché i lanci si sono sovrascritti a vicenda. Gravità: da C1 a C8 Critico in tutti e 3 i lanci, ognuno con il criterio. Voci Critico nel report: 7, 8, 7 (il 12/11 erano 8). Impatti: 21 su 21 in tutti e 3, ma in `output/` c'era `2026-11-17_proposte.md` e tutti e 3 lo citano: il risultato va confermato con un lancio senza proposte precedenti. L'origine della soglia di 5 secondi (C4) esce solo nel lancio 1. G5 su DEMO-7 come caso dubbio nei lanci 1 e 2, con il campo sprint vuoto: G5 corretta in `fintech.md`. Preparazione del test corretta: lanci uno alla volta, report e proposte spostati in `lanci/`. |
 | 6 disinstallazione | 2026-11-17 | superato | Il marketplace tolto nella cartella A ha disinstallato anche la copia della B, ma ne ha lasciato le dichiarazioni in `settings.local.json`, tolte a mano. Istruzioni del test corrette. |

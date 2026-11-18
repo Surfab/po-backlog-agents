@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-11-18, plugin 0.2.2: report mai sovrascritti, G5 con sprint non noto
+
+- Tutti gli agent di analisi, in `plugin/agents/` e in `.claude/agents/`: il report va in `./output/AAAA-MM-GG_HHMM_<agent>.md`, con data e ora reali che la sessione principale passa nel prompt, come per backlog-sync. Senza ora l'agent si ferma e la chiede. Prima di scrivere controlla con Glob: se il file esiste, non lo scrive e si ferma. Motivo: il 18/11 tre lanci di domain-review in parallelo hanno scritto tutti in `2026-11-18_domain-review.md` e due report sono andati persi. I report già esistenti non sono rinominati.
+- `proposte.md` resta un file al giorno. Il motivo di ogni riga comincia con il nome del report da cui viene. L'agent scrive prima il report, poi le proposte.
+- sprint-prep cerca i report di domain-review con e senza ora nel nome.
+- `CLAUDE.md` e `plugin/templates/CLAUDE.template.md`: la tabella Agent dice che ogni agent riceve data e ora del lancio, un `date` per lancio. Architettura e Scritture citano il nuovo nome dei report e l'origine delle proposte.
+- `domain/fintech.md` e `plugin/templates/domain/fintech.md`, G5: si applica solo se lo snapshot dice che l'item è in corso o in uno sprint, o se il PO lo indica come candidato. Altrimenti non si applica, nemmeno come caso dubbio, e il dato va in "Dati mancanti". Motivo: con il campo sprint vuoto, 2 lanci su 3 hanno messo DEMO-7 Critico (G5, caso dubbio). I due file restano identici.
+- `TEST-plugin.md`, test 5: lanci uno alla volta; prima di ogni lancio report di domain-review e file di proposte, anche dei giorni precedenti, si spostano in `lanci/`. Registrati gli esiti del 18/11: 21 su 21 e C1-C8 Critico nei 3 lanci, da confermare perché tutti e 3 citano `2026-11-17_proposte.md`. Il test non è stato rieseguito con queste modifiche.
+- Guide, `TEST-generici.md` e checklist: nuovo nome dei report.
+- Versione del plugin 0.2.2.
+
 ## 2026-11-18, plugin 0.2.1: gravità decidibile in domain-review
 
 - `domain/fintech.md` e `plugin/templates/domain/fintech.md`, sezione Gravità: nove criteri numerati (G1-G5 Critico, G6-G8 Medio, G9 Basso), ognuno con un esempio di Conto Business. Ogni voce del report cita il criterio. La probabilità e il feature flag non abbassano la gravità. Nei casi dubbi si sceglie il livello più alto e si scrive perché. I due file restano identici.

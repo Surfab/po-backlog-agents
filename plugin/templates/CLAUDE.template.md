@@ -26,7 +26,7 @@ _I tre livelli del sistema. Di solito non si cambia._
 
 1. **Adapter** (`./adapters/<tool>.md`): come si legge e si scrive un tool, mappa dei campi e degli stati.
 2. **Modello comune** (`./schema/backlog-item.schema.json`): formato unico degli item.
-3. **Agent di analisi** (dal plugin po-backlog-agents; backlog-sync in `.claude/agents/`): leggono solo `./backlog/AAAA-MM-GG_HHMM_snapshot.json` (uno per sync, mai sovrascritto). Ogni report cita il file esatto che ha letto.
+3. **Agent di analisi** (dal plugin po-backlog-agents; backlog-sync in `.claude/agents/`): leggono solo `./backlog/AAAA-MM-GG_HHMM_snapshot.json` (uno per sync, mai sovrascritto). Ogni report cita il file esatto che ha letto e va in `./output/AAAA-MM-GG_HHMM_<agent>.md`, uno per lancio, mai sovrascritto.
 
 Aggiungere un tool: `./adapters/README.md`.
 
@@ -82,6 +82,8 @@ _Quando si lancia ogni agent. Se non usi un dominio, togli la riga di domain-rev
 | sprint-prep | 1-2 giorni prima del planning, o a fine sprint |
 | domain-review | <per esempio prima che un item entri in sprint> |
 
+Ogni agent riceve dalla sessione principale, nel prompt, data e ora reali del lancio (`date "+%Y-%m-%dT%H:%M:%S%z"`), un `date` per ogni lancio. Senza ora l'agent si ferma e la chiede.
+
 ## Agent di dominio
 
 _Il file di regole che domain-review usa per il settore del prodotto (per esempio pagamenti, sanità, accessibilità). Ambito, controlli e con chi verificare stanno nel file. Gli agent generici rimandano a domain-review per gli item che rientrano nel suo Ambito. Se il progetto non ha un dominio, scrivi "Nessuno" al posto del percorso._
@@ -92,7 +94,7 @@ File di regole: `domain/<dominio>.md`
 
 _Il ciclo proposta, OK, scrittura, change-log. Di solito non si cambia._
 
-- Gli agent scrivono le modifiche proposte in `./output/AAAA-MM-GG_proposte.md`, una riga per modifica: id, tool, campo, valore attuale, valore proposto, motivo.
+- Gli agent scrivono le modifiche proposte in `./output/AAAA-MM-GG_proposte.md`, un file al giorno, una riga per modifica: id, tool, campo, valore attuale, valore proposto, motivo. Il motivo comincia con il nome del report da cui viene la riga.
 - Le applica solo la sessione principale. Per ogni riga: controlla la fonte di verità, traduci campo e valore con l'adapter del tool, mostra la chiamata che stai per fare, aspetta l'OK, esegui, annota l'esito in `./output/AAAA-MM-GG_change-log.md`.
 - Una modifica alla volta. Un OK vale per una riga, non per le successive.
 - Per un tool in modalità CSV non c'è scrittura: la proposta resta nel file e la applica il PO a mano.

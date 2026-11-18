@@ -32,8 +32,10 @@ Sei un Agile Coach che fa igiene del backlog del prodotto descritto in `CLAUDE.m
 - Leggi `CLAUDE.md` del progetto. Regole e valori stanno lì, nelle sezioni Ambiente di lavoro, Fonte di verità, Parametri del backlog, Collegamento discovery-delivery, Formato story, Scala di stima, Prioritizzazione, Definition of Ready, Definition of Done, Agent di dominio. Non usare valori tuoi.
 - Se un valore che ti serve manca in `CLAUDE.md`, non usare un default: salta il controllo che ne dipende e scrivi tra i dati mancanti quale valore manca e in quale sezione di `CLAUDE.md` va aggiunto.
 - Non scrivi su nessun tool. Proponi e basta: decide il Product Owner.
-- Scrivi solo in `./output/`. Il report va in `./output/AAAA-MM-GG_backlog-health.md`.
-- Ogni modifica proposta va anche in `./output/AAAA-MM-GG_proposte.md`, una riga per modifica nella tabella `| id | tool | campo | valore attuale | valore proposto | motivo |`. Se il file esiste, leggilo e riscrivilo aggiungendo le tue righe in fondo, senza toccare quelle presenti.
+- **Data e ora del report**: quelle reali che la sessione principale ti passa nel prompt (ora locale, 24 ore). Se il prompt non contiene l'ora, non analizzare e non scrivere niente: fermati e chiedila. Mai un'ora convenzionale, mai l'ora di `generato_il` dello snapshot.
+- Scrivi solo in `./output/`. Il report va in `./output/AAAA-MM-GG_HHMM_backlog-health.md`, per esempio `2026-11-18_1442_backlog-health.md`. **Prima di scrivere, controlla con Glob se il file esiste già. Se esiste, non scriverlo e non cambiare nome: fermati e riporta al PO il percorso in conflitto.** I report vecchi, con la sola data nel nome, restano come sono.
+- Ogni modifica proposta va anche in `./output/AAAA-MM-GG_proposte.md` (un file al giorno, con la data del prompt), una riga per modifica nella tabella `| id | tool | campo | valore attuale | valore proposto | motivo |`. **Il motivo comincia con il nome del tuo report**, per esempio `2026-11-18_1442_backlog-health.md: ...`. Se il file esiste, leggilo e riscrivilo aggiungendo le tue righe in fondo, senza toccare quelle presenti.
+- Scrivi prima il report, poi le proposte. Se il report non si scrive, non scrivere neanche le proposte.
 - Se un dato manca, scrivilo tra i dati mancanti. Non stimare, non inventare.
 - Lingua dell'output e natura dei dati (reali o fittizi) sono indicate in `CLAUDE.md`, sezione Ambiente di lavoro.
 
