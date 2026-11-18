@@ -1,6 +1,6 @@
 # Regole di dominio: fintech dei pagamenti
 
-Esempio completo, estratto da fintech-compliance, l'agent di dominio del progetto di riferimento Conto Business (pagamenti per PMI italiane), con in più gli ultimi tre controlli di "Cosa controllare". Lo legge domain-review quando la sezione "Agent di dominio" di `CLAUDE.md` indica questo file.
+Esempio completo, estratto da fintech-compliance, l'agent di dominio del progetto di riferimento Conto Business (pagamenti per PMI italiane), con in più gli ultimi quattro controlli di "Cosa controllare". Lo legge domain-review quando la sezione "Agent di dominio" di `CLAUDE.md` indica questo file.
 
 ## Ruolo
 
@@ -13,7 +13,8 @@ Item che toccano pagamenti, identità del cliente, dati personali, carte o integ
 ## Cosa controllare
 
 - **PSD2 e SCA**: autenticazione forte su accessi e disposizioni, esenzioni, accesso di terze parti (AISP, PISP), consenso.
-- **Bonifici istantanei e Verification of Payee**: verifica del beneficiario prima dell'invio, gestione dell'esito (corrisponde, simile, non corrisponde, non disponibile), irrevocabilità, limiti, controlli sulle sanzioni.
+- **Bonifici istantanei e Verification of Payee**: verifica del beneficiario prima dell'invio, gestione dell'esito (corrisponde, simile, non corrisponde, non disponibile), irrevocabilità, limiti.
+- **Controlli sulle sanzioni**: se l'item fa partire, riceve o modifica un pagamento, o aggiunge un beneficiario, controlla se dice quando e su chi si fanno i controlli sulle liste delle sanzioni (beneficiario, ordinante, canale) e cosa succede al pagamento se il controllo trova una corrispondenza o non risponde. Se l'item non ne parla, è un impatto da segnalare.
 - **AML, KYC, KYB**: identificazione del cliente e del titolare effettivo, monitoraggio delle operazioni, segnalazioni, conservazione dei documenti.
 - **GDPR**: base giuridica, minimizzazione, tempi di conservazione, dati mostrati a terzi (es. nome del titolare di un IBAN), diritti dell'interessato, fornitori che trattano dati.
 - **DORA**: fornitori ICT critici, continuità operativa, gestione e notifica degli incidenti, test.
@@ -24,6 +25,7 @@ Item che toccano pagamenti, identità del cliente, dati personali, carte o integ
 - **Beneficiari e perimetro della verifica**: beneficiario persona fisica o impresa (denominazione, nomi commerciali diversi dalla ragione sociale), canali coperti (app, API, terze parti come i PISP, pagamenti in blocco), lato "risposta" (le verifiche che altri prestatori chiedono sui nomi dei nostri clienti).
 - **Scadenze**: se l'item o la sua epica hanno un'etichetta di compliance o una time criticality alta, chiedi a compliance se esiste una data obbligatoria. Non indicarla a memoria.
 - **Contesto dell'item**: coerenza tra l'item e l'epica a cui è collegato (se riguarda un'altra parte del flusso, il collegamento va confermato dal PO), dati di test necessari per ogni esito senza dati personali reali.
+- **Numeri senza fonte**: per ogni soglia, tempo, limite o importo scritto nell'item (per esempio un timeout in secondi, un massimale, un numero di tentativi), chiedi da dove viene e chi l'ha deciso: normativa, circuito, fornitore o scelta di prodotto. Se l'item non lo dice, segnalalo e indica con chi verificarlo. Non proporre tu un valore.
 
 ## Gravità
 
@@ -35,7 +37,7 @@ Ogni impatto ha una gravità e il criterio che la decide, scritto nella voce: pe
 - G2. Tocca l'identificazione del cliente o del titolare effettivo (KYC, KYB, AML) o l'autenticazione forte di un accesso o di una disposizione. Esempio: il cliente autorizza con SCA un beneficiario diverso da quello verificato, perché IBAN o nome sono cambiati dopo la verifica.
 - G3. Mostra o comunica a terzi dati personali, o permette di ricavarli. Esempio: con esito "simile" il cliente vede il nome del titolare di un IBAN.
 - G4. Può far scattare un obbligo di segnalazione o di notifica (incidente operativo, operazione sospetta) e non si sa ancora se scatta. Esempio: un timeout del circuito che lascia bonifici in stato incerto, senza dati su ambiente e frequenza.
-- G5. L'item è in corso o candidato allo sprint con un impatto da G1 a G4 non ancora valutato dal ruolo indicato. Esempio: la story è "In corso" e non risulta un parere di compliance. **G5 si applica solo se lo snapshot dice che l'item è in corso (`stato` = `in_progress`) o in uno sprint (`sprint` valorizzato), oppure se il PO lo indica come candidato nella richiesta. Se non risulta nessuna delle tre cose, G5 non si applica, nemmeno come caso dubbio: la gravità si decide con gli altri criteri, e in "Dati mancanti" si scrive che non si sa se l'item è in sprint o candidato.** È un'eccezione alla regola dei casi dubbi.
+- G5. L'item è in corso o candidato allo sprint con un impatto da G1 a G4 non ancora valutato dal ruolo indicato. Esempio: la story è "In corso" e non risulta un parere di compliance. **G5 si applica solo se lo snapshot dice che l'item è in corso (`stato` = `in_progress`) o in uno sprint (`sprint` valorizzato), oppure se il PO, nella richiesta, lo indica in modo esplicito come candidato. Il fatto che domain-review venga lanciato prima dello sprint non rende l'item candidato: la review si fa sempre prima dello sprint. Conta solo una richiesta del PO che lo dice, per esempio "DEMO-7 è candidato al prossimo sprint". Se non risulta nessuna delle tre cose, G5 non si applica, nemmeno come caso dubbio: la gravità si decide con gli altri criteri, e in "Dati mancanti" si scrive che non si sa se l'item è in sprint o candidato.** È un'eccezione alla regola dei casi dubbi.
 
 **Medio**: serve una verifica, ma lo sviluppo può partire.
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-11-18, plugin 0.2.3: regole dopo il test 5 pulito, proposte con testo esatto
+
+- `domain/fintech.md` e `plugin/templates/domain/fintech.md`, sezione Cosa controllare: i controlli sulle sanzioni sono una voce a sé, fuori da quella sui bonifici istantanei. Voce nuova sui numeri senza fonte (soglie, tempi, limiti): chiedere da dove vengono e chi li ha decisi. Motivo: nel test 5 pulito del 18/11 il lancio 3 non cita i controlli sulle sanzioni (M5) e l'origine della soglia di 5 secondi (C4) esce solo nel lancio 1. I due file restano identici.
+- Stessi file, G5: il fatto che domain-review venga lanciato prima dello sprint non rende un item candidato. Conta solo una richiesta del PO che lo dice in modo esplicito. Motivo: 2 lanci su 3 hanno applicato G5 a DEMO-7 con il ragionamento "la review si fa prima dello sprint, quindi è candidato".
+- Tutti gli agent che scrivono proposte, in `plugin/agents/` e in `.claude/agents/`, e la sezione Scritture di `CLAUDE.md` e `plugin/templates/CLAUDE.template.md`: il valore proposto è il testo esatto da scrivere, mai un rimando al report. Una riga per ogni scenario Gherkin e una per ogni campo, con `<br>` tra le righe di uno scenario. Motivo: 2 lanci su 3 hanno messo 9-10 scenari in una sola riga, con un rimando a una sezione del report.
+- `TEST-plugin.md`: registrato l'esito del test 5 pulito del 18/11 (non superato). Il test va rifatto con questa versione e non è stato rieseguito.
+- Versione del plugin 0.2.3.
+
 ## 2026-11-18, plugin 0.2.2: report mai sovrascritti, G5 con sprint non noto
 
 - Tutti gli agent di analisi, in `plugin/agents/` e in `.claude/agents/`: il report va in `./output/AAAA-MM-GG_HHMM_<agent>.md`, con data e ora reali che la sessione principale passa nel prompt, come per backlog-sync. Senza ora l'agent si ferma e la chiede. Prima di scrivere controlla con Glob: se il file esiste, non lo scrive e si ferma. Motivo: il 18/11 tre lanci di domain-review in parallelo hanno scritto tutti in `2026-11-18_domain-review.md` e due report sono andati persi. I report già esistenti non sono rinominati.
