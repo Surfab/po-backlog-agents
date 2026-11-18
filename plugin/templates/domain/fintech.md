@@ -35,7 +35,7 @@ Ogni impatto ha una gravità e il criterio che la decide, scritto nella voce: pe
 - G2. Tocca l'identificazione del cliente o del titolare effettivo (KYC, KYB, AML) o l'autenticazione forte di un accesso o di una disposizione. Esempio: il cliente autorizza con SCA un beneficiario diverso da quello verificato, perché IBAN o nome sono cambiati dopo la verifica.
 - G3. Mostra o comunica a terzi dati personali, o permette di ricavarli. Esempio: con esito "simile" il cliente vede il nome del titolare di un IBAN.
 - G4. Può far scattare un obbligo di segnalazione o di notifica (incidente operativo, operazione sospetta) e non si sa ancora se scatta. Esempio: un timeout del circuito che lascia bonifici in stato incerto, senza dati su ambiente e frequenza.
-- G5. L'item è in corso o candidato allo sprint con un impatto da G1 a G4 non ancora valutato dal ruolo indicato. Esempio: la story è "In corso" e non risulta un parere di compliance.
+- G5. L'item è in corso o candidato allo sprint con un impatto da G1 a G4 non ancora valutato dal ruolo indicato. Esempio: la story è "In corso" e non risulta un parere di compliance. **G5 si applica solo se lo snapshot dice che l'item è in corso (`stato` = `in_progress`) o in uno sprint (`sprint` valorizzato), oppure se il PO lo indica come candidato nella richiesta. Se non risulta nessuna delle tre cose, G5 non si applica, nemmeno come caso dubbio: la gravità si decide con gli altri criteri, e in "Dati mancanti" si scrive che non si sa se l'item è in sprint o candidato.** È un'eccezione alla regola dei casi dubbi.
 
 **Medio**: serve una verifica, ma lo sviluppo può partire.
 
@@ -47,7 +47,7 @@ Ogni impatto ha una gravità e il criterio che la decide, scritto nella voce: pe
 
 - G9. Testi per il cliente da far approvare, dati di test, collegamenti da confermare, formato degli item. Esempio: il messaggio "in elaborazione" va riscritto per dire al cliente di non ripetere il bonifico.
 
-**Casi dubbi**: se un impatto sta tra due livelli, o un criterio del livello più alto si applica "forse" perché manca un dato, scegli il livello più alto. Nella voce scrivi quale criterio, quale dato manca e cosa farebbe scendere la gravità. Il dato va anche in "Dati mancanti". Esempio: "Critico (G4, caso dubbio): non si sa se il timeout avviene in produzione. Se compliance esclude l'obbligo di notifica, scende a Medio (G8)."
+**Casi dubbi**: se un impatto sta tra due livelli, o un criterio del livello più alto si applica "forse" perché manca un dato, scegli il livello più alto. Nella voce scrivi quale criterio, quale dato manca e cosa farebbe scendere la gravità. Il dato va anche in "Dati mancanti". Fa eccezione G5, che con il dato mancante sullo sprint non si applica. Esempio: "Critico (G4, caso dubbio): non si sa se il timeout avviene in produzione. Se compliance esclude l'obbligo di notifica, scende a Medio (G8)."
 
 ## Glossario
 

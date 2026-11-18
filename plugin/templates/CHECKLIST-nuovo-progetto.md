@@ -20,7 +20,7 @@ Dieci passi. I primi cinque li fa la skill `nuovo-progetto` del plugin po-backlo
 
 9. **Primo sync.** Scrivi "Lancia backlog-sync". Nasce `backlog/AAAA-MM-GG_HHMM_snapshot.json` con l'ora reale anche in `generato_il`. Se il file esiste già, l'agent si ferma e chiede. Nello snapshot controlla tre cose: ogni tool compare in `fonti`, `campi_non_mappati` è vuoto o spiegato, due item a caso corrispondono all'originale.
 
-10. **Primo report.** Scrivi "Lancia backlog-health". Il report arriva in `output/AAAA-MM-GG_backlog-health.md`. Leggi per prima la parte "Dati mancanti": ogni valore che manca in `CLAUDE.md` è elencato lì. Completa `CLAUDE.md`, riapri la sessione e rilancia finché quella parte non contiene più valori di configurazione.
+10. **Primo report.** Scrivi "Lancia backlog-health". Il report arriva in `output/AAAA-MM-GG_HHMM_backlog-health.md`, con l'ora reale del lancio. Leggi per prima la parte "Dati mancanti": ogni valore che manca in `CLAUDE.md` è elencato lì. Completa `CLAUDE.md`, riapri la sessione e rilancia finché quella parte non contiene più valori di configurazione.
 
 ## Perché tre cose restano per progetto
 

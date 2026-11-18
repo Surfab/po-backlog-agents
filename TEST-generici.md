@@ -15,7 +15,7 @@ Per ogni test scrivi l'esito nella tabella in fondo. **Se il test 3 (prioritizer
 
 Richiesta: "Lancia backlog-health su `backlog/sample/2026-11-12_snapshot.json`".
 
-Report atteso: `output/AAAA-MM-GG_backlog-health.md`.
+Report atteso: `output/AAAA-MM-GG_HHMM_backlog-health.md` (fino al 18/11 il nome aveva solo la data).
 
 La sintesi deve dichiarare che lo snapshot letto è `backlog/sample/2026-11-12_snapshot.json`.
 
@@ -52,7 +52,7 @@ Confronta con `output/2026-11-12_story-refiner.md`. Il report deve avere:
 - Acceptance criteria in blocchi Gherkin: uno `Scenario` per caso, con `Dato`, `Quando`, `Allora` su righe separate, come nel report del 12 novembre. **La prosa numerata non basta**, anche se usa le parole Dato, Quando, Allora: in quel caso il test non è superato. Almeno un caso di errore e i casi limite di `CLAUDE.md` dove pertinenti (importi, timeout, stati del pagamento).
 - Uno split obbligatorio per PAY-118 (21 punti), senza stime sulle nuove story.
 - Il rimando "da passare a domain-review" se la story rientra nell'Ambito di `domain/fintech.md` (pagamenti, identità, dati personali). Fino al 17/11 l'agente di dominio era fintech-compliance: gli esiti qui sotto portano ancora quel nome.
-- Righe aggiunte a `output/AAAA-MM-GG_proposte.md`.
+- Righe aggiunte a `output/AAAA-MM-GG_proposte.md`, con il nome del report all'inizio del motivo.
 
 Esito: **superato** se tutti i punti ci sono.
 

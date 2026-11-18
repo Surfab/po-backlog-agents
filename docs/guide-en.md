@@ -101,14 +101,16 @@ The recommended order is always: **sync, then analysis, then decisions**. The an
 
 ### What to read after each agent
 
-Each agent writes a report to `output/AAAA-MM-GG_<agent>.md` (AAAA-MM-GG = YYYY-MM-DD), always in the same format:
+Each agent writes a report to `output/AAAA-MM-GG_HHMM_<agent>.md` (AAAA-MM-GG = YYYY-MM-DD), with the real date and time of the run, always in the same format:
 
 1. Summary in 3 lines.
 2. Problems grouped as Critical, Medium, Low, each with the item id.
 3. Proposed actions.
 4. Missing data.
 
-The concrete changes it proposes go into `output/AAAA-MM-GG_proposte.md`.
+The concrete changes it proposes go into `output/AAAA-MM-GG_proposte.md`, one file per day. The reason of each row starts with the name of the report it comes from.
+
+A report is never overwritten: if a file with the same name already exists, the agent stops. Reports written up to 18 November 2026 have only the date in their name and stay that way.
 
 ---
 
@@ -198,7 +200,7 @@ po-backlog-agents/
 │       ├── 2026-11-12_snapshot.json   10 fictional items with planted defects
 │       └── README.md                  list of the defects, to test the agents
 └── output/
-    ├── AAAA-MM-GG_<agent>.md      agent reports
+    ├── AAAA-MM-GG_HHMM_<agent>.md agent reports, one per run
     ├── AAAA-MM-GG_proposte.md     proposed changes, with a "stato" (status) column
     └── AAAA-MM-GG_change-log.md   applied changes
 ```
@@ -241,7 +243,7 @@ If `backlog/` holds no snapshot at all, the two versions behave differently, on 
 
 Either way, the report summary quotes the exact path of the file read and its `generato_il` (generated at).
 
-backlog-sync gets the real date and time from the main session (`date "+%Y-%m-%dT%H:%M:%S%z"`). If the prompt has no time, it does not write the snapshot and asks for it.
+Every agent gets the real date and time of the run from the main session (`date "+%Y-%m-%dT%H:%M:%S%z"`): backlog-sync uses them for the snapshot, the analysis agents for the report. If the prompt has no time, the agent writes nothing and asks for it. The actual rule is in `CLAUDE.md`, Agent table: the agents have no tool to read the clock, and a stop costs a rerun.
 
 The agents write only to `backlog/` (backlog-sync) and to `output/` (all the others). An agent's frontmatter cannot restrict writing to a folder: the constraint lives in each agent's instructions and in the permissions.
 
