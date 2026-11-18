@@ -6,7 +6,7 @@ Gli agent di analisi non si toccano. Si lavora solo qui, in `backlog-sync` e nei
 
 2. **Leggi 2-3 item reali.** In sola lettura. Servono per scoprire i nomi veri dei campi, gli ID dei campi custom e i valori degli stati.
 
-3. **Scrivi `./adapters/<tool>.md`.** Usa queste sezioni, come negli adapter di Notion e Jira del progetto di riferimento Conto Business: connettore, tool di lettura, tool di scrittura, query standard, mappa dei campi, mappa degli stati, limiti noti. Ogni campo senza corrispondenza nel modello comune va in `extra`.
+3. **Scrivi `./adapters/<tool>.md`.** Per Jira e Notion parti dai modelli `jira.md` e `notion.md` (la skill `nuovo-progetto` li copia se hai indicato quei tool) e compila le parti tra `< >`. Per gli altri tool usa le stesse sezioni: connettore, tool di lettura, tool di scrittura, query standard, mappa dei campi, mappa degli stati, limiti noti. Ogni campo senza corrispondenza nel modello comune va in `extra`.
 
 4. **Aggiorna permessi e sync.** Aggiungi i tool di lettura a `tools:` in `.claude/agents/backlog-sync.md`. Aggiungi i tool di scrittura alla lista "ask" di `.claude/settings.json`. Aggiungi il tool alla tabella "Tool attivi" e alla fonte di verità in `CLAUDE.md`.
 

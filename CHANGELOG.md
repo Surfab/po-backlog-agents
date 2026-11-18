@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-11-18, plugin 0.2.0: modelli degli adapter di Jira e Notion
+
+- Nuovi `plugin/templates/adapters/jira.md` e `plugin/templates/adapters/notion.md`, ricavati dagli adapter della demo. Le parti uguali in ogni sito sono già scritte: nomi dei tool dei connettori, query, mappa degli stati per categoria, convenzione degli acceptance criteria, regole di conversione. Le parti che cambiano per progetto sono segnaposto `< >`: prefisso del connettore, sito e chiave dello spazio, id dei campi custom, proprietà e stati del database Notion. Il modello Notion propone anche le proprietà consigliate per un database nuovo.
+- La skill `nuovo-progetto` copia i due modelli solo se il PO indica Jira o Notion tra i tool, anche via CSV. Checklist, `adapters/README.md` del plugin e guide aggiornati.
+- `TEST-plugin.md`, test 3: tra i file attesi anche `adapters/jira.md` (Jira è indicato via CSV), identico al modello, e nessun `adapters/notion.md`. Il test non è stato rieseguito.
+- Versione del plugin 0.2.0, perché chi l'ha installato riceva l'aggiornamento.
+
 ## 2026-11-17, la demo passa a domain-review
 
 - La demo Conto Business usa domain-review con le regole di `domain/fintech.md`, copiato dal plugin. fintech-compliance è spostato in `archivio/agents/`: i suoi controlli sono tutti nel file di regole.

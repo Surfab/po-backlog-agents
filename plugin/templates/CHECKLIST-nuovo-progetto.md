@@ -6,7 +6,7 @@ Dieci passi. I primi cinque li fa la skill `nuovo-progetto` del plugin po-backlo
 
 2. **Lancia la skill**: `/po-backlog-agents:nuovo-progetto`. Fa al massimo 6 domande: prodotto, tool di backlog, team e sprint, scala di stima, framework di priorità, dominio. Se un file esiste già, si ferma e chiede.
 
-3. **Controlla i file creati**: `CLAUDE.md`, `.claude/settings.json`, `.claude/agents/backlog-sync.md`, `schema/backlog-item.schema.json`, `adapters/README.md`, `adapters/csv.md` e, se hai indicato un dominio, `domain/<dominio>.md`. Le cartelle `backlog/import/` e `output/` sono pronte.
+3. **Controlla i file creati**: `CLAUDE.md`, `.claude/settings.json`, `.claude/agents/backlog-sync.md`, `schema/backlog-item.schema.json`, `adapters/README.md`, `adapters/csv.md`, i modelli `adapters/jira.md` e `adapters/notion.md` se hai indicato quei tool e, se hai indicato un dominio, `domain/<dominio>.md`. Le cartelle `backlog/import/` e `output/` sono pronte.
 
 4. **Completa `CLAUDE.md`.** La skill compila solo quello che hai detto. Restano da compilare almeno Collegamento discovery-delivery, Definition of Ready, Definition of Done, Formato story e Glossario. Non cambiare i nomi delle sezioni né quelli della tabella "Parametri del backlog": gli agent li cercano per nome.
 
@@ -14,7 +14,7 @@ Dieci passi. I primi cinque li fa la skill `nuovo-progetto` del plugin po-backlo
 
 6. **Collega i connettori e trova i nomi esatti dei tool.** Nell'app collega i connettori (Impostazioni, Connettori), apri una sessione locale sulla cartella e chiedi a Claude l'elenco dei tool che vede, divisi in lettura, scrittura ed eliminazione. Metti i tool di lettura nella riga `tools:` di `.claude/agents/backlog-sync.md` e in "allow", quelli di scrittura in "ask", quelli che eliminano in "deny". Senza connettore: esporta un CSV in `backlog/import/<tool>_<progetto>.csv`.
 
-7. **Scrivi un adapter per ogni tool** seguendo i 5 passi di `adapters/README.md`, e aggiungi il tool alla tabella "Tool attivi" di `CLAUDE.md`.
+7. **Completa o scrivi un adapter per ogni tool**, e aggiungi il tool alla tabella "Tool attivi" di `CLAUDE.md`. Per Jira e Notion la skill ha già copiato un modello: resta da compilare le parti tra `< >` (prefisso del connettore, sito e chiave dello spazio, id dei campi custom, proprietà e stati del database) leggendo 2-3 item reali. Per gli altri tool segui i 5 passi di `adapters/README.md`.
 
 8. **Controlla che non restino segnaposto e riapri la sessione.** Chiedi a Claude: "Cerca il testo `<` seguito da maiuscole o da `ID-` in CLAUDE.md, .claude/, adapters/ e domain/". Ogni risultato è un segnaposto da compilare. Poi chiudi e riapri la sessione: agent e `CLAUDE.md` si leggono all'avvio.
 
