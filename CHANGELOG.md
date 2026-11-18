@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-11-18, plugin 0.2.1: gravità decidibile in domain-review
+
+- `domain/fintech.md` e `plugin/templates/domain/fintech.md`, sezione Gravità: nove criteri numerati (G1-G5 Critico, G6-G8 Medio, G9 Basso), ognuno con un esempio di Conto Business. Ogni voce del report cita il criterio. La probabilità e il feature flag non abbassano la gravità. Nei casi dubbi si sceglie il livello più alto e si scrive perché. I due file restano identici.
+- `plugin/templates/domain.template.md`: la sezione Gravità chiede criteri numerati con un esempio e contiene la regola per i casi dubbi.
+- `TEST-plugin.md`, test 5: 3 lanci in sessioni nuove, superato solo se li supera tutti. Un lancio fallisce se un impatto Critico del 12/11 (C1-C8) risulta Medio o Basso senza una motivazione che rimandi ai criteri. Motivo: il 17/11 C4, C5 e C8 erano scesi a Medio e C6 a Basso senza spiegazione. Il test non è stato rieseguito.
+- `archivio/` rinominata in `versioni-precedenti/`, rimandi aggiornati in guide e `TEST-generici.md`.
+- README e guide: percorso per installare e gestire il plugin dall'app desktop, preso dalla documentazione ufficiale. Il marketplace si aggiunge ancora da terminale: la documentazione non descrive come farlo dall'app.
+- Versione del plugin 0.2.1.
+
 ## 2026-11-18, plugin 0.2.0: modelli degli adapter di Jira e Notion
 
 - Nuovi `plugin/templates/adapters/jira.md` e `plugin/templates/adapters/notion.md`, ricavati dagli adapter della demo. Le parti uguali in ogni sito sono già scritte: nomi dei tool dei connettori, query, mappa degli stati per categoria, convenzione degli acceptance criteria, regole di conversione. Le parti che cambiano per progetto sono segnaposto `< >`: prefisso del connettore, sito e chiave dello spazio, id dei campi custom, proprietà e stati del database Notion. Il modello Notion propone anche le proprietà consigliate per un database nuovo.

@@ -169,7 +169,7 @@ po-backlog-agents/
 │                                  schema, adapter di base e modelli di Jira e Notion, modello e esempio delle regole di dominio
 ├── domain/
 │   └── fintech.md                 regole di dominio lette da domain-review
-├── archivio/
+├── versioni-precedenti/
 │   └── agents/fintech-compliance.md   il vecchio agente di dominio, non più usato
 ├── adapters/
 │   ├── README.md                  come aggiungere un tool in 5 passi
@@ -216,7 +216,7 @@ Solo backlog-sync tocca i connettori, e solo in lettura. Gli altri cinque lavora
 
 backlog-health, story-refiner, prioritizer e sprint-prep sono **generici**: non contengono regole di Conto Business. Formato story, scala di stima, framework di priorità, soglie, team e durata dello sprint li leggono da `CLAUDE.md`. Se un valore manca, non usano un default: saltano il controllo che ne dipende e lo scrivono tra i dati mancanti, con la sezione di `CLAUDE.md` da completare. Il test di non regressione in `TEST-generici.md` ha verificato che su Conto Business danno gli stessi risultati della versione precedente.
 
-domain-review è l'**agente di dominio**: non contiene regole proprie, le legge dal file indicato nella sezione Agent di dominio di `CLAUDE.md`, qui `domain/fintech.md` (sezione 15). Gli agenti generici rimandano a lui quando un item rientra nella sezione Ambito di quel file. Fino al 17 novembre 2026 la demo usava fintech-compliance, un agente con le regole di pagamento scritte dentro: è spostato in `archivio/agents/` e i suoi controlli sono tutti in `domain/fintech.md`. I report vecchi in `output/` portano ancora il suo nome.
+domain-review è l'**agente di dominio**: non contiene regole proprie, le legge dal file indicato nella sezione Agent di dominio di `CLAUDE.md`, qui `domain/fintech.md` (sezione 15). Gli agenti generici rimandano a lui quando un item rientra nella sezione Ambito di quel file. Fino al 17 novembre 2026 la demo usava fintech-compliance, un agente con le regole di pagamento scritte dentro: è spostato in `versioni-precedenti/agents/` e i suoi controlli sono tutti in `domain/fintech.md`. I report vecchi in `output/` portano ancora il suo nome.
 
 backlog-sync resta specifico del progetto, perché la riga `tools:` contiene i prefissi dei connettori. Nel plugin c'è come `plugin/templates/backlog-sync.template.md`, con i segnaposto.
 
@@ -535,9 +535,11 @@ claude plugin install po-backlog-agents@surfab
 
 Senza opzioni il plugin vale per tutti i tuoi progetti (scope `user`). Con `--scope project` vale solo per il progetto ed entra in `.claude/settings.json`; con `--scope local` vale solo per te e solo per quel progetto. Dopo l'installazione apri una sessione nuova: plugin e agenti si leggono all'avvio.
 
+**Dall'app desktop (tab Code).** Il marketplace si aggiunge comunque con il primo comando qui sopra, una volta per computer: la documentazione ufficiale non descrive come farlo dall'app. Poi, in una sessione locale, clicca **+** accanto al riquadro del messaggio e scegli **Add plugins**; se il menu mostra **Plugins**, scegli **Plugins** > **Browse plugins** (se manca, **Manage plugins**). Seleziona `po-backlog-agents` e lo scope: il tuo account, il progetto o solo locale. Per disattivarlo o disinstallarlo: **+** > **Plugins** > **Manage plugins**, oppure **Customize** o **Plugins** nella barra laterale. Il plugin non è disponibile nelle sessioni cloud. Fonti: [Install plugins nell'app desktop](https://code.claude.com/docs/en/desktop#install-plugins) e [Install a plugin](https://code.claude.com/docs/en/discover-plugins#install-a-plugin).
+
 Gli agenti del plugin hanno il nome del plugin davanti: `po-backlog-agents:backlog-health`, `po-backlog-agents:domain-review` e così via. "Lancia backlog-health" di solito basta. Attenzione: se il progetto ha in `.claude/agents/` un agente con lo stesso nome, vince quello del progetto.
 
-**Aggiornamenti.** `plugin.json` dichiara una versione (oggi 0.1.0). Chi ha installato il plugin riceve una modifica solo quando la versione cambia: a ogni modifica del plugin va alzata, e va scritta nel CHANGELOG. Per aggiornare: `claude plugin update po-backlog-agents@surfab`.
+**Aggiornamenti.** `plugin.json` dichiara una versione (oggi 0.2.1). Chi ha installato il plugin riceve una modifica solo quando la versione cambia: a ogni modifica del plugin va alzata, e va scritta nel CHANGELOG. Per aggiornare: `claude plugin update po-backlog-agents@surfab`. Per l'aggiornamento la documentazione dell'app desktop non indica un percorso: si usa il comando da terminale.
 
 ### La skill nuovo-progetto
 
